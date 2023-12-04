@@ -5,7 +5,7 @@ Code to reproduce the analyses of (...)
 
 Simple commands for downloading and processing the reference data are available in the `step0_download_ref.md`. Note that the analysis steps assume that a particular directory structure is maintained.
 
-### Extracting Singletons
+### Extracting 1kGP Singletons
 
 The `src/extract_singletons_*.sh` files are example slurm jobs to extract singletons for each of the 1kGP super-populations. We suggest using SLURM or some other workload manager, as these commands do take some time to run. The chain of commands for each superpopulation are also included below (directory references assume commands are being run from the `src` directory):
 
@@ -58,3 +58,18 @@ for i in `seq 1 22`; do
     bcftools query -f "%CHROM\t%POS\t%REF\t%ALT\n" > ../output/SAS/chr${SLURM_ARRAY_TASK_ID}.txt
 done
 ```
+
+### Extracting HGDP Singletons
+
+
+### Annotating 1kGP Singletons
+
+The code for annotating each singleton with its subtype, nucleotide motif, etc is in the script `src/annotate_singletons.py`. The three argmuents which need to be provided are:
+
+1. The singleton file (`-s`)
+2. The location of the reference genome (`-r`)
+3. The intended output (`-o`)
+
+
+
+
