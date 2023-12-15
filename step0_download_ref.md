@@ -12,6 +12,9 @@ for i in `seq 1 22`; do
 done
 ```
 
+We will also want to grab subject IDs and group them by their 1kGP superpopulation:
+
+
 ## HGDP Data
 
 In the directory `data/hgdp`:
