@@ -8,12 +8,24 @@ Run the following to download the 1kGP 30x deep-sequence VCF files:
 
 ```
 for i in `seq 1 22`; do
-  wget "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_raw_GT_with_annot/20201028_CCDG_14151_B01_GRM_WGS_2020-08-05_chr${i}.recalibrated_variants.vcf.gz"
+  wget "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_raw_GT_with_annot/20201028_CCDG_14151_B01_GRM_WGS_2020-08-05_chr${i}.recalibrated_variants.annotated.vcf.gz"
 done
 ```
 
 We will also want to grab subject IDs and group them by their 1kGP superpopulation:
 
+```
+curl http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/1000G_2504_high_coverage.sequence.index |\
+  awk -F"\t" 'NR > 24 {print($10"\t"$11)}' > metadata/subjects_populations.tsv
+
+curl http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/20131219.populations.tsv | head -n -3 > metadata/20131219.populations.tsv
+```
+
+The script `src/append_1kgp_superpop.R` appends the super-population code to the sample list we downloaded above. The script can be run from the root directory of this project:
+
+```
+Rscript src/append_1kgp_superpop.R
+```
 
 ## HGDP Data
 
