@@ -1,6 +1,7 @@
 from pyfaidx import Fasta
 import argparse
 import pandas as pd
+from functools import partial, partialmethod
 #from Bio.Seq import Seq
 
 pd.DataFrame.to_tsv = partialmethod(pd.DataFrame.to_csv, sep='\t', index=None)
