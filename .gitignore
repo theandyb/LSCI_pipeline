@@ -4,6 +4,7 @@
 *.tsv
 *.err
 *.out
+*.gz
 
 # History files
 .Rhistory
