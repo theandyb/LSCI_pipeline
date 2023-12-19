@@ -58,3 +58,23 @@ wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRC
 ```
 
 See [this blog post](https://lh3.github.io/2017/11/13/which-human-reference-genome-to-use) for why we chose this particular fasta
+
+## dbSNP 155
+
+We will use dbSNP 155 to mask sites in the genome known to be variable.
+
+```
+# from the directory data/dbSNP
+wget ftp://hgdownload.soe.ucsc.edu/gbdb/hg38/snp/dbSnp155Common.bb
+bigBedToBed dbSnp155Common.bb dbSnp155Common.bed
+# we only need the first three columns; subsetting yields a much smaller file size
+awk '{print($1"\t"$2"\t"$3)}' dbSnp155Common.bed > dbSnp155Common_reduced.bed
+rm dbSnp155Common.bb dbSnp155Common.bed
+```
+
+We use `bedtools maskfasta` to mask the variant sites in the reference genome:
+
+```
+# from the root directory of the project
+bedtools maskfasta -fi data/ref_genome/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna -bed data/dbSNP/dbSnp155Common_reduced.bed -fo data/ref_genome/hg38_masked.fasta
+```
