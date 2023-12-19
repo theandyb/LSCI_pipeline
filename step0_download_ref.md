@@ -77,4 +77,5 @@ We use `bedtools maskfasta` to mask the variant sites in the reference genome:
 ```
 # from the root directory of the project
 bedtools maskfasta -fi data/ref_genome/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna -bed data/dbSNP/dbSnp155Common_reduced.bed -fo data/ref_genome/hg38_masked.fasta
+samtools faidx data/ref_genome/hg38_masked.fasta
 ```
