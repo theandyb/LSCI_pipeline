@@ -145,6 +145,56 @@ python src/sample_control.py -s output/singletons/${pop}/cpg_GC_CG.txt -f ${ref_
 
 These files are the input for the model fitting code. We need to separate A > N from T > N (and similarly, C > N and G > N) since relative positions need to be reversed for the T > N (G > N) relative to the A > N (C > N) positions.
 
+#### Singletons
+
+*Note: commands below works in zsh -- for command would need to be rewritten for bash*
+
+```
+pop="AFR"
+cd output/singletons/${pop}
+
+typeset -a subtypes
+subtypes=("AT_CG" "AT_GC" "AT_TA")
+for i ("$subtypes[@]"); do
+  print $i
+  awk -v var=$i '{if($3 == "A")print($2) >> "pos_files/"var"_"substr($1,4)".txt"; 
+    else if($3 == "T")print($2) >> "pos_files/"var"_rev_"substr($1,4)".txt"; }' $i.txt
+done
+
+subtypes=("GC_AT" "GC_TA" "GC_CG" "cpg_GC_AT" "cpg_GC_TA" "cpg_GC_CG")
+for i ("$subtypes[@]"); do
+  print $i
+  awk -v var=$i '{if($3 == "C")print($2) >> "pos_files/"var"_"substr($1,4)".txt"; 
+    else if($3 == "G")print($2) >> "pos_files/"var"_rev_"substr($1,4)".txt"; }' $i.txt
+done
+
+cd ../../../
+```
+
+#### Controls
+
+```
+pop="AFR"
+cd output/controls/${pop}
+
+typeset -a subtypes
+subtypes=("AT_CG" "AT_GC" "AT_TA")
+for i ("$subtypes[@]"); do
+  print $i
+  awk -v var=$i -F, '{if($4 == "A")print($2) >> "pos_files/"var"_"substr($1,4)".txt"; 
+    else if($4 == "T")print($2) >> "pos_files/"var"_rev_"substr($1,4)".txt"; }' $i.csv
+done
+
+subtypes=("GC_AT" "GC_TA" "GC_CG" "cpg_GC_AT" "cpg_GC_TA" "cpg_GC_CG")
+for i ("$subtypes[@]"); do
+  print $i
+  awk -v var=$i -F, '{if($4 == "C")print($2) >> "pos_files/"var"_"substr($1,4)".txt"; 
+    else if($4 == "G")print($2) >> "pos_files/"var"_rev_"substr($1,4)".txt"; }' $i.csv
+done
+
+cd ../../../
+```
+
 
 ### Annotating 1kGP Singletons
 
@@ -164,7 +214,12 @@ subtype="AT_CG"
 python src/annotate_singletons.py -s output/singletons/${pop}/${subtype}.txt -o output/singletons/${pop}/annotated/${subtype}.txt -r data/reference/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
 ```
 
+## Fitting Models
 
+### Single Position Models
 
+```
+python src/single_pos.py 
+```
 
 
