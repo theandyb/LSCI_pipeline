@@ -3,15 +3,15 @@
 # We assume that the job is submitted from the src/ directory
 
 #SBATCH --mail-type=FAIL
-#SBATCH --mail-user=you@domain.tld
+#SBATCH --mail-user=beckandy@umich.edu
 #SBATCH --mem=700MB
 #SBATCH --ntasks=1
 #SBATCH --time 04:00:00
 #SBATCH --job-name=singletons_AFR
-#SBATCH --array=1-22
+#SBATCH --array=1-3
 #SBATCH --requeue
-#SBATCH -e slurm/singleton_afr-%J.err
-#SBATCH -o slurm/singleton_afr-%J.out
+#SBATCH -e slurm/singleton_afr-%A_%a.err
+#SBATCH -o slurm/singleton_afr-%A_%a.out
 
 OUT_DIR="../output/singletons/AFR/"
 

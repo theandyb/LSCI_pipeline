@@ -7,7 +7,7 @@ Simple commands for downloading and processing the reference data are available 
 
 ### Extracting 1kGP Singletons
 
-The `src/extract_singletons_*.sh` files are example slurm jobs to extract singletons for each of the 1kGP super-populations. We suggest using SLURM or some other workload manager, as these commands do take some time to run. The chain of commands for each superpopulation are also included below (directory references assume commands are being run from the `src` directory):
+The `src/extract_singletons_*.sh` files are example slurm jobs to extract singletons for each of the 1kGP super-populations. We suggest using SLURM or some other workload manager, as these commands do take some time to run. The chain of commands for each super-population are also included below (directory references assume commands are being run from the `src` directory):
 
 #### AFR Singletons
 
@@ -76,12 +76,12 @@ The singleton extraction steps above yield a single file per chromosome. We rear
 ```
 for i in `seq 1 22`; do
 echo $i
-awk '{if(($3 == "A" && $4 == "C")|| ($3 == "T" && $4 == "G"))print($1"\t"$2"\t"$3)}' chr$i.txt >> AT_CG.txt
-awk '{if(($3 == "A" && $4 == "G")|| ($3 == "T" && $4 == "C"))print($1"\t"$2"\t"$3)}' chr$i.txt >> AT_GC.txt
-awk '{if(($3 == "A" && $4 == "T")|| ($3 == "T" && $4 == "A"))print($1"\t"$2"\t"$3)}' chr$i.txt >> AT_TA.txt
-awk '{if(($3 == "C" && $4 == "A")|| ($3 == "G" && $4 == "T"))print($1"\t"$2"\t"$3)}' chr$i.txt >> all_GC_TA.txt
-awk '{if(($3 == "C" && $4 == "G")|| ($3 == "G" && $4 == "C"))print($1"\t"$2"\t"$3)}' chr$i.txt >> all_GC_CG.txt
-awk '{if(($3 == "C" && $4 == "T")|| ($3 == "G" && $4 == "A"))print($1"\t"$2"\t"$3)}' chr$i.txt >> all_GC_AT.txt
+awk '{if(($3 == "A" && $4 == "C")|| ($3 == "T" && $4 == "G")) print($1"\t"$2"\t"$3) >> "AT_CG.txt"; 
+  else if(($3 == "A" && $4 == "G")|| ($3 == "T" && $4 == "C")) print($1"\t"$2"\t"$3) >> "AT_GC.txt"; 
+  else if(($3 == "A" && $4 == "T")|| ($3 == "T" && $4 == "A"))print($1"\t"$2"\t"$3) >> "AT_TA.txt" ;
+  else if(($3 == "C" && $4 == "A")|| ($3 == "G" && $4 == "T"))print($1"\t"$2"\t"$3) >> "all_GC_TA.txt" ;
+  else if(($3 == "C" && $4 == "G")|| ($3 == "G" && $4 == "C"))print($1"\t"$2"\t"$3) >> "all_GC_CG.txt";
+  else if(($3 == "C" && $4 == "T")|| ($3 == "G" && $4 == "A"))print($1"\t"$2"\t"$3) >> "all_GC_AT.txt"; }' chr$i.txt 
 done 
 ```
 
@@ -92,25 +92,58 @@ This needs to be run in `/output/hgdp_singletons` and in all subdirectories of `
 In our analyses, we consided CpG and non-CpG subtypes as distinct. To do this, we need to identify which GC_NN singletons are CpGs and which are not. The script `src/annotate_cpg.py` performs this task, and can be run as follows:
 
 ```
-pop="AFR"
-python src/annotate_cpg.py -s output/${pop}/all_GC_AT.txt -r data/reference/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna -o output/singletons/${pop}/all_GC_AT_cpg.txt
+pop="SAS"
+python src/annotate_cpg.py -s output/singletons/${pop}/all_GC_AT.txt -r data/ref_genome/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna -o output/singletons/${pop}/all_GC_AT_cpg.txt
 
-python src/annotate_cpg.py -s output/${pop}/all_GC_TA.txt -r data/reference/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna -o output/singletons/${pop}/all_GC_TA_cpg.txt
+python src/annotate_cpg.py -s output/singletons/${pop}/all_GC_TA.txt -r data/ref_genome/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna -o output/singletons/${pop}/all_GC_TA_cpg.txt
 
-python src/annotate_cpg.py -s output/${pop}/all_GC_CG.txt -r data/reference/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna -o output/singletons/${pop}/all_GC_CG_cpg.txt
+python src/annotate_cpg.py -s output/singletons/${pop}/all_GC_CG.txt -r data/ref_genome/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna -o output/singletons/${pop}/all_GC_CG_cpg.txt
 ```
 
 We the generate separate CpG and Non-CpG C>N subtype files:
 
 ```
-pop="AFR"
-awk -F, '{if($4==1)print("chr"$1"\t"$2"\t"$3)}' all_GC_AT_cpg > cpg_GC_AT.txt
-awk -F, '{if($4==0)print("chr"$1"\t"$2"\t"$3)}' all_GC_AT_cpg > GC_AT.txt
-awk -F, '{if($4==1)print("chr"$1"\t"$2"\t"$3)}' all_GC_TA_cpg > cpg_GC_TA.txt
-awk -F, '{if($4==0)print("chr"$1"\t"$2"\t"$3)}' all_GC_TA_cpg > GC_TA.txt
-awk -F, '{if($4==1)print("chr"$1"\t"$2"\t"$3)}' all_GC_CG_cpg > cpg_GC_CG.txt
-awk -F, '{if($4==0)print("chr"$1"\t"$2"\t"$3)}' all_GC_CG_cpg > GC_CG.txt
+pop="SAS"
+cd "output/singletons/$pop"
+
+awk -F, '{if($4==1)print("chr"$1"\t"$2"\t"$3) >> "cpg_GC_AT.txt";
+  else if($4==0)print("chr"$1"\t"$2"\t"$3) >> "GC_AT.txt"; }' all_GC_AT_cpg.txt 
+
+awk -F, '{if($4==1)print("chr"$1"\t"$2"\t"$3) >> "cpg_GC_TA.txt";
+  else if($4==0)print("chr"$1"\t"$2"\t"$3) >> "GC_TA.txt"; }' all_GC_TA_cpg.txt 
+  
+awk -F, '{if($4==1)print("chr"$1"\t"$2"\t"$3) >> "cpg_GC_CG.txt";
+  else if($4==0)print("chr"$1"\t"$2"\t"$3) >> "GC_CG.txt"; }' all_GC_CG_cpg.txt 
+
+cd ../../../
 ```
+
+### Sample Control Observations
+
+Run for each super-population. In our analyses, we sampled 5 control observations for each singleton.
+
+```
+# Sample controls
+n_control=1
+pop="AFR"
+ref_genome="data/ref_genome/hg38_masked.fasta"
+
+python src/sample_control.py -s output/singletons/${pop}/AT_CG.txt -f ${ref_genome} -o output/controls/${pop}/AT_CG.csv -t "AT_CG" -n ${n_control}
+python src/sample_control.py -s output/singletons/${pop}/AT_GC.txt -f ${ref_genome} -o output/controls/${pop}/AT_GC.csv -t "AT_GC" -n ${n_control}
+python src/sample_control.py -s output/singletons/${pop}/AT_TA.txt -f ${ref_genome} -o output/controls/${pop}/AT_TA.csv -t "AT_TA" -n ${n_control}
+
+python src/sample_control.py -s output/singletons/${pop}/GC_AT.txt -f ${ref_genome} -o output/controls/${pop}/GC_AT.csv -t "GC_AT" -n ${n_control}
+python src/sample_control.py -s output/singletons/${pop}/GC_TA.txt -f ${ref_genome} -o output/controls/${pop}/GC_TA.csv -t "GC_TA" -n ${n_control}
+python src/sample_control.py -s output/singletons/${pop}/GC_CG.txt -f ${ref_genome} -o output/controls/${pop}/GC_CG.csv -t "GC_CG" -n ${n_control}
+
+python src/sample_control.py -s output/singletons/${pop}/cpg_GC_AT.txt -f ${ref_genome} -o output/controls/${pop}/cpg_GC_AT.csv -t "cpg_GC_AT" -n ${n_control}
+python src/sample_control.py -s output/singletons/${pop}/cpg_GC_TA.txt -f ${ref_genome} -o output/controls/${pop}/cpg_GC_TA.csv -t "cpg_GC_TA" -n ${n_control}
+python src/sample_control.py -s output/singletons/${pop}/cpg_GC_CG.txt -f ${ref_genome} -o output/controls/${pop}/cpg_GC_CG.csv -t "cpg_GC_CG" -n ${n_control}
+```
+
+### Generating Position Files
+
+These files are the input for the model fitting code. We need to separate A > N from T > N (and similarly, C > N and G > N) since relative positions need to be reversed for the T > N (G > N) relative to the A > N (C > N) positions.
 
 
 ### Annotating 1kGP Singletons

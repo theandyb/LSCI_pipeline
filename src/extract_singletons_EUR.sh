@@ -10,8 +10,8 @@
 #SBATCH --job-name=singletons_EUR
 #SBATCH --array=1-22
 #SBATCH --requeue
-#SBATCH -e slurm/singleton_eur-%J.err
-#SBATCH -o slurm/singleton_eur-%J.out
+#SBATCH -e slurm/singleton_eur-%A_%a.err
+#SBATCH -o slurm/singleton_eur-%A_%a.out
 
 OUT_DIR="../output/singletons/EUR/"
 

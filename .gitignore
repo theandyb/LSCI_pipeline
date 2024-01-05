@@ -1,6 +1,6 @@
 # Output files of the pipeline
 *.txt
-*.csv
+*.csv*
 *.tsv
 *.err
 *.out
