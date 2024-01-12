@@ -1,5 +1,5 @@
 """
-Code for getting the deviance statistics at all positions within +/- 100bp window
+Code for getting the deviance statistics at all positions within +/- 1000bp window
 """
 import pandas as pd
 import statsmodels.api as sm
@@ -48,7 +48,10 @@ def get_count_table_control(chromosome, subtype, offset, pop, ref_file, base_dir
   """
   fasta_obj = Fasta(ref_file)
   control_pos = c_pos(subtype, chromosome, pop, base_dir, suffix = suffix)
-  rev_control_pos = c_pos(subtype + "_rev", chromosome, pop, base_dir, suffix = suffix)
+  if not subtype.startswith("cpg"):
+    rev_control_pos = c_pos(subtype + "_rev", chromosome, pop, base_dir, suffix = suffix)
+  else:
+    rev_control_pos = {}
   seq = fasta_obj["{}{}".format("chr", chromosome)]
   seqstr = seq[0:len(seq)].seq
   results = {"A":0, "C":0, "G":0, "T":0}
@@ -124,18 +127,18 @@ subtype = args.subtype
 base_dir = args.output
 suffix = args.suffix
 
-ray.init(num_cpus=22)
-res_out_dir = "{}/single_pos/resid/{}/".format(base_dir, pop)
-print("Running models for subtype: {} and population: {}".format(subtype, pop))
-for offset in range(1, 1001):
+ray.init(num_cpus=22, include_dashboard=False)
+res_out_dir = "{}/single_pos/resid/{}/".format(base_dir, population)
+print("Running models for subtype: {} and population: {}".format(subtype, population))
+for offset in range(1, 51):
   print(offset)
-  df = fit_model_all(subtype, offset * -1, pop, ref_file, base_dir , suffix = suffix)
-  file_name = out_dir + subtype + "_rp_" + str(-1*offset) + ".csv" + suffix
+  df = fit_model_all(subtype, offset * -1, population, ref_genome, base_dir , suffix = suffix)
+  file_name = res_out_dir + subtype + "_rp_" + str(-1*offset) + ".csv" + suffix
   df.to_csv(file_name, index = False)
   if subtype.startswith("cpg") and offset == 1:
     continue
-  df = fit_model_all(subtype, offset, pop = pop, suffix = suffix)
-  file_name = out_dir + subtype + "_rp_" + str(offset) + ".csv" + suffix
+  df = fit_model_all(subtype, offset, pop = population, suffix = suffix)
+  file_name = res_out_dir + subtype + "_rp_" + str(offset) + ".csv" + suffix
   df.to_csv(file_name, index = False)
 
 ray.shutdown()
