@@ -143,7 +143,9 @@ We use vcftool's `singletons` option to extract singletons from the HGDP dataset
 
 ```
 chromosome=22
-bcftools view data/hgdp/hgdp_wgs.20190516.full.chr${chromosome}.vcf.gz | vcftools --vcf - --singletons --out output/singletons/hgdp/chr${chromosome}_sing
+population="EUROPE"
+bcftools view -S metadata/${population}.txt -v snps data/hgdp/hgdp_wgs.20190516.full.chr${chromosome}.vcf.gz |\
+  vcftools --vcf - --singletons --out output/singletons/hgdp/${population}/chr${chromosome}_sing
 ```
 
 
