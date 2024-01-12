@@ -46,13 +46,11 @@ done
 
 We will also need the metadata for the samples:
 
-
 ```
 curl https://ngs.sanger.ac.uk//production/hgdp/hgdp_wgs.20190516/metadata/hgdp_wgs.20190516.metadata.txt |\
     awk 'NR>1 {print($1"\t"$9)}' |\
-    awk '{print>"metadata/"$2".txt"}'
+    awk '{print($1) >> ("metadata/" $2 ".txt")}'
 ```
-
 
 #### Reference Genome
 
@@ -144,7 +142,8 @@ We use vcftool's `singletons` option to extract singletons from the HGDP dataset
 
 
 ```
-
+chromosome=22
+bcftools view data/hgdp/hgdp_wgs.20190516.full.chr${chromosome}.vcf.gz | vcftools --vcf - --singletons --out output/singletons/hgdp/chr${chromosome}_sing
 ```
 
 
