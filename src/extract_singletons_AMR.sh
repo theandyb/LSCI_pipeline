@@ -10,8 +10,8 @@
 #SBATCH --job-name=singletons_AMR
 #SBATCH --array=1-22
 #SBATCH --requeue
-#SBATCH -e slurm/singleton_amr-%J.err
-#SBATCH -o slurm/singleton_amr-%J.out
+#SBATCH -e slurm/singleton_amr-%A_%a.err
+#SBATCH -o slurm/singleton_amr-%A_%a.out
 
 OUT_DIR="../output/singletons/AMR/"
 

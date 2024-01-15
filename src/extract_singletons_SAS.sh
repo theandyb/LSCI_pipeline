@@ -3,17 +3,17 @@
 # We assume that the job is submitted from the src/ directory
 
 #SBATCH --mail-type=FAIL
-#SBATCH --mail-user=you@domain.tld
+#SBATCH --mail-user=beckandy@umich.edu
 #SBATCH --mem=700MB
 #SBATCH --ntasks=1
 #SBATCH --time 04:00:00
 #SBATCH --job-name=singletons_SAS
-#SBATCH --array=1-22
+#SBATCH --array=1-5
 #SBATCH --requeue
-#SBATCH -e slurm/singleton_sas-%J.err
-#SBATCH -o slurm/singleton_sas-%J.out
+#SBATCH -e slurm/singleton_sas-%A_%a.err
+#SBATCH -o slurm/singleton_sas-%A_%a.out
 
-OUT_DIR="../output/singletons/AMR/"
+OUT_DIR="../output/singletons/SAS/"
 
 bcftools view -i "%FILTER=='PASS'" -v snps ../data/1kgp/20201028_CCDG_14151_B01_GRM_WGS_2020-08-05_chr${SLURM_ARRAY_TASK_ID}.recalibrated_variants.annotated.vcf.gz |\
 bcftools view -i "(AC_SAS_unrel == 1 | (AC_Hom_SAS_unrel == 2 & AC_Het_SAS_unrel ==0)) & AC_EUR_unrel == 0 & AC_AFR_unrel == 0 & AC_EAS_unrel == 0 & AC_AMR_unrel == 0" |\
