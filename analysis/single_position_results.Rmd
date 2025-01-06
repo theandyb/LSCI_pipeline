@@ -7,9 +7,108 @@ editor_options:
   chunk_output_type: console
 ---
 
-## Introduction
+## Notes
+
+* Save figures using something along the lines of `ggsave("file.png", dpi=300)`
+
+## Setup
+
+### Libraries
 
 ```{r}
+library(tidyverse)
+library(ggpubfigs) # functions for color blind friendly palettes
+library(reactable) # table output for html
+library(knitr) # PDF table output
+```
+
+### Paths
+
+```{r}
+base_dir = "output"
+single_pos_dir = paste0(base_dir, "/single_pos")
+
+figure_output = paste0(base_dir, "/figs/single_pos")
+```
+
+
+### Base Functions
+
+Load position-level results:
+
+```{r}
+get_pos_results <- function(res_dir, pop, subtype){
+  f_name <- paste0(res_dir, "/", pop, "/", subtype, ".csv")
+  df <- read_csv(f_name, show_col_types = FALSE) %>%
+    rowwise() %>%
+    mutate(re = dev / (2 * (singletons+controls)))
+  return(df)
+}
+```
+
+Load position-level residuals:
+
+```{r}
+get_pos_resid <- function(res_dir, pop, subtype, rp){
+  f_name <- paste0(res_dir, "/resid/", pop, "/", subtype, "_rp_", rp, ".csv")
+  df <- read_csv(f_name, show_col_types = FALSE)
+  df$rp <- rp
+  return(df)
+}
+
+get_pos_resid_all <- function(res_dir, pop, subtype, rp = c(-500:-1, 1:500)){
+  results <- vector(mode = "list", length = length(rp))
+  for(i in 1:length(rp)){
+    results[[i]] <- get_pos_resid(res_dir, pop, subtype, rp[i])
+  }
+  df <- bind_rows(results)
+  return(df)
+}
+```
+
+
+## Position Level Result Plots
+
+### A > G
+
+```{r}
+subtype <- "AT_GC"
+```
+
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+df_results %>%
+  mutate(sig = dev < qchisq(0.95, 3)) %>%
+  ggplot(aes(x = offset, y = re, color = sig)) +
+  scale_y_log10() +
+  geom_point() +
+  scale_color_manual(values = friendly_pal("contrast_three")) +
+  theme_classic() +
+  theme(text = element_text(family = "Arial"),
+        legend.position = "inside",
+        legend.position.inside = c(.85, .8)) +
+  xlab("Relative Position") +
+  ylab("Log10 Relative Entropy") +
+  labs(color = "Significant")
+
+
+df_results %>%
+  filter(abs(offset) <= 20) %>%
+  ggplot(aes(x = offset, y = re)) +
+  geom_point() +
+  geom_line() +
+  theme_classic() +
+  theme(text = element_text(family = "Arial"),
+        legend.position = "inside",
+        legend.position.inside = c(.85, .8)) +
+  xlab("Relative Position") +
+  ylab("Relative Entropy")
 
 ```
+
 

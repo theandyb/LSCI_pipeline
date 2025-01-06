@@ -458,6 +458,8 @@ df_sim <- vector(mode = "list", length = n_sim)
 for(i in 1:n_sim){
   df_sim[[i]] <- simulate_1_pos_null_fixM(n_s, prop_nuc_22)
 }
+
+df_sim <- bind_rows(df_sim)
 ```
 
 ```{r}
