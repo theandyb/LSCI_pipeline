@@ -26,10 +26,10 @@ def main(ref_prefix = "chr"):
     current_chrom = 1
     output_list = []
     out_file = args.output
-    min_list = []
-    max_list = []
-    min_file = out_file + ".min"
-    max_file = out_file + ".max"
+    # min_list = []
+    # max_list = []
+    # min_file = out_file + ".min"
+    # max_file = out_file + ".max"
     fasta_obj = Fasta(ref_file)
     seq = fasta_obj["{}{}".format(ref_prefix, current_chrom)]
     #seqstr = seq[0:len(seq)].seq
@@ -46,27 +46,29 @@ def main(ref_prefix = "chr"):
                 seq = fasta_obj["{}{}".format(ref_prefix, current_chrom)]
             new_entry = sample_control("chr{}".format(current_chrom), pos, ref, nSample, seq, cpg_bool = cpg_bool, all_bool = all_bool)
             output_list.extend(new_entry)
-            min_dist = min([t.get("distance") for t in new_entry])
-            max_dist = max([t.get("distance") for t in new_entry])
-            min_entry = [t for t in new_entry if t.get('distance') == min_dist]
-            max_entry = [t for t in new_entry if t.get('distance') == max_dist ]
+            # min_dist = min([t.get("distance") for t in new_entry])
+            # max_dist = max([t.get("distance") for t in new_entry])
+            # min_entry = [t for t in new_entry if t.get('distance') == min_dist]
+            # max_entry = [t for t in new_entry if t.get('distance') == max_dist ]
+            # min_list.extend(min_entry)
+            # max_list.extend(max_entry)
             line = fp.readline()
             counter += 1
             if counter % 10000 == 0:
                 print(counter)
                 pd.DataFrame(output_list).to_csv(args.output, index=None, header=False, mode='a')
-                pd.DataFrame(min_list).to_csv(min_file, index = None, header=False, mode='a')
-                pd.DataFrame(max_list).to_csv(max_file, index = None, header=False, mode='a')
+                # pd.DataFrame(min_list).to_csv(min_file, index = None, header=False, mode='a')
+                # pd.DataFrame(max_list).to_csv(max_file, index = None, header=False, mode='a')
                 output_list = []
-                min_list = []
-                max_list = []
+                # min_list = []
+                # max_list = []
     print("done sampling")
     if(output_list):
         pd.DataFrame(output_list).to_csv(args.output, index = None, header=False, mode='a')
-    if(min_list):
-        pd.DataFrame(min_list).to_csv(args.output, index = None, header=False, mode='a')
-    if(max_list):
-        pd.DataFrame(max_list).to_csv(args.output, index = None, header=False, mode='a')
+    # if(min_list):
+    #     pd.DataFrame(min_list).to_csv(args.output, index = None, header=False, mode='a')
+    # if(max_list):
+    #     pd.DataFrame(max_list).to_csv(args.output, index = None, header=False, mode='a')
     return 0
 
 def sample_control(chrom, pos, ref, nSample, seq, cpg_bool = False, all_bool = False, window = 150, bp = 10):
@@ -91,6 +93,10 @@ def sample_control(chrom, pos, ref, nSample, seq, cpg_bool = False, all_bool = F
     window -= 50
     while len(newlist) < nSample:
         ix = random.choice(sites)
+        sites.remove(ix)
+        if cpg_bool: # Allow for the G in CG to be selected by chance
+          to_g = random.randint(0, 1)
+          ix += to_g
         control_al = subseq[ix]
         chrom_ix = ix - window + pos
         distance = abs(ix - window)
@@ -105,7 +111,6 @@ def sample_control(chrom, pos, ref, nSample, seq, cpg_bool = False, all_bool = F
             'three':seq[(chrom_ix - 2):(chrom_ix+1)].seq.upper()
             }
         newlist.append(entry)
-        sites.remove(ix)
     return newlist
 
 if __name__ == "__main__":

@@ -72,6 +72,10 @@ gunzip GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
 
 See [this blog post](https://lh3.github.io/2017/11/13/which-human-reference-genome-to-use) for why we chose this particular fasta
 
+#### Reference genome to sqlite3
+
+
+
 #### Mask 1kGP Variable Sites
 
 We will mask sites in the reference genome which are variable in the 1kGP sample. First we generate bed files from the 1kGP vcf files
@@ -240,6 +244,13 @@ cd ../../../
 Run for each super-population. In our analyses, we sampled 5 control observations for each singleton.
 
 ```
+mkdir -p output/controls/AFR/pos_files
+mkdir -p output/controls/AMR/pos_files
+mkdir -p output/controls/EAS/pos_files
+mkdir -p output/controls/EUR/pos_files
+mkdir -p output/controls/SAS/pos_files
+
+
 # Sample controls
 n_control=5
 pop="SAS"
@@ -328,7 +339,7 @@ The code for annotating each singleton with its subtype, nucleotide motif, etc i
 From the root directory, an example command would be:
 
 ```
-pop="SAS"
+pop="AFR"
 mkdir output/singletons/${pop}/annotated
 
 subtype="AT_CG"
@@ -359,7 +370,50 @@ subtype="cpg_GC_CG"
 python code/annotate_1kgp_singletons.py -s output/singletons/${pop}/${subtype}.txt -o output/singletons/${pop}/annotated/${subtype}.txt -r data/reference/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
 ```
 
+## Combining Position Files for ALL
+
+We'd also like to perform analyses using singletons from all populations at once. One option is to construct an "ALL" population folder; this leads to some data reduundancy, but doesn't require re-writing code that does single population analyses.
+
+```
+mkdir -p output/singletons/ALL/pos_files
+mkdir -p output/controls/ALL/pos_files
+
+for filename in output/controls/AFR/pos_files/*.txt*; do
+  f_name=$(basename -- "$filename")
+  cat output/controls/AFR/pos_files/${f_name} >> output/controls/ALL/pos_files/${f_name}
+  cat output/controls/AMR/pos_files/${f_name} >> output/controls/ALL/pos_files/${f_name}
+  cat output/controls/EAS/pos_files/${f_name} >> output/controls/ALL/pos_files/${f_name}
+  cat output/controls/EUR/pos_files/${f_name} >> output/controls/ALL/pos_files/${f_name}
+  cat output/controls/SAS/pos_files/${f_name} >> output/controls/ALL/pos_files/${f_name}
+done
+
+for filename in output/singletons/AFR/pos_files/*.txt*; do
+  f_name=$(basename -- "$filename")
+  cat output/singletons/AFR/pos_files/${f_name} >> output/singletons/ALL/pos_files/${f_name}
+  cat output/singletons/AMR/pos_files/${f_name} >> output/singletons/ALL/pos_files/${f_name}
+  cat output/singletons/EAS/pos_files/${f_name} >> output/singletons/ALL/pos_files/${f_name}
+  cat output/singletons/EUR/pos_files/${f_name} >> output/singletons/ALL/pos_files/${f_name}
+  cat output/singletons/SAS/pos_files/${f_name} >> output/singletons/ALL/pos_files/${f_name}
+done
+```
+
 ## Fitting Models
+
+```
+mkdir -p output/single_pos/ALL
+mkdir -p output/single_pos/AFR
+mkdir -p output/single_pos/AMR
+mkdir -p output/single_pos/EAS
+mkdir -p output/single_pos/EUR
+mkdir -p output/single_pos/SAS
+
+mkdir -p output/single_pos/resid/ALL
+mkdir -p output/single_pos/resid/AFR
+mkdir -p output/single_pos/resid/AMR
+mkdir -p output/single_pos/resid/EAS
+mkdir -p output/single_pos/resid/EUR
+mkdir -p output/single_pos/resid/SAS
+```
 
 ### Single Position Models
 
@@ -435,4 +489,34 @@ python code/single_position_models.py -p SAS -s ${subtype} -f data/reference/GCA
 
 ```
 
+### Two Position Models
 
+#### Position level results
+
+```
+pop="SAS"
+python code/two_position_model.py -p ${pop} -t "AT_CG"
+python code/two_position_model.py -p ${pop} -t "AT_GC"
+python code/two_position_model.py -p ${pop} -t "AT_TA"
+python code/two_position_model.py -p ${pop} -t "GC_AT"
+python code/two_position_model.py -p ${pop} -t "GC_TA"
+python code/two_position_model.py -p ${pop} -t "GC_CG"
+python code/two_position_model.py -p ${pop} -t "cpg_GC_AT"
+python code/two_position_model.py -p ${pop} -t "cpg_GC_TA"
+python code/two_position_model.py -p ${pop} -t "cpg_GC_CG"
+```
+
+#### Residual Level Results
+
+```
+pop="SAS"
+python code/two_position_resid.py -p ${pop} -t "AT_CG"
+python code/two_position_resid.py -p ${pop} -t "AT_GC"
+python code/two_position_resid.py -p ${pop} -t "AT_TA"
+python code/two_position_resid.py -p ${pop} -t "GC_AT"
+python code/two_position_resid.py -p ${pop} -t "GC_TA"
+python code/two_position_resid.py -p ${pop} -t "GC_CG"
+python code/two_position_resid.py -p ${pop} -t "cpg_GC_AT"
+python code/two_position_resid.py -p ${pop} -t "cpg_GC_TA"
+python code/two_position_resid.py -p ${pop} -t "cpg_GC_CG"
+```

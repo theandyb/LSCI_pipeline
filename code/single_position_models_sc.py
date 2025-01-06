@@ -1,4 +1,5 @@
 """
+Single Chromosome Results
 Code for getting the deviance statistics at all positions within +/- 1000bp window
 """
 import pandas as pd
@@ -6,7 +7,6 @@ import statsmodels.api as sm
 from pyfaidx import Fasta
 from patsy import dmatrices
 import statsmodels.formula.api as smf
-import ray
 import argparse
 import time
 
@@ -15,7 +15,8 @@ parser.add_argument("-p", "--population", help="1kGP Superpopulation Code", requ
 parser.add_argument("-s", "--subtype", help="Mutation Subtype", required=True)
 parser.add_argument("-f", "--fasta", help="Reference Genome Fasta", required=True)
 parser.add_argument("-o", "--output", help="Output base directory", required=True)
-parser.add_argument("-c", "--suffix", help="Control file suffix", default="")
+parser.add_argument("-x", "--suffix", help="Control file suffix", default="")
+parser.add_argument("-c", "--chrom", help="Chromosome", default="")
 args = parser.parse_args()
 
 def c_pos(subtype, chromosome, pop, base_dir, suffix):
@@ -38,7 +39,6 @@ def complement(nucleotide):
     return nucleotide
   return complements[nucleotide]
 
-@ray.remote
 def get_count_table_control(chromosome, subtype, offset, pop, ref_file, base_dir, suffix):
   """
   Get the count table for controls at a given relative position for a subtype.
@@ -65,7 +65,6 @@ def get_count_table_control(chromosome, subtype, offset, pop, ref_file, base_dir
       results[nuc] += 1
   return(results)
 
-@ray.remote
 def get_count_table_singletons(chromosome, subtype, offset, pop, ref_file, base_dir):
   """
   Get the count table for singletons at a given relative position for a subtype.
@@ -92,26 +91,12 @@ def get_count_table_singletons(chromosome, subtype, offset, pop, ref_file, base_
       results[nuc] += 1
   return(results)
 
-def get_count_all(subtype, offset, pop, ref_file, base_dir, status = "singleton", suffix = ""):
-  """
-  Get the singleton and control counts for a given relative position
-  across all 22 autosomes. This version is parallelized via ray
-  """
-  if status == "singleton":
-    futures = [get_count_table_singletons.remote(i, subtype, offset, pop, ref_file, base_dir) for i in range(1,23)]
-    results = pd.DataFrame.from_dict(ray.get(futures)).sum(axis=0)
-  else:
-    futures = [get_count_table_control.remote(i, subtype, offset, pop, ref_file, base_dir, suffix = suffix) for i in range(1,23)]
-    results = pd.DataFrame.from_dict(ray.get(futures)).sum(axis=0)
-  return(results)
 
-def fit_model_all(subtype, offset, pop, ref_file, base_dir, suffix = ""):
-  s_tab = get_count_all(subtype, offset, pop, ref_file, base_dir, status = "singleton")
-  s_tab = s_tab.reset_index(level=0)
-  s_tab.columns = ['nuc', 'singletons']
-  c_tab = get_count_all(subtype, offset, pop, ref_file, base_dir, status = "control", suffix = suffix)
-  c_tab = c_tab.reset_index(level=0)
-  c_tab.columns = ['nuc', 'controls']
+def fit_model(chromosome, subtype, offset, pop, ref_file, base_dir, suffix = ""):
+  s_tab = get_count_table_singletons(chromosome, subtype, offset, pop, ref_file, base_dir)
+  s_tab = pd.DataFrame(s_tab.items(), columns=['nuc', 'singletons'])
+  c_tab = get_count_table_control(chromosome, subtype, offset, pop, ref_file, base_dir, suffix)
+  c_tab = pd.DataFrame(c_tab.items(), columns=['nuc', 'controls'])
   df = pd.DataFrame.merge(s_tab, c_tab, on='nuc')
   df = pd.melt(df, id_vars = 'nuc', var_name = 'status', value_name = "n")
   mod = smf.glm("n ~ status + nuc", df, family = sm.families.Poisson()).fit()
@@ -124,30 +109,28 @@ population = args.population
 subtype = args.subtype
 base_dir = args.output
 suffix = args.suffix
+chromosome = str(args.chrom)
 
 print("Running with options: ")
 print("Population: " + population)
 print("Subtype: " + subtype)
 print("Reference File: {}".format(ref_genome))
 print("Base directory: " + base_dir)
+print("Chromosome: " + chromosome)
 
 time.sleep(3)
 
-
-ray.init(num_cpus=22, include_dashboard=False)
-res_out_dir = "{}/single_pos/resid/{}/".format(base_dir, population)
+res_out_dir = "{}/single_pos/chr{}/resid/{}/".format(base_dir, chromosome, population)
 print("Running models for subtype: {} and population: {}".format(subtype, population))
 for offset in range(1, 501):
   print(offset)
-  df = fit_model_all(subtype, offset * -1, population, ref_genome, base_dir , suffix = suffix)
+  df = fit_model(chromosome, subtype, offset * -1, population, ref_genome, base_dir, suffix = suffix)
   #fit_model_all(subtype, offset, pop, ref_file, base_dir, suffix = "")
   file_name = res_out_dir + subtype + "_rp_" + str(-1*offset) + ".csv" + suffix
   df.to_csv(file_name, index = False)
   if subtype.startswith("cpg") and offset == 1:
     continue
-  df = fit_model_all(subtype, offset, population, ref_genome, base_dir , suffix = suffix)
+  df = fit_model(chromosome, subtype, offset, population, ref_genome, base_dir, suffix = suffix)
   file_name = res_out_dir + subtype + "_rp_" + str(offset) + ".csv" + suffix
   df.to_csv(file_name, index = False)
-
-ray.shutdown()
 
