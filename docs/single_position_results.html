@@ -513,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreef74e31a5f394c9287ea2e3ffb63ce9915269d6a9targetblankf74e31aa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreeb368e8ab66a816969738d39b00b34bc904816328targetblankb368e8aa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/f74e31a5f394c9287ea2e3ffb63ce9915269d6a9" target="_blank">f74e31a</a>
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/b368e8ab66a816969738d39b00b34bc904816328" target="_blank">b368e8a</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreef74e31a5f394c9287ea2e3ffb63ce9915269d6a9targetblankf74e31aa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreeb368e8ab66a816969738d39b00b34bc904816328targetblankb368e8aa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -531,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/f74e31a5f394c9287ea2e3ffb63ce9915269d6a9" target="_blank">f74e31a</a>.
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/b368e8ab66a816969738d39b00b34bc904816328" target="_blank">b368e8a</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -607,6 +607,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/b368e8ab66a816969738d39b00b34bc904816328/analysis/single_position_results.Rmd" target="_blank">b368e8a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-06
+</td>
+<td>
+wflow_publish("analysis/single_position_results.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/theandyb/LSCI_pipeline/b634345745006ad0b0e8372062519d2af098af6f/docs/single_position_results.html" target="_blank">b634345</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -715,6 +749,40 @@ get_pos_resid_all &lt;- function(res_dir, pop, subtype, rp = c(-500:-1, 1:500)){
   return(df)
 }</code></pre>
 </div>
+<div id="figure-functions" class="section level3">
+<h3>Figure Functions</h3>
+<pre class="r"><code>pos_level_line &lt;- function(res_df, rp_lim = 20){
+  p &lt;- res_df %&gt;%
+    filter(abs(offset) &lt;= rp_lim) %&gt;%
+    ggplot(aes(x = offset, y = re)) +
+    geom_point() +
+    geom_line() +
+    theme_classic() +
+    theme(text = element_text(family = &quot;Arial&quot;),
+          legend.position = &quot;inside&quot;,
+          legend.position.inside = c(.85, .8)) +
+    xlab(&quot;Relative Position&quot;) +
+    ylab(&quot;Relative Entropy&quot;)
+  return(p)
+}
+
+pos_level_dot &lt;- function(res_df, palette_name = &quot;contrast_three&quot;){
+  p &lt;- res_df %&gt;%
+    mutate(sig = dev &lt; qchisq(0.95, 3)) %&gt;%
+    ggplot(aes(x = offset, y = re, color = sig)) +
+    scale_y_log10() +
+    geom_point() +
+    scale_color_manual(values = friendly_pal(palette_name)) +
+    theme_classic() +
+    theme(text = element_text(family = &quot;Arial&quot;),
+          legend.position = &quot;inside&quot;,
+          legend.position.inside = c(.85, .8)) +
+    xlab(&quot;Relative Position&quot;) +
+    ylab(&quot;Log10 Relative Entropy&quot;) +
+    labs(color = &quot;Significant&quot;)
+  return(p)
+}</code></pre>
+</div>
 </div>
 <div id="position-level-result-plots" class="section level2">
 <h2>Position Level Result Plots</h2>
@@ -726,32 +794,164 @@ get_pos_resid_all &lt;- function(res_dir, pop, subtype, rp = c(-500:-1, 1:500)){
 <pre class="r"><code>pop &lt;- &quot;ALL&quot;
 df_results &lt;- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
 
-df_results %&gt;%
-  mutate(sig = dev &lt; qchisq(0.95, 3)) %&gt;%
-  ggplot(aes(x = offset, y = re, color = sig)) +
-  scale_y_log10() +
-  geom_point() +
-  scale_color_manual(values = friendly_pal(&quot;contrast_three&quot;)) +
-  theme_classic() +
-  theme(text = element_text(family = &quot;Arial&quot;),
-        legend.position = &quot;inside&quot;,
-        legend.position.inside = c(.85, .8)) +
-  xlab(&quot;Relative Position&quot;) +
-  ylab(&quot;Log10 Relative Entropy&quot;) +
-  labs(color = &quot;Significant&quot;)</code></pre>
-<p><img src="figure/single_position_results.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>df_results %&gt;%
-  filter(abs(offset) &lt;= 20) %&gt;%
-  ggplot(aes(x = offset, y = re)) +
-  geom_point() +
-  geom_line() +
-  theme_classic() +
-  theme(text = element_text(family = &quot;Arial&quot;),
-        legend.position = &quot;inside&quot;,
-        legend.position.inside = c(.85, .8)) +
-  xlab(&quot;Relative Position&quot;) +
-  ylab(&quot;Relative Entropy&quot;)</code></pre>
-<p><img src="figure/single_position_results.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
+pos_level_line(df_results) </code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_dot(df_results)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_line(df_results) + scale_y_log10() + ylab(&quot;Relative Entropy (log10)&quot;)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-7-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>For the A &gt; G mutation subtype, we observe the strongest signal of
+influence (relative entropy) at the +1 relative position. We observed
+that, in general, the signal decreases as positions further from the
+focal (0) position are considered, but note that this pattern is not
+monotonic in either direction, with the most obvious example of this
+being the stronger signal observed at -2 relative to the signal observed
+at -1. When compared to the critical value for a <span
+class="math inline">\(\chi^2\)</span> distribution with 3 degrees of
+freedom at the <span class="math inline">\(\alpha=0.05\)</span> level of
+significance, we find that the underlying deviance statistics remain
+significant up to approximately +/- 250bp; from here, we see values
+hover in a range that includes values which are not significant. The
+above results are based on the distributions of nucleotides flanking
+singletons and their matched controls across all five 1kGP
+super-populations; we next plot the results for each super-population
+individually:</p>
+</div>
+<div id="afr" class="section level4">
+<h4>AFR</h4>
+<pre class="r"><code>pop &lt;- &quot;AFR&quot;
+df_results &lt;- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) </code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_dot(df_results)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_line(df_results) + scale_y_log10() + ylab(&quot;Relative Entropy (log10)&quot;)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-8-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="amr" class="section level4">
+<h4>AMR</h4>
+<pre class="r"><code>pop &lt;- &quot;AMR&quot;
+df_results &lt;- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) </code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_dot(df_results)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-9-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_line(df_results) + scale_y_log10() + ylab(&quot;Relative Entropy (log10)&quot;)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-9-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="eas" class="section level4">
+<h4>EAS</h4>
+<pre class="r"><code>pop &lt;- &quot;EAS&quot;
+df_results &lt;- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) </code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_dot(df_results)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_line(df_results) + scale_y_log10() + ylab(&quot;Relative Entropy (log10)&quot;)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-10-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="eur" class="section level4">
+<h4>EUR</h4>
+<pre class="r"><code>pop &lt;- &quot;EUR&quot;
+df_results &lt;- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) </code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_dot(df_results)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_line(df_results) + scale_y_log10() + ylab(&quot;Relative Entropy (log10)&quot;)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-11-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="sas" class="section level4">
+<h4>SAS</h4>
+<pre class="r"><code>pop &lt;- &quot;EUR&quot;
+df_results &lt;- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) </code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_dot(df_results)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-12-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_line(df_results) + scale_y_log10() + ylab(&quot;Relative Entropy (log10)&quot;)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-12-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="a-c" class="section level3">
+<h3>A &gt; C</h3>
+<pre class="r"><code>subtype &lt;- &quot;AT_CG&quot;</code></pre>
+<div id="all-1" class="section level4">
+<h4>ALL</h4>
+<pre class="r"><code>pop &lt;- &quot;ALL&quot;
+df_results &lt;- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) </code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_dot(df_results)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-14-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_line(df_results) + scale_y_log10() + ylab(&quot;Relative Entropy (log10)&quot;)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-14-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="afr-1" class="section level4">
+<h4>AFR</h4>
+<pre class="r"><code>pop &lt;- &quot;AFR&quot;
+df_results &lt;- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) </code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_dot(df_results)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-15-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_line(df_results) + scale_y_log10() + ylab(&quot;Relative Entropy (log10)&quot;)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-15-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="amr-1" class="section level4">
+<h4>AMR</h4>
+<pre class="r"><code>pop &lt;- &quot;AMR&quot;
+df_results &lt;- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) </code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_dot(df_results)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-16-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_line(df_results) + scale_y_log10() + ylab(&quot;Relative Entropy (log10)&quot;)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-16-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="eas-1" class="section level4">
+<h4>EAS</h4>
+<pre class="r"><code>pop &lt;- &quot;EAS&quot;
+df_results &lt;- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) </code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_dot(df_results)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-17-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_line(df_results) + scale_y_log10() + ylab(&quot;Relative Entropy (log10)&quot;)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-17-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="eur-1" class="section level4">
+<h4>EUR</h4>
+<pre class="r"><code>pop &lt;- &quot;EUR&quot;
+df_results &lt;- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) </code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_dot(df_results)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-18-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_line(df_results) + scale_y_log10() + ylab(&quot;Relative Entropy (log10)&quot;)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-18-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="sas-1" class="section level4">
+<h4>SAS</h4>
+<pre class="r"><code>pop &lt;- &quot;EUR&quot;
+df_results &lt;- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) </code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_dot(df_results)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-19-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pos_level_line(df_results) + scale_y_log10() + ylab(&quot;Relative Entropy (log10)&quot;)</code></pre>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-19-3.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
