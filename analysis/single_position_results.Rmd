@@ -66,6 +66,42 @@ get_pos_resid_all <- function(res_dir, pop, subtype, rp = c(-500:-1, 1:500)){
 }
 ```
 
+### Figure Functions
+
+```{r}
+pos_level_line <- function(res_df, rp_lim = 20){
+  p <- res_df %>%
+    filter(abs(offset) <= rp_lim) %>%
+    ggplot(aes(x = offset, y = re)) +
+    geom_point() +
+    geom_line() +
+    theme_classic() +
+    theme(text = element_text(family = "Arial"),
+          legend.position = "inside",
+          legend.position.inside = c(.85, .8)) +
+    xlab("Relative Position") +
+    ylab("Relative Entropy")
+  return(p)
+}
+
+pos_level_dot <- function(res_df, palette_name = "contrast_three"){
+  p <- res_df %>%
+    mutate(sig = dev < qchisq(0.95, 3)) %>%
+    ggplot(aes(x = offset, y = re, color = sig)) +
+    scale_y_log10() +
+    geom_point() +
+    scale_color_manual(values = friendly_pal(palette_name)) +
+    theme_classic() +
+    theme(text = element_text(family = "Arial"),
+          legend.position = "inside",
+          legend.position.inside = c(.85, .8)) +
+    xlab("Relative Position") +
+    ylab("Log10 Relative Entropy") +
+    labs(color = "Significant")
+  return(p)
+}
+```
+
 
 ## Position Level Result Plots
 
@@ -82,33 +118,136 @@ subtype <- "AT_GC"
 pop <- "ALL"
 df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
 
-df_results %>%
-  mutate(sig = dev < qchisq(0.95, 3)) %>%
-  ggplot(aes(x = offset, y = re, color = sig)) +
-  scale_y_log10() +
-  geom_point() +
-  scale_color_manual(values = friendly_pal("contrast_three")) +
-  theme_classic() +
-  theme(text = element_text(family = "Arial"),
-        legend.position = "inside",
-        legend.position.inside = c(.85, .8)) +
-  xlab("Relative Position") +
-  ylab("Log10 Relative Entropy") +
-  labs(color = "Significant")
-
-
-df_results %>%
-  filter(abs(offset) <= 20) %>%
-  ggplot(aes(x = offset, y = re)) +
-  geom_point() +
-  geom_line() +
-  theme_classic() +
-  theme(text = element_text(family = "Arial"),
-        legend.position = "inside",
-        legend.position.inside = c(.85, .8)) +
-  xlab("Relative Position") +
-  ylab("Relative Entropy")
-
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
 ```
 
+For the A > G mutation subtype, we observe the strongest signal of influence (relative entropy) at the +1 relative position. We observed that, in general, the signal decreases as positions further from the focal (0) position are considered, but note that this pattern is not monotonic in either direction, with the most obvious example of this being the stronger signal observed at -2 relative to the signal observed at -1. When compared to the critical value for a $\chi^2$ distribution with 3 degrees of freedom at the $\alpha=0.05$ level of significance, we find that the underlying deviance statistics remain significant up to approximately +/- 250bp; from here, we see values hover in a range that includes values which are not significant. The above results are based on the distributions of nucleotides flanking singletons and their matched controls across all five 1kGP super-populations; we next plot the results for each super-population individually:
 
+#### AFR
+
+```{r}
+pop <- "AFR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### SAS
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+### A > C
+
+```{r}
+subtype <- "AT_CG"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### SAS
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
