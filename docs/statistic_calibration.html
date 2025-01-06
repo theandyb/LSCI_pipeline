@@ -361,7 +361,7 @@ div.tocify {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -372,8 +372,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -382,13 +382,13 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-12-06
+<strong>Last updated:</strong> 2025-01-06
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>LSCI_pipeline/</code> <span
@@ -411,21 +411,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown is untracked by Git. To know which version of the R
-Markdown file created these results, you’ll want to first commit it to
-the Git repo. If you’re still working on the analysis, you can ignore
-this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -516,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree75eb4a184e89718469513e4672ff5e0d5a4154e8targetblank75eb4a1a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreef74e31a5f394c9287ea2e3ffb63ce9915269d6a9targetblankf74e31aa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/75eb4a184e89718469513e4672ff5e0d5a4154e8" target="_blank">75eb4a1</a>
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/f74e31a5f394c9287ea2e3ffb63ce9915269d6a9" target="_blank">f74e31a</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree75eb4a184e89718469513e4672ff5e0d5a4154e8targetblank75eb4a1a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreef74e31a5f394c9287ea2e3ffb63ce9915269d6a9targetblankf74e31aa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -534,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/75eb4a184e89718469513e4672ff5e0d5a4154e8" target="_blank">75eb4a1</a>.
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/f74e31a5f394c9287ea2e3ffb63ce9915269d6a9" target="_blank">f74e31a</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -555,19 +552,15 @@ Ignored files:
     Ignored:    data/hgdp/
     Ignored:    data/reference/
     Ignored:    output/controls/
+    Ignored:    output/figs/
     Ignored:    output/single_pos/
     Ignored:    output/singletons/
     Ignored:    output/slurm/
-
-Untracked files:
-    Untracked:  analysis/statistic_calibration.Rmd
-    Untracked:  code/single_position_models_posOnly.py
+    Ignored:    output/two_pos/
+    Ignored:    scratch/
 
 Unstaged changes:
-    Modified:   README.md
-    Modified:   code/batch_single_pos.sh
-    Modified:   code/sample_control.py
-    Modified:   code/single_position_models.py
+    Modified:   code/single_position_models_sc.py
 
 </code></pre>
 <p>
@@ -582,10 +575,92 @@ have uncommitted changes.
 <hr>
 </div>
 <div id="versions" class="tab-pane fade">
+
 <p>
-There are no past versions. Publish this analysis with
-<code>wflow_publish()</code> to start tracking its development.
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/statistic_calibration.Rmd</code>)
+and HTML (<code>docs/statistic_calibration.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
 </p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f74e31a5f394c9287ea2e3ffb63ce9915269d6a9/analysis/statistic_calibration.Rmd" target="_blank">f74e31a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-06
+</td>
+<td>
+wflow_publish(c("analysis/index.Rmd",
+"analysis/statistic_calibration.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/bbc121da604d6d4a1c15c7b40e2a07cd83e16fe3/analysis/statistic_calibration.Rmd" target="_blank">bbc121d</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-06
+</td>
+<td>
+Add single chromosome code
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/theandyb/LSCI_pipeline/bbc121da604d6d4a1c15c7b40e2a07cd83e16fe3/docs/statistic_calibration.html" target="_blank">bbc121d</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-06
+</td>
+<td>
+Add single chromosome code
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr>
 </div>
 </div>
@@ -626,6 +701,33 @@ df_singleton &lt;- df_singleton %&gt;%
     ungroup() %&gt;%
     mutate(pop = &quot;ALL&quot;) %&gt;%
     select(pop, subtype, n_s)})</code></pre>
+<div id="nucleotide-frequencies-in-chr22" class="section level4">
+<h4>Nucleotide frequencies in chr22</h4>
+<p>For some of our simulations, we will want proportions of nucleotides.
+While we could fiddle around with this, for a starting point let’s get
+the frequency of each nucleotide in chromosome 22:</p>
+<pre class="r"><code>df_22 &lt;- read_tsv(&quot;data/reference/gc100_22.bed&quot;,
+                  col_names = c(&quot;chr&quot;, &quot;start&quot;, &quot;end&quot;, &quot;pct_at&quot;, &quot;pct_gc&quot;, &quot;n_A&quot;, &quot;n_C&quot;, &quot;n_G&quot;, &quot;n_T&quot;, &quot;n_N&quot;, &quot;n_O&quot;, &quot;len&quot;)) %&gt;%
+  filter(n_N &lt; 50)</code></pre>
+<pre><code>Rows: 508185 Columns: 12
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: &quot;\t&quot;
+chr  (1): chr
+dbl (11): start, end, pct_at, pct_gc, n_A, n_C, n_G, n_T, n_N, n_O, len
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>n_nuc_22 &lt;- df_22 %&gt;%
+  ungroup() %&gt;%
+  summarize(n_A = sum(n_A),
+            n_C = sum(n_C),
+            n_G = sum(n_G),
+            n_T = sum(n_T)
+            ) %&gt;%
+  as.numeric()
+
+prop_nuc_22 &lt;- n_nuc_22 / sum(n_nuc_22)</code></pre>
+</div>
 </div>
 </div>
 <div id="single-position-models" class="section level2">
@@ -669,6 +771,406 @@ position. We fill the following table:</p>
 \log(n_{i,s}) = \lambda_0 + \sum_{j \in \{C,G,T\}} \lambda_j 1(i==j) +
 \lambda_{\textrm{singleton}} 1(s==\textrm{singleton})
 \]</span></p>
+<p>We’ll look at both the deviance statistic (which has a theoretical
+<span class="math inline">\(\chi^2\)</span> distribution with 3 degrees
+of freedom) and the relative entropy statistic.</p>
+<pre class="r"><code>simulate_1_pos_null &lt;- function(n_s, nuc_prop, c_s_ratio = 5){
+  singletons &lt;- rmultinom(1, n_s, nuc_prop)
+  controls &lt;- rmultinom(1, n_s * c_s_ratio, nuc_prop)
+  
+  test_df &lt;- data.frame(nuc = c(&quot;A&quot;, &quot;C&quot;, &quot;G&quot;, &quot;T&quot;),
+                        singletons = singletons,
+                        controls = controls) %&gt;%
+    pivot_longer(singletons:controls, names_to = &quot;status&quot;, values_to = &quot;n&quot;)
+  
+  mod_obj &lt;- glm(n ~ nuc + status, test_df, family = poisson())
+  
+  dev_stat &lt;- deviance(mod_obj)
+  re_val &lt;- dev_stat / (2 * n_s * (1 + c_s_ratio))
+  return(data.frame(deviance = dev_stat, re = re_val))
+}</code></pre>
+<pre class="r"><code>n_s &lt;- df_singleton %&gt;%
+  filter(pop == &quot;ALL&quot;, subtype == &quot;AT_GC&quot;) %&gt;%
+  pull(n_s)
+
+n_sim &lt;- 2000
+
+set.seed(1848)
+df_sim &lt;- vector(mode = &quot;list&quot;, length = n_sim)
+for(i in 1:n_sim){
+  df_sim[[i]] &lt;- simulate_1_pos_null(n_s, prop_nuc_22)
+}
+
+df_sim &lt;- df_sim %&gt;% bind_rows()</code></pre>
+<p>Out of our 2000 simulations, how many false positive statistics do we
+observe?</p>
+<pre class="r"><code>sum(df_sim$deviance &gt; qchisq(0.95, 3))</code></pre>
+<pre><code>[1] 90</code></pre>
+<p>This is incredibly close to 0.05. Now, among the statistics which
+were significant, what does their distribution look like?</p>
+<pre class="r"><code>df_sim %&gt;%
+  filter(deviance &gt; qchisq(0.95, 3)) %&gt;%
+  pull(deviance) %&gt;%
+  {plot(density(.))}</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>How does the overall distribution of statistics look relative to the
+theoretical <span
+class="math inline">\(\chi^2_{\textrm{df}=3}\)</span>?</p>
+<pre class="r"><code>ggplot() +
+  aes(sample = df_sim$deviance) +
+  stat_qq(distribution = qchisq, dparams = 3) +
+  stat_qq_line(col = &quot;blue&quot;, distribution = qchisq, dparams = 3) +
+  xlab(&quot;Quantile&quot;) + ylab(&quot;Deviance&quot;)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>And finally, what does our density look like?</p>
+<pre class="r"><code>df_sim %&gt;%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(3), n = 1000, colour = &quot;red&quot;) + 
+  geom_vline(xintercept = 1, colour = &quot;red&quot;, linetype = 2)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>MASS::fitdistr(df_sim$deviance, &quot;chi-squared&quot;, start = list(&quot;df&quot; = 4))</code></pre>
+<pre><code>Warning in stats::optim(x = c(1.08542398408702, 1.78680277324611, 4.7001163318746, : one-dimensional optimization by Nelder-Mead is unreliable:
+use &quot;Brent&quot; or optimize() directly</code></pre>
+<pre><code>       df    
+  2.98281250 
+ (0.04607813)</code></pre>
+</div>
+<div id="alternative-simulation-strategy" class="section level2">
+<h2>Alternative simulation strategy</h2>
+<p>Here we’ll simulate directly from the poisson distribution. We’ll
+place normal priors on the nucleotide parameters, and fix the status
+parameter at <span class="math inline">\(log(\frac{1}{5})\)</span></p>
+<pre class="r"><code>simulate_1_pos_null_poisson &lt;- function(n_s, nuc_prop, c_s_ratio = 5){
+  
+  beta_s = log(1/c_s_ratio)
+  beta_0 = log(n_s * c_s_ratio * nuc_prop[1])
+  beta_c = log(nuc_prop[2] / nuc_prop[1])
+  beta_g = log(nuc_prop[3] / nuc_prop[1])
+  beta_t = log(nuc_prop[4] / nuc_prop[1])
+  
+  # theta_0 &lt;- rnorm(1, beta_0, 1/10)
+  # theta_c &lt;- rnorm(1, beta_c, 1/(10 ^ (ceiling(-1*log10(-1 * beta_c)) + 2) ))
+  # theta_g &lt;- rnorm(1, beta_g, 1/(10 ^ (ceiling(-1*log10(-1 * beta_g)) + 2) ))
+  # theta_t &lt;- rnorm(1, beta_t, 1/(10 ^ (ceiling(-1*log10(-1 * beta_t)) + 2) ))
+  
+  controls &lt;- c(rpois(1, exp(beta_0)), rpois(1, exp(beta_0 + beta_c)), rpois(1, exp(beta_0+ beta_g)),  rpois(1, exp(beta_0+ beta_t)) )
+  #controls &lt;- c(controls, n_s*c_s_ratio - sum(controls))
+  controls[controls&lt;0] &lt;- 0
+  
+  singletons &lt;- c(rpois(1, exp(beta_0 + beta_s)), rpois(1, exp(beta_0 + beta_c + beta_s)), rpois(1, exp(beta_0+ beta_g + beta_s)), rpois(1, exp(beta_0+ beta_t + beta_s)))
+  #singletons &lt;- c(singletons, n_s - sum(singletons))
+  singletons[singletons&lt;0] &lt;- 0
+  
+  test_df &lt;- data.frame(nuc = c(&quot;A&quot;, &quot;C&quot;, &quot;G&quot;, &quot;T&quot;),
+                        singletons = singletons,
+                        controls = controls) %&gt;%
+    pivot_longer(singletons:controls, names_to = &quot;status&quot;, values_to = &quot;n&quot;)
+  
+  mod_obj &lt;- glm(n ~ nuc + status, test_df, family = poisson())
+  
+  dev_stat &lt;- deviance(mod_obj)
+  re_val &lt;- dev_stat / (2 * n_s * (1 + c_s_ratio))
+  return(data.frame(deviance = dev_stat, re = re_val))
+}</code></pre>
+<pre class="r"><code>n_s &lt;- df_singleton %&gt;%
+  filter(pop == &quot;ALL&quot;, subtype == &quot;AT_GC&quot;) %&gt;%
+  pull(n_s)
+
+n_sim &lt;- 2000
+
+set.seed(1848)
+df_sim2 &lt;- vector(mode = &quot;list&quot;, length = n_sim)
+for(i in 1:n_sim){
+  df_sim2[[i]] &lt;- simulate_1_pos_null_poisson(n_s, prop_nuc_22)
+}</code></pre>
+<pre><code>Warning: glm.fit: algorithm did not converge</code></pre>
+<pre class="r"><code>df_sim2 &lt;- df_sim2 %&gt;% bind_rows()</code></pre>
+<pre class="r"><code>sum(df_sim2$deviance &gt; qchisq(0.95, 3))</code></pre>
+<pre><code>[1] 98</code></pre>
+<pre class="r"><code>df_sim2 %&gt;%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(3), n = 1000, colour = &quot;red&quot;) + 
+  geom_vline(xintercept = 1, colour = &quot;red&quot;, linetype = 2)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot() +
+  aes(sample = df_sim2$deviance) +
+  stat_qq(distribution = qchisq, dparams = 3) +
+  stat_qq_line(col = &quot;blue&quot;, distribution = qchisq, dparams = 3) +
+  xlab(&quot;Quantile&quot;) + ylab(&quot;Deviance&quot;)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>MASS::fitdistr(df_sim2$deviance, &quot;chi-squared&quot;, start = list(&quot;df&quot; = 3))</code></pre>
+<pre><code>Warning in stats::optim(x = c(3.06721923759667, 2.34851958708578, 3.1292682101448, : one-dimensional optimization by Nelder-Mead is unreliable:
+use &quot;Brent&quot; or optimize() directly</code></pre>
+<pre><code>       df    
+  2.93847656 
+ (0.04562023)</code></pre>
+</div>
+<div id="poisson-simulation-with-fixed-margins" class="section level2">
+<h2>Poisson Simulation with Fixed Margins</h2>
+<pre class="r"><code>simulate_1_pos_null_fixM &lt;- function(n_s, nuc_prop, c_s_ratio = 5){
+  
+  beta_s = log(1/c_s_ratio)
+  beta_0 = log(n_s * c_s_ratio * nuc_prop[1])
+  beta_c = log(nuc_prop[2] / nuc_prop[1])
+  beta_g = log(nuc_prop[3] / nuc_prop[1])
+  beta_t = log(nuc_prop[4] / nuc_prop[1])
+  
+  controls &lt;- c(rpois(1, exp(beta_0)), rpois(1, exp(beta_0 + beta_c)), rpois(1, exp(beta_0+ beta_g)))
+  controls &lt;- c(controls, n_s*c_s_ratio - sum(controls))
+  #controls[controls&lt;0] &lt;- 0
+  
+  singletons &lt;- c(rpois(1, exp(beta_0 + beta_s)), rpois(1, exp(beta_0 + beta_c + beta_s)), rpois(1, exp(beta_0+ beta_g + beta_s)))
+  singletons &lt;- c(singletons, n_s - sum(singletons))
+  #singletons[singletons&lt;0] &lt;- 0
+  
+  test_df &lt;- data.frame(nuc = c(&quot;A&quot;, &quot;C&quot;, &quot;G&quot;, &quot;T&quot;),
+                        singletons = singletons,
+                        controls = controls) %&gt;%
+    pivot_longer(singletons:controls, names_to = &quot;status&quot;, values_to = &quot;n&quot;)
+  
+  mod_obj &lt;- glm(n ~ nuc + status, test_df, family = poisson())
+  
+  dev_stat &lt;- deviance(mod_obj)
+  re_val &lt;- dev_stat / (2 * n_s * (1 + c_s_ratio))
+  return(data.frame(deviance = dev_stat, re = re_val))
+}
+
+simulate_1_pos_null_fixM_altM &lt;- function(n_s, nuc_prop, c_s_ratio = 5){
+  
+  beta_s = log(1/c_s_ratio)
+  beta_0 = log(n_s * c_s_ratio * nuc_prop[1])
+  beta_c = log(nuc_prop[2] / nuc_prop[1])
+  beta_g = log(nuc_prop[3] / nuc_prop[1])
+  beta_t = log(nuc_prop[4] / nuc_prop[1])
+  
+  controls &lt;- c(rpois(1, exp(beta_0)), rpois(1, exp(beta_0 + beta_c)), rpois(1, exp(beta_0+ beta_g)))
+  controls &lt;- c(controls, n_s*c_s_ratio - sum(controls))
+  #controls[controls&lt;0] &lt;- 0
+  
+  singletons &lt;- c(rpois(1, exp(beta_0 + beta_s)), rpois(1, exp(beta_0 + beta_c + beta_s)), rpois(1, exp(beta_0+ beta_g + beta_s)))
+  singletons &lt;- c(singletons, n_s - sum(singletons))
+  #singletons[singletons&lt;0] &lt;- 0
+  
+  test_df &lt;- data.frame(nuc = c(&quot;A&quot;, &quot;C&quot;, &quot;G&quot;, &quot;T&quot;),
+                        singletons = singletons,
+                        controls = controls) %&gt;%
+    pivot_longer(singletons:controls, names_to = &quot;status&quot;, values_to = &quot;n&quot;) %&gt;%
+    left_join(data.frame(status = c(&quot;singletons&quot;, &quot;controls&quot;), col_sum = c(n_s, n_s*5)), by = &quot;status&quot;)
+  
+  mod_obj &lt;- glm(n ~ nuc + offset(log(col_sum)), test_df, family = poisson())
+  
+  dev_stat &lt;- deviance(mod_obj)
+  re_val &lt;- dev_stat / (2 * n_s * (1 + c_s_ratio))
+  return(data.frame(deviance = dev_stat, re = re_val))
+}</code></pre>
+<pre class="r"><code>n_s &lt;- df_singleton %&gt;%
+  filter(pop == &quot;ALL&quot;, subtype == &quot;AT_GC&quot;) %&gt;%
+  pull(n_s)
+
+n_sim &lt;- 2000
+
+set.seed(1848)
+df_sim3 &lt;- vector(mode = &quot;list&quot;, length = n_sim)
+for(i in 1:n_sim){
+  df_sim3[[i]] &lt;- simulate_1_pos_null_fixM(n_s, prop_nuc_22)
+}
+
+df_sim3 &lt;- df_sim3 %&gt;% bind_rows()
+
+set.seed(1848)
+df_sim4 &lt;- vector(mode = &quot;list&quot;, length = n_sim)
+for(i in 1:n_sim){
+  df_sim4[[i]] &lt;- simulate_1_pos_null_fixM_altM(n_s, prop_nuc_22)
+}
+
+df_sim4 &lt;- df_sim4 %&gt;% bind_rows()</code></pre>
+<pre class="r"><code>sum(df_sim3$deviance &gt; qchisq(0.95, 3))</code></pre>
+<pre><code>[1] 489</code></pre>
+<pre class="r"><code>sum(df_sim4$deviance &gt; qchisq(0.95, 4))</code></pre>
+<pre><code>[1] 370</code></pre>
+<pre class="r"><code>df_sim3 %&gt;%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(3), n = 1000, colour = &quot;red&quot;) +
+  geom_vline(xintercept = 1, colour = &quot;red&quot;, linetype = 2)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># 
+df_sim4 %&gt;%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = list(&quot;df&quot; = 4, &quot;ncp&quot; = 0), n = 1000, colour = &quot;red&quot;) +
+  geom_vline(xintercept = 2, colour = &quot;red&quot;, linetype = 2)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-20-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot() +
+  aes(sample = df_sim3$deviance) +
+  stat_qq(distribution = qchisq, dparams = 3) +
+  stat_qq_line(col = &quot;blue&quot;, distribution = qchisq, dparams = list(&quot;df&quot; = 4, &quot;ncp&quot; = 0)) +
+  xlab(&quot;Quantile&quot;) + ylab(&quot;Deviance&quot;)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot() +
+  aes(sample = df_sim3$deviance) +
+  stat_qq(distribution = qchisq, dparams = 4) +
+  stat_qq_line(col = &quot;blue&quot;, distribution = qchisq, dparams = 4) +
+  xlab(&quot;Quantile&quot;) + ylab(&quot;Deviance&quot;)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-21-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>opt_1 &lt;- MASS::fitdistr(df_sim3$deviance, &quot;chi-squared&quot;, start = list(&quot;df&quot; = 4, &quot;ncp&quot; = 3))</code></pre>
+<pre><code>Warning in densfun(x, parm[1], parm[2], ...): NaNs produced
+Warning in densfun(x, parm[1], parm[2], ...): NaNs produced
+Warning in densfun(x, parm[1], parm[2], ...): NaNs produced
+Warning in densfun(x, parm[1], parm[2], ...): NaNs produced
+Warning in densfun(x, parm[1], parm[2], ...): NaNs produced</code></pre>
+<pre class="r"><code>opt_1$estimate</code></pre>
+<pre><code>      df      ncp 
+1.827676 3.764550 </code></pre>
+<pre class="r"><code>opt_2 &lt;- MASS::fitdistr(df_sim3$deviance, &quot;chi-squared&quot;, start = list(&quot;ncp&quot; = 1), df=4)</code></pre>
+<pre><code>Warning in stats::optim(x = c(3.37229132652169, 7.1735898455986, 4.08473925053249, : one-dimensional optimization by Nelder-Mead is unreliable:
+use &quot;Brent&quot; or optimize() directly</code></pre>
+<pre class="r"><code>opt_2$estimate</code></pre>
+<pre><code>     ncp 
+1.526563 </code></pre>
+<p>Below we plot the density of the deviances along with the non-central
+<span class="math inline">\(\chi^2\)</span> distribution with both df
+and ncp parameters optimized:</p>
+<pre class="r"><code>df_sim3 %&gt;%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = list(&quot;df&quot; = opt_1$estimate[&quot;df&quot;], &quot;ncp&quot; = opt_1$estimate[&quot;ncp&quot;]), n = 1000, colour = &quot;red&quot;)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Now plot the estimated distribution where we’ve fixed the df to be
+4:</p>
+<pre class="r"><code>df_sim3 %&gt;%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = list(&quot;df&quot; = 4, &quot;ncp&quot; = opt_2$estimate[&quot;ncp&quot;]), n = 1000, colour = &quot;red&quot;)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>And finally the distribution where we use a quasi-method-of-moments
+estimator of the ncp assuming df = 3</p>
+<pre class="r"><code>ncp_est &lt;- mean(df_sim3$deviance) - 4
+df_sim3 %&gt;%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = list(&quot;df&quot; = 4, &quot;ncp&quot; = ncp_est), n = 1000, colour = &quot;red&quot;)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Lastly, to satisfy my curiosity, if we fix df = 4 and find ncp based
+on variance formula for the nc-chisq:</p>
+<pre class="r"><code>ncp_var_est &lt;- (var(df_sim3$deviance) - 8) / 4
+df_sim3 %&gt;%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = list(&quot;df&quot; = 4, &quot;ncp&quot; = ncp_var_est), n = 1000, colour = &quot;red&quot;)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>df_sim3 %&gt;%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(3, ncp_est), n = 1000, colour = &quot;red&quot;)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>df_sim3 %&gt;%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(3, ncp_est), n = 1000, colour = &quot;red&quot;)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="fit-poisson-model-with-offset" class="section level2">
+<h2>Fit poisson model with offset</h2>
+<p>Here I want to see what happens with our single position test if we
+use an offset to condition on fix totals for singleton/control
+categories:</p>
+<pre class="r"><code>singletons &lt;- rmultinom(1, n_s, prop_nuc_22) #n_s * prop_nuc_22
+controls &lt;- rmultinom(1, n_s*5, prop_nuc_22 + c(-0.1, 0.1, -0.02, 0.02))
+
+test_df &lt;- data.frame(nuc = c(&quot;A&quot;, &quot;C&quot;, &quot;G&quot;, &quot;T&quot;),
+                      singletons = singletons,
+                      controls = controls) %&gt;%
+  pivot_longer(singletons:controls, names_to = &quot;status&quot;, values_to = &quot;n&quot;)
+
+test_df &lt;- test_df %&gt;%
+  left_join(data.frame(status = c(&quot;singletons&quot;, &quot;controls&quot;), col_sum = c(n_s, n_s*5)), by = &quot;status&quot;)
+
+mod_obj &lt;- glm(n ~ nuc + status, test_df, family = poisson)
+mod_obj2 &lt;- glm(n ~ nuc + offset(log(col_sum)), test_df, family = poisson)
+mod_obj3 &lt;- glm(n ~ nuc * status + offset(log(col_sum)), test_df, family=poisson)</code></pre>
+<div id="impact-of-sample-size-on-distribution" class="section level3">
+<h3>Impact of sample size on distribution</h3>
+<p>Let’s look at the distribution of the statistics in a simulation
+using a smaller sample size:</p>
+<pre class="r"><code>n_s &lt;- df_singleton %&gt;%
+  pull(n_s) %&gt;%
+  min()
+
+n_sim &lt;- 2000
+
+set.seed(1848)
+df_sim &lt;- vector(mode = &quot;list&quot;, length = n_sim)
+for(i in 1:n_sim){
+  df_sim[[i]] &lt;- simulate_1_pos_null_fixM(n_s, prop_nuc_22)
+}
+
+df_sim &lt;- bind_rows(df_sim)</code></pre>
+<pre class="r"><code>sum(df_sim$deviance &gt; qchisq(0.95, 3))</code></pre>
+<pre><code>[1] 473</code></pre>
+<pre class="r"><code>ggplot() +
+  aes(sample = df_sim$deviance) +
+  stat_qq(distribution = qchisq, dparams = 4) +
+  stat_qq_line(col = &quot;blue&quot;, distribution = qchisq, dparams = 3) +
+  xlab(&quot;Quantile&quot;) + ylab(&quot;Deviance&quot;)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-33-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>And finally, what does our density look like?</p>
+<pre class="r"><code>df_sim %&gt;%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = list(&quot;df&quot; = 4), n = 1000, colour = &quot;red&quot;) + 
+  geom_vline(xintercept = 2, colour = &quot;red&quot;, linetype = 2)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-34-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>df_sim %&gt;%
+  mutate(type = &quot;small&quot;) %&gt;%
+  bind_rows({df_sim3 %&gt;% mutate(type = &quot;big&quot;)}) %&gt;%
+  ggplot(aes(x = deviance, color = type)) +
+  geom_density()</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-35-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>df_sim %&gt;%
+  mutate(type = &quot;small&quot;) %&gt;%
+  bind_rows({df_sim3 %&gt;% mutate(type = &quot;big&quot;)}) %&gt;%
+  ggplot() + 
+  aes(sample = deviance, color = type) + 
+  stat_qq(distribution = qchisq, dparams = 4) +
+  stat_qq_line(col = &quot;blue&quot;, distribution = qchisq, dparams = 3) +
+  xlab(&quot;Quantile&quot;) + ylab(&quot;Deviance&quot;)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-35-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="varyinig-nucleotide-distributions" class="section level3">
+<h3>Varyinig nucleotide distributions</h3>
+<pre class="r"><code>nuc_prop_high_gh &lt;- c(0.15,0.34,0.36,0.15)
+
+n_s &lt;- df_singleton %&gt;%
+  pull(n_s) %&gt;%
+  min()
+
+n_sim &lt;- 2000
+
+set.seed(1848)
+df_sim_gc &lt;- vector(mode = &quot;list&quot;, length = n_sim)
+for(i in 1:n_sim){
+  df_sim_gc[[i]] &lt;- simulate_1_pos_null_fixM(n_s, nuc_prop_high_gh)
+}
+
+df_sim_gc &lt;- df_sim_gc %&gt;% bind_rows()</code></pre>
+<pre class="r"><code>sum(df_sim_gc$deviance &gt; qchisq(0.95, 4))</code></pre>
+<pre><code>[1] 608</code></pre>
+<pre class="r"><code>ggplot() +
+  aes(sample = df_sim_gc$deviance) +
+  stat_qq(distribution = qchisq, dparams = 4) +
+  stat_qq_line(col = &quot;blue&quot;, distribution = qchisq, dparams = 4) +
+  xlab(&quot;Quantile&quot;) + ylab(&quot;Deviance&quot;)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-38-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>And finally, what does our density look like?</p>
+<pre class="r"><code>df_sim_gc %&gt;%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = list(&quot;df&quot; = 4), n = 1000, colour = &quot;red&quot;) + 
+  geom_vline(xintercept = 2, colour = &quot;red&quot;, linetype = 2)</code></pre>
+<p><img src="figure/statistic_calibration.Rmd/unnamed-chunk-39-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -711,14 +1213,18 @@ loaded via a namespace (and not attached):
  [9] evaluate_1.0.1    grid_4.4.2        fastmap_1.2.0     rprojroot_2.0.4  
 [13] jsonlite_1.8.9    processx_3.8.4    whisker_0.4.1     ps_1.8.1         
 [17] promises_1.3.0    httr_1.4.7        fansi_1.0.6       scales_1.3.0     
-[21] jquerylib_0.1.4   cli_3.6.3         rlang_1.1.4       munsell_0.5.1    
-[25] withr_3.0.2       cachem_1.1.0      yaml_2.3.10       tools_4.4.2      
-[29] tzdb_0.4.0        colorspace_2.1-1  httpuv_1.6.15     vctrs_0.6.5      
-[33] R6_2.5.1          lifecycle_1.0.4   git2r_0.33.0      fs_1.6.5         
-[37] pkgconfig_2.0.3   callr_3.7.6       pillar_1.9.0      bslib_0.8.0      
-[41] later_1.3.2       gtable_0.3.6      glue_1.8.0        Rcpp_1.0.13-1    
-[45] xfun_0.49         tidyselect_1.2.1  rstudioapi_0.17.1 knitr_1.49       
-[49] htmltools_0.5.8.1 rmarkdown_2.29    compiler_4.4.2    getPass_0.2-4    </code></pre>
+[21] jquerylib_0.1.4   cli_3.6.3         crayon_1.5.3      rlang_1.1.4      
+[25] bit64_4.0.5       munsell_0.5.1     withr_3.0.2       cachem_1.1.0     
+[29] yaml_2.3.10       parallel_4.4.2    tools_4.4.2       tzdb_0.4.0       
+[33] colorspace_2.1-1  httpuv_1.6.15     vctrs_0.6.5       R6_2.5.1         
+[37] lifecycle_1.0.4   git2r_0.33.0      bit_4.5.0.1       fs_1.6.5         
+[41] MASS_7.3-61       vroom_1.6.5       archive_1.1.8     pkgconfig_2.0.3  
+[45] callr_3.7.6       pillar_1.9.0      bslib_0.8.0       later_1.3.2      
+[49] gtable_0.3.6      glue_1.8.0        Rcpp_1.0.13-1     xfun_0.49        
+[53] tidyselect_1.2.1  rstudioapi_0.17.1 knitr_1.49        farver_2.1.2     
+[57] htmltools_0.5.8.1 labeling_0.4.3    rmarkdown_2.29    compiler_4.4.2   
+[61] getPass_0.2-4    </code></pre>
+</div>
 </div>
 </div>
 
