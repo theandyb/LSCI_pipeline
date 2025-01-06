@@ -251,3 +251,508 @@ pos_level_line(df_results)
 pos_level_dot(df_results)
 pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
 ```
+
+### A > T
+
+```{r}
+subtype <- "AT_TA"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### SAS
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+### C > T
+
+```{r}
+subtype <- "GC_AT"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### SAS
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+### C > A
+
+```{r}
+subtype <- "GC_TA"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### SAS
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+
+### C > G
+
+```{r}
+subtype <- "GC_CG"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### SAS
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+### CpG > TpG
+
+```{r}
+subtype <- "cpg_GC_AT"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### SAS
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+### CpG > ApG
+
+```{r}
+subtype <- "cpg_GC_TA"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### SAS
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+### CpG > GpG
+
+```{r}
+subtype <- "cpg_GC_CG"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
+
+#### SAS
+
+```{r}
+pop <- "EUR"
+df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+
+pos_level_line(df_results) 
+pos_level_dot(df_results)
+pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+```
