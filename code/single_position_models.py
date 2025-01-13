@@ -137,7 +137,7 @@ time.sleep(3)
 ray.init(num_cpus=22, include_dashboard=False)
 res_out_dir = "{}/single_pos/resid/{}/".format(base_dir, population)
 print("Running models for subtype: {} and population: {}".format(subtype, population))
-for offset in range(1, 501):
+for offset in range(1, 21):
   print(offset)
   df = fit_model_all(subtype, offset * -1, population, ref_genome, base_dir , suffix = suffix)
   #fit_model_all(subtype, offset, pop, ref_file, base_dir, suffix = "")
