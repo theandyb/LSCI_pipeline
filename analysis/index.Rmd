@@ -11,4 +11,5 @@ editor_options:
 Welcome to my research website.
 
 * [Single Position Results](single_position_results.html)
+* [Single Position Single Chromosome Comparisons](single_position_single_chromosome.html)
 * [Statistic Calibration](statistic_calibration.html)

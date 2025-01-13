@@ -1,0 +1,129 @@
+---
+title: "single_position_single_chromosome"
+author: "Andy Beck"
+date: "2025-01-13"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+The purpose of this document is to assess the consistency of our results across chromosomes. In our initial comparison of the distributions of nucleotides flanking singletons and controls, we aggregated singletons and controls across all autosomes; here, we'll look at if we use just the singletons and controls from a single chromosome what do the results look like?
+
+I have yet to have generated data from all possible population/subtype/chromosome combinations; for now, we'll look at a small subset to see if there's anything worth pursing in looking at this more thoroghly.
+
+```{r}
+library(tidyverse)
+library(ggpubfigs) # functions for color blind friendly palettes
+library(reactable) # table output for html
+library(knitr) # PDF table output
+
+base_dir <- "output/single_pos"
+
+# load residuals for a single relative position
+load_resid <- function(base_dir, chrom, pop, subtype, rp){
+  f_name <- paste0(base_dir, "/chr", chrom, "/resid/", pop, "/", subtype, "_rp_", rp, ".csv")
+  df <- read_csv(f_name, show_col_types = F)
+  df$rp <- rp
+  return(df)
+}
+
+# load residuals for a set of relative positions
+load_resid_range <- function(base_dir, chrom, pop, subtype, rp = c(-10:-1,1:10)){
+  results <- vector(mode = "list", length = length(rp))
+  for(i in 1:length(rp)){
+    if(rp[i] == 1 & str_starts(subtype, "cpg")) next
+    results[[i]] <- load_resid(base_dir, chrom, pop, subtype, rp[i])
+  }
+  return(bind_rows(results))
+}
+
+# Get position level deviance statistics
+load_deviance <- function(base_dir, chrom, pop, subtype, rp = c(-10:-1, 1:10)){
+  df <- load_resid_range(base_dir, chrom, pop, subtype, rp)
+  df %>%
+    group_by(rp) %>%
+    summarize(deviance = sum(res^2),
+              n = sum(n))
+}
+```
+
+## Chromosome 1 and 22
+
+For our first look, let's assess the results for the *A to G* subtype from all 1kGP populations in chromsomes 1 and 22. First, let's get the overall deviance statistics at each relative position in the +/-200 bp window centered at the focal site:
+
+```{r}
+df1 <- load_deviance(base_dir, 1, "ALL", "AT_GC", c(-200:-1,1:200)) %>%
+  rename(dev1 = deviance,
+         n1 = n)
+df22 <- load_deviance(base_dir, 22, "ALL", "AT_GC", c(-200:-1,1:200)) %>%
+  rename(dev22 = deviance,
+         n22 = n)
+
+df <- inner_join(df1, df22, by = "rp") %>%
+  mutate(re1 = dev1 / (2*n1),
+         re22 = dev22 / (2*n22))
+
+df %>% 
+  ggplot(aes(x = re1, y = re22)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = 2)
+
+df %>% 
+  ggplot(aes(x = dev1, y = dev22)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = F, linetype = 2)
+
+df %>%
+  filter(abs(rp) < 21) %>%
+  select(rp, re1, re22) %>%
+  pivot_longer(re1:re22, names_to = "chrom", values_to = "re") %>%
+  ggplot(aes(x = rp, y = re, colour = chrom)) +
+  geom_point() + 
+  geom_line() +
+  xlab("Relative Position") +
+  ylab("Relative Entropy") +
+  labs(color = "Chromosome") +
+  theme_classic() +
+  scale_color_manual(values = ggpubfigs::friendly_pal("contrast_three"))
+```
+
+## Chromosome 22 and 8
+
+```{r}
+df8 <- load_deviance(base_dir, 8, "ALL", "AT_GC", c(-200:-1,1:200)) %>%
+  rename(dev8 = deviance,
+         n8 = n)
+df22 <- load_deviance(base_dir, 22, "ALL", "AT_GC", c(-200:-1,1:200)) %>%
+  rename(dev22 = deviance,
+         n22 = n)
+
+df <- inner_join(df8, df22, by = "rp") %>%
+  mutate(re8= dev8 / (2*n8),
+         re22 = dev22 / (2*n22))
+
+df %>% 
+  ggplot(aes(x = re8, y = re22)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = 2)
+
+df %>% 
+  ggplot(aes(x = dev8, y = dev22)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = F, linetype = 2)
+
+df %>%
+  filter(abs(rp) < 21) %>%
+  select(rp, re8, re22) %>%
+  pivot_longer(re8:re22, names_to = "chrom", values_to = "re") %>%
+  ggplot(aes(x = rp, y = re, colour = chrom)) +
+  geom_point() + 
+  geom_line() +
+  xlab("Relative Position") +
+  ylab("Relative Entropy") +
+  labs(color = "Chromosome") +
+  theme_classic() +
+  scale_color_manual(values = ggpubfigs::friendly_pal("contrast_three"))
+```
+
