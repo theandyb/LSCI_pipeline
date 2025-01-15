@@ -1,0 +1,529 @@
+---
+title: "two_position_results"
+author: "Andy Beck"
+date: "2025-01-14"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Setup
+
+```{r}
+library(tidyverse)
+library(ggpubfigs) # functions for color blind friendly palettes
+library(reactable) # table output for html
+library(knitr) # PDF table output
+```
+
+### Paths
+
+```{r}
+base_dir <- "output/two_pos"
+```
+
+### Load Data
+
+```{r}
+deviance_df_load <- function(base_dir, pop, subtype){
+  f_name <- paste0(base_dir, "/", pop, "/", subtype, ".csv")
+  df <- read_csv(f_name, show_col_types = F, 
+                 col_names = c("dev","singletons","controls","rp1","rp2")) %>%
+    rowwise() %>%
+    mutate(re = dev / (2 * (singletons + controls))) %>%
+    ungroup()
+  return(df)
+}
+
+resid_df_load <- function(base_dir, pop, subtype, p, q){
+  f_name <- paste0(base_dir, "/resid/", pop, "/", subtype, "_p", p, "_q", q, ".csv")
+  df <- read_csv(f_name, show_col_types = F)
+  return(df)
+}
+```
+
+### Plot data
+
+```{r}
+deviance_heatmap_1 <- function(base_dir, pop, subtype, max_rp = 20){
+  df <- deviance_df_load(base_dir, pop, subtype)
+  
+  p <- df %>%
+    filter(abs(rp1) <= max_rp, abs(rp2) <= max_rp) %>%
+    ggplot(aes(x = rp2, y = rp1, fill = re)) +
+    geom_tile() +
+    xlab("Relative Position 2") +
+    ylab("Relative Position 1") +
+    scale_fill_distiller(palette = "Purples", direction = 1) +
+    theme_classic() +
+    labs(fill = "Relative Entropy") +
+    theme(legend.position = "inside", legend.position.inside = c(0.3, 0.8),
+          legend.background = element_rect(colour = 1))
+  return(p)
+}
+
+deviance_heatmap_2 <- function(base_dir, pop, subtype, max_rp = 20){
+  df <- deviance_df_load(base_dir, pop, subtype)
+  
+  p <- df %>%
+    filter(abs(rp1) <= max_rp, abs(rp2) <= max_rp) %>%
+    ggplot(aes(x = rp2, y = rp1, fill = re)) +
+    geom_tile() +
+    xlab("Relative Position 2") +
+    ylab("Relative Position 1") +
+    scale_fill_distiller(palette = "Purples", direction = 1) +
+    theme_classic() +
+    labs(fill = "Rel. Ent.")
+  return(p)
+}
+```
+
+### Main analysis function
+
+```{r}
+main_analysis <- function(base_dir, pop, subtype, max_rp = 20){
+  deviance_heatmap_1(base_dir, pop, subtype, max_rp) %>% print()
+}
+```
+
+## Results
+
+```{r}
+max_rp <- 10
+```
+
+
+### A > C
+
+```{r}
+subtype <- "AT_CG"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### SAS
+
+```{r}
+pop <- "SAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+### A > G
+
+```{r}
+subtype <- "AT_GC"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### SAS
+
+```{r}
+pop <- "SAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+### A > T
+
+```{r}
+subtype <- "AT_TA"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### SAS
+
+```{r}
+pop <- "SAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+### C > T
+
+```{r}
+subtype <- "GC_AT"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### SAS
+
+```{r}
+pop <- "SAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+### C > A
+
+```{r}
+subtype <- "GC_TA"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### SAS
+
+```{r}
+pop <- "SAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+### C > G
+
+```{r}
+subtype <- "GC_CG"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### SAS
+
+```{r}
+pop <- "SAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+### CpG > TpG
+
+```{r}
+subtype <- "cpg_GC_AT"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### SAS
+
+```{r}
+pop <- "SAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+
+### CpG > ApG
+
+```{r}
+subtype <- "cpg_GC_TA"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### SAS
+
+```{r}
+pop <- "SAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+
+### CpG > GpG
+
+```{r}
+subtype <- "cpg_GC_CG"
+```
+
+#### ALL
+
+```{r}
+pop <- "ALL"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AFR
+
+```{r}
+pop <- "AFR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### AMR
+
+```{r}
+pop <- "AMR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EAS
+
+```{r}
+pop <- "EAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### EUR
+
+```{r}
+pop <- "EUR"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+#### SAS
+
+```{r}
+pop <- "SAS"
+main_analysis(base_dir, pop, subtype, max_rp)
+```
+
