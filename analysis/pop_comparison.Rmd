@@ -9,7 +9,289 @@ editor_options:
 
 ## Introduction
 
-```{r}
+In this document we are primariliy interested in assessing the consistency of results across the five 1kGP super-populations. Namely, for the single position models:
 
+1. Are the patterns of influence seen across positions shared across populations?
+2. At individual positions, are the same nucleotides the most influential across populations?
+
+The questions we ask for the two position models are similar.
+
+## Setup and Data Functions
+
+### Libraries
+
+```{r}
+library(tidyverse)
+library(ggpubfigs) # functions for color blind friendly palettes
+library(reactable) # table output for html
+library(knitr) # PDF table output
+library(corrr)
 ```
 
+### Single Position Functions
+
+Load position-level results:
+
+```{r}
+sp_deviance_df_load <- function(res_dir, pop, subtype){
+  f_name <- paste0(res_dir, "/", pop, "/", subtype, ".csv")
+  df <- read_csv(f_name, show_col_types = FALSE) %>%
+    rowwise() %>%
+    mutate(re = dev / (2 * (singletons+controls)))
+  return(df)
+}
+
+sp_re_all_pop <- function(res_dir, subtype){
+  df_ALL <- sp_deviance_df_load(res_dir, "ALL", subtype) %>%
+    select(offset, re) %>%
+    mutate(pop="ALL")
+  
+  df_AFR <- sp_deviance_df_load(res_dir, "AFR", subtype) %>%
+    select(offset, re) %>%
+    mutate(pop="AFR")
+  
+  df_AMR <- sp_deviance_df_load(res_dir, "AMR", subtype) %>%
+    select(offset, re) %>%
+    mutate(pop="AMR")
+  
+  df_EAS <- sp_deviance_df_load(res_dir, "EAS", subtype) %>%
+    select(offset, re) %>%
+    mutate(pop="EAS")
+  
+  df_EUR <- sp_deviance_df_load(res_dir, "EUR", subtype) %>%
+    select(offset, re) %>%
+    mutate(pop="EUR")
+  
+  df_SAS <- sp_deviance_df_load(res_dir, "SAS", subtype) %>%
+    select(offset, re) %>%
+    mutate(pop="SAS")
+  
+  #return(bind_rows(df_ALL, df_AFR, df_AMR, df_EAS, df_EUR, df_SAS) %>%
+  #  pivot_wider(id_cols = offset, names_from = pop, values_from = re))
+  return(bind_rows(df_ALL, df_AFR, df_AMR, df_EAS, df_EUR, df_SAS))
+}
+```
+
+Load position-level residuals:
+
+```{r}
+sp_resid_df_load <- function(res_dir, pop, subtype, rp){
+  f_name <- paste0(res_dir, "/resid/", pop, "/", subtype, "_rp_", rp, ".csv")
+  df <- read_csv(f_name, show_col_types = FALSE)
+  df$rp <- rp
+  return(df)
+}
+
+sp_resid_df_load_all <- function(res_dir, pop, subtype, rp = c(-500:-1, 1:500)){
+  results <- vector(mode = "list", length = length(rp))
+  for(i in 1:length(rp)){
+    if(rp[i] == 1 & str_starts(subtype, "cpg")) next
+    results[[i]] <- sp_resid_df_load(res_dir, pop, subtype, rp[i])
+  }
+  df <- bind_rows(results)
+  return(df)
+}
+
+sp_resid_all_pop <- function(res_dir, subtype, rp = c(-500:-1, 1:500)){
+  df_ALL <- sp_resid_df_load_all(res_dir, "ALL", subtype, rp) %>%
+    select(rp, nuc, status, res) %>%
+    mutate(pop = "ALL")
+  
+  df_AFR <- sp_resid_df_load_all(res_dir, "AFR", subtype, rp) %>%
+    select(rp, nuc, status, res) %>%
+    mutate(pop = "AFR")
+  
+  df_AMR <- sp_resid_df_load_all(res_dir, "AMR", subtype, rp) %>%
+    select(rp, nuc, status, res) %>%
+    mutate(pop = "AMR")
+  
+  df_EAS <- sp_resid_df_load_all(res_dir, "EAS", subtype, rp) %>%
+    select(rp, nuc, status, res) %>%
+    mutate(pop = "EAS")
+  
+  df_EUR <- sp_resid_df_load_all(res_dir, "EUR", subtype, rp) %>%
+    select(rp, nuc, status, res) %>%
+    mutate(pop = "EUR")
+  
+  df_SAS <- sp_resid_df_load_all(res_dir, "SAS", subtype, rp) %>%
+    select(rp, nuc, status, res) %>%
+    mutate(pop = "SAS")
+  
+  return(bind_rows(df_ALL, df_AFR, df_AMR, df_EAS, df_EUR, df_SAS))
+}
+```
+
+### Two position functions
+
+```{r}
+tp_deviance_df_load <- function(base_dir, pop, subtype){
+  f_name <- paste0(base_dir, "/", pop, "/", subtype, ".csv")
+  df <- read_csv(f_name, show_col_types = F, 
+                 col_names = c("dev","singletons","controls","rp1","rp2")) %>%
+    rowwise() %>%
+    mutate(re = dev / (2 * (singletons + controls))) %>%
+    ungroup()
+  return(df)
+}
+
+tp_resid_df_load <- function(base_dir, pop, subtype, p, q){
+  f_name <- paste0(base_dir, "/resid/", pop, "/", subtype, "_p", p, "_q", q, ".csv")
+  df <- read_csv(f_name, show_col_types = F)
+  return(df)
+}
+```
+
+### Paths
+
+```{r}
+base_dir = "output"
+single_pos_dir = paste0(base_dir, "/single_pos")
+two_pos_dir = paste0(base_dir, "/two_pos")
+```
+
+## Single Position Results
+
+### A > C
+
+```{r}
+subtype <- "AT_CG"
+
+single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10)){
+  df_res <- sp_re_all_pop(single_pos_dir, subtype)
+  df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = rp)
+  
+  p <- df_res %>%
+    filter(abs(offset) < 20) %>%
+    mutate(pop = factor(pop, levels = c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS"))) %>%
+    ggplot(aes(x = offset, y = re, colour = pop)) +
+    geom_point() +
+    geom_line() +
+    scale_colour_manual(values = friendly_pal("vibrant_seven")) +
+    theme_classic() +
+    labs(colour = "Population") +
+    xlab("Relative Position") +
+    ylab("Relative Entropy")
+  print(p)
+  
+  p <- df_res %>%
+    filter(abs(offset) < 20) %>%
+    mutate(pop = factor(pop, levels = c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS"))) %>%
+    ggplot(aes(x = offset, y = re, colour = pop)) +
+    geom_point() +
+    geom_line() +
+    scale_colour_manual(values = friendly_pal("vibrant_seven")) +
+    theme_classic() +
+    labs(colour = "Population") +
+    xlab("Relative Position") +
+    ylab("Relative Entropy") +
+    scale_y_log10()
+  print(p)
+  
+  df_res %>%
+    pivot_wider(id_cols = offset, names_from = pop, values_from = re) %>%
+    correlate(method = "pearson", diagonal = 1) %>%
+    focus(-offset, mirror = T) %>%
+    shave() %>%
+    fashion() %>%
+    print()
+  
+  df_res %>%
+    pivot_wider(id_cols = offset, names_from = pop, values_from = re) %>%
+    correlate(method = "spearman", diagonal = 1) %>%
+    focus(-offset, mirror = T) %>%
+    shave() %>%
+    fashion() %>%
+    print()
+  
+  df_wide <- df_res %>%
+    pivot_wider(id_cols = offset, names_from = pop, values_from = re)
+  
+  nms <- combn(names(df_wide %>% select(-offset, -ALL)), 2, simplify = T) %>% 
+    t() %>% 
+    as.data.frame() %>% rename(x = V1, y = V2)
+  
+  plts <- map2(.x = nms$x, 
+               .y = nms$y,
+            ~{ggplot(data = df_wide, 
+                     aes(x = .data[[.x]], 
+                                y = .data[[.y]])) +
+                geom_point()}
+            )
+  
+  print(gridExtra::grid.arrange(grobs = plts))
+  
+  df_resid %>%
+    pivot_wider(id_cols = rp:status, names_from = pop, values_from = res) %>%
+    select(ALL:SAS) %>%
+    correlate(method = "pearson", diagonal = 1) %>%
+    shave() %>%
+    fashion(decimals = 3) %>%
+    print()
+  
+  df_resid %>%
+    pivot_wider(id_cols = rp:status, names_from = pop, values_from = res) %>%
+    select(ALL:SAS) %>%
+    correlate(method = "spearman", diagonal = 1) %>%
+    shave() %>%
+    fashion(decimals = 3) %>%
+    print()
+}
+
+single_pos_analysis(subtype)
+```
+
+### A > G
+
+```{r}
+subtype <- "AT_GC"
+single_pos_analysis(subtype)
+```
+
+### A > T
+
+```{r}
+subtype <- "AT_TA"
+single_pos_analysis(subtype)
+```
+
+### C > T
+
+```{r}
+subtype <- "GC_AT"
+single_pos_analysis(subtype)
+```
+
+### C > A
+
+```{r}
+subtype <- "GC_TA"
+single_pos_analysis(subtype)
+```
+
+### C > G
+
+```{r}
+subtype <- "GC_CG"
+single_pos_analysis(subtype)
+```
+
+### CpG > TpG
+
+```{r}
+subtype <- "cpg_GC_AT"
+single_pos_analysis(subtype, rp = c(-10:-1,2:10))
+```
+
+### CpG > ApG
+
+```{r}
+subtype <- "cpg_GC_TA"
+single_pos_analysis(subtype, rp = c(-10:-1,2:10))
+```
+
+### CpG > GpG
+
+```{r}
+subtype <- "cpg_GC_CG"
+single_pos_analysis(subtype, rp = c(-10:-1,2:10))
+```
