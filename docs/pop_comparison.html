@@ -382,7 +382,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-01-20
+<strong>Last updated:</strong> 2025-01-21
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -513,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreec137abf794c2b6b48e46ad22c1dca3bba56f83fatargetblankc137abfa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreecfc74e4f3ec881fd3b92f27ae4ea7eab05563ed1targetblankcfc74e4a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/c137abf794c2b6b48e46ad22c1dca3bba56f83fa" target="_blank">c137abf</a>
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/cfc74e4f3ec881fd3b92f27ae4ea7eab05563ed1" target="_blank">cfc74e4</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreec137abf794c2b6b48e46ad22c1dca3bba56f83fatargetblankc137abfa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreecfc74e4f3ec881fd3b92f27ae4ea7eab05563ed1targetblankcfc74e4a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -531,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/c137abf794c2b6b48e46ad22c1dca3bba56f83fa" target="_blank">c137abf</a>.
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/cfc74e4f3ec881fd3b92f27ae4ea7eab05563ed1" target="_blank">cfc74e4</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -608,6 +608,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/cfc74e4f3ec881fd3b92f27ae4ea7eab05563ed1/analysis/pop_comparison.Rmd" target="_blank">cfc74e4</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+<td>
+wflow_publish(c("analysis/index.Rmd", "analysis/pop_comparison.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/theandyb/LSCI_pipeline/2c891e1832df8db1f372437e6760e3965b4efb2e/docs/pop_comparison.html" target="_blank">2c891e1</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/c137abf794c2b6b48e46ad22c1dca3bba56f83fa/analysis/pop_comparison.Rmd" target="_blank">c137abf</a>
 </td>
 <td>
@@ -629,6 +663,768 @@ wflow_publish(c("analysis/pop_comparison.Rmd", "analysis/index.Rmd"))
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
+<p>In this document we are primariliy interested in assessing the
+consistency of results across the five 1kGP super-populations. Namely,
+for the single position models:</p>
+<ol style="list-style-type: decimal">
+<li>Are the patterns of influence seen across positions shared across
+populations?</li>
+<li>At individual positions, are the same nucleotides the most
+influential across populations?</li>
+</ol>
+<p>The questions we ask for the two position models are similar.</p>
+</div>
+<div id="setup-and-data-functions" class="section level2">
+<h2>Setup and Data Functions</h2>
+<div id="libraries" class="section level3">
+<h3>Libraries</h3>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<pre class="r"><code>library(ggpubfigs) # functions for color blind friendly palettes</code></pre>
+<pre><code>
+Attaching package: &#39;ggpubfigs&#39;
+
+The following object is masked from &#39;package:ggplot2&#39;:
+
+    theme_grey</code></pre>
+<pre class="r"><code>library(reactable) # table output for html
+library(knitr) # PDF table output
+library(corrr)</code></pre>
+</div>
+<div id="single-position-functions" class="section level3">
+<h3>Single Position Functions</h3>
+<p>Load position-level results:</p>
+<pre class="r"><code>sp_deviance_df_load &lt;- function(res_dir, pop, subtype){
+  f_name &lt;- paste0(res_dir, &quot;/&quot;, pop, &quot;/&quot;, subtype, &quot;.csv&quot;)
+  df &lt;- read_csv(f_name, show_col_types = FALSE) %&gt;%
+    rowwise() %&gt;%
+    mutate(re = dev / (2 * (singletons+controls)))
+  return(df)
+}
+
+sp_re_all_pop &lt;- function(res_dir, subtype){
+  df_ALL &lt;- sp_deviance_df_load(res_dir, &quot;ALL&quot;, subtype) %&gt;%
+    select(offset, re) %&gt;%
+    mutate(pop=&quot;ALL&quot;)
+  
+  df_AFR &lt;- sp_deviance_df_load(res_dir, &quot;AFR&quot;, subtype) %&gt;%
+    select(offset, re) %&gt;%
+    mutate(pop=&quot;AFR&quot;)
+  
+  df_AMR &lt;- sp_deviance_df_load(res_dir, &quot;AMR&quot;, subtype) %&gt;%
+    select(offset, re) %&gt;%
+    mutate(pop=&quot;AMR&quot;)
+  
+  df_EAS &lt;- sp_deviance_df_load(res_dir, &quot;EAS&quot;, subtype) %&gt;%
+    select(offset, re) %&gt;%
+    mutate(pop=&quot;EAS&quot;)
+  
+  df_EUR &lt;- sp_deviance_df_load(res_dir, &quot;EUR&quot;, subtype) %&gt;%
+    select(offset, re) %&gt;%
+    mutate(pop=&quot;EUR&quot;)
+  
+  df_SAS &lt;- sp_deviance_df_load(res_dir, &quot;SAS&quot;, subtype) %&gt;%
+    select(offset, re) %&gt;%
+    mutate(pop=&quot;SAS&quot;)
+  
+  #return(bind_rows(df_ALL, df_AFR, df_AMR, df_EAS, df_EUR, df_SAS) %&gt;%
+  #  pivot_wider(id_cols = offset, names_from = pop, values_from = re))
+  return(bind_rows(df_ALL, df_AFR, df_AMR, df_EAS, df_EUR, df_SAS))
+}</code></pre>
+<p>Load position-level residuals:</p>
+<pre class="r"><code>sp_resid_df_load &lt;- function(res_dir, pop, subtype, rp){
+  f_name &lt;- paste0(res_dir, &quot;/resid/&quot;, pop, &quot;/&quot;, subtype, &quot;_rp_&quot;, rp, &quot;.csv&quot;)
+  df &lt;- read_csv(f_name, show_col_types = FALSE)
+  df$rp &lt;- rp
+  return(df)
+}
+
+sp_resid_df_load_all &lt;- function(res_dir, pop, subtype, rp = c(-500:-1, 1:500)){
+  results &lt;- vector(mode = &quot;list&quot;, length = length(rp))
+  for(i in 1:length(rp)){
+    if(rp[i] == 1 &amp; str_starts(subtype, &quot;cpg&quot;)) next
+    results[[i]] &lt;- sp_resid_df_load(res_dir, pop, subtype, rp[i])
+  }
+  df &lt;- bind_rows(results)
+  return(df)
+}
+
+sp_resid_all_pop &lt;- function(res_dir, subtype, rp = c(-500:-1, 1:500)){
+  df_ALL &lt;- sp_resid_df_load_all(res_dir, &quot;ALL&quot;, subtype, rp) %&gt;%
+    select(rp, nuc, status, res) %&gt;%
+    mutate(pop = &quot;ALL&quot;)
+  
+  df_AFR &lt;- sp_resid_df_load_all(res_dir, &quot;AFR&quot;, subtype, rp) %&gt;%
+    select(rp, nuc, status, res) %&gt;%
+    mutate(pop = &quot;AFR&quot;)
+  
+  df_AMR &lt;- sp_resid_df_load_all(res_dir, &quot;AMR&quot;, subtype, rp) %&gt;%
+    select(rp, nuc, status, res) %&gt;%
+    mutate(pop = &quot;AMR&quot;)
+  
+  df_EAS &lt;- sp_resid_df_load_all(res_dir, &quot;EAS&quot;, subtype, rp) %&gt;%
+    select(rp, nuc, status, res) %&gt;%
+    mutate(pop = &quot;EAS&quot;)
+  
+  df_EUR &lt;- sp_resid_df_load_all(res_dir, &quot;EUR&quot;, subtype, rp) %&gt;%
+    select(rp, nuc, status, res) %&gt;%
+    mutate(pop = &quot;EUR&quot;)
+  
+  df_SAS &lt;- sp_resid_df_load_all(res_dir, &quot;SAS&quot;, subtype, rp) %&gt;%
+    select(rp, nuc, status, res) %&gt;%
+    mutate(pop = &quot;SAS&quot;)
+  
+  return(bind_rows(df_ALL, df_AFR, df_AMR, df_EAS, df_EUR, df_SAS))
+}</code></pre>
+</div>
+<div id="two-position-functions" class="section level3">
+<h3>Two position functions</h3>
+<pre class="r"><code>tp_deviance_df_load &lt;- function(base_dir, pop, subtype){
+  f_name &lt;- paste0(base_dir, &quot;/&quot;, pop, &quot;/&quot;, subtype, &quot;.csv&quot;)
+  df &lt;- read_csv(f_name, show_col_types = F, 
+                 col_names = c(&quot;dev&quot;,&quot;singletons&quot;,&quot;controls&quot;,&quot;rp1&quot;,&quot;rp2&quot;)) %&gt;%
+    rowwise() %&gt;%
+    mutate(re = dev / (2 * (singletons + controls))) %&gt;%
+    ungroup()
+  return(df)
+}
+
+tp_resid_df_load &lt;- function(base_dir, pop, subtype, p, q){
+  f_name &lt;- paste0(base_dir, &quot;/resid/&quot;, pop, &quot;/&quot;, subtype, &quot;_p&quot;, p, &quot;_q&quot;, q, &quot;.csv&quot;)
+  df &lt;- read_csv(f_name, show_col_types = F)
+  return(df)
+}</code></pre>
+</div>
+<div id="paths" class="section level3">
+<h3>Paths</h3>
+<pre class="r"><code>base_dir = &quot;output&quot;
+single_pos_dir = paste0(base_dir, &quot;/single_pos&quot;)
+two_pos_dir = paste0(base_dir, &quot;/two_pos&quot;)</code></pre>
+</div>
+</div>
+<div id="single-position-results" class="section level2">
+<h2>Single Position Results</h2>
+<div id="a-c" class="section level3">
+<h3>A &gt; C</h3>
+<pre class="r"><code>subtype &lt;- &quot;AT_CG&quot;
+
+single_pos_analysis &lt;- function(subtype, rp = c(-10:-1, 1:10)){
+  df_res &lt;- sp_re_all_pop(single_pos_dir, subtype)
+  df_resid &lt;- sp_resid_all_pop(single_pos_dir, subtype, rp = rp)
+  
+  p &lt;- df_res %&gt;%
+    filter(abs(offset) &lt; 20) %&gt;%
+    mutate(pop = factor(pop, levels = c(&quot;ALL&quot;, &quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;))) %&gt;%
+    ggplot(aes(x = offset, y = re, colour = pop)) +
+    geom_point() +
+    geom_line() +
+    scale_colour_manual(values = friendly_pal(&quot;vibrant_seven&quot;)) +
+    theme_classic() +
+    labs(colour = &quot;Population&quot;) +
+    xlab(&quot;Relative Position&quot;) +
+    ylab(&quot;Relative Entropy&quot;)
+  print(p)
+  
+  p &lt;- df_res %&gt;%
+    filter(abs(offset) &lt; 20) %&gt;%
+    mutate(pop = factor(pop, levels = c(&quot;ALL&quot;, &quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;))) %&gt;%
+    ggplot(aes(x = offset, y = re, colour = pop)) +
+    geom_point() +
+    geom_line() +
+    scale_colour_manual(values = friendly_pal(&quot;vibrant_seven&quot;)) +
+    theme_classic() +
+    labs(colour = &quot;Population&quot;) +
+    xlab(&quot;Relative Position&quot;) +
+    ylab(&quot;Relative Entropy&quot;) +
+    scale_y_log10()
+  print(p)
+  
+  df_res %&gt;%
+    pivot_wider(id_cols = offset, names_from = pop, values_from = re) %&gt;%
+    correlate(method = &quot;pearson&quot;, diagonal = 1) %&gt;%
+    focus(-offset, mirror = T) %&gt;%
+    shave() %&gt;%
+    fashion() %&gt;%
+    print()
+  
+  df_res %&gt;%
+    pivot_wider(id_cols = offset, names_from = pop, values_from = re) %&gt;%
+    correlate(method = &quot;spearman&quot;, diagonal = 1) %&gt;%
+    focus(-offset, mirror = T) %&gt;%
+    shave() %&gt;%
+    fashion() %&gt;%
+    print()
+  
+  df_wide &lt;- df_res %&gt;%
+    pivot_wider(id_cols = offset, names_from = pop, values_from = re)
+  
+  nms &lt;- combn(names(df_wide %&gt;% select(-offset, -ALL)), 2, simplify = T) %&gt;% 
+    t() %&gt;% 
+    as.data.frame() %&gt;% rename(x = V1, y = V2)
+  
+  plts &lt;- map2(.x = nms$x, 
+               .y = nms$y,
+            ~{ggplot(data = df_wide, 
+                     aes(x = .data[[.x]], 
+                                y = .data[[.y]])) +
+                geom_point()}
+            )
+  
+  print(gridExtra::grid.arrange(grobs = plts))
+  
+  df_resid %&gt;%
+    pivot_wider(id_cols = rp:status, names_from = pop, values_from = res) %&gt;%
+    select(ALL:SAS) %&gt;%
+    correlate(method = &quot;pearson&quot;, diagonal = 1) %&gt;%
+    shave() %&gt;%
+    fashion(decimals = 3) %&gt;%
+    print()
+  
+  df_resid %&gt;%
+    pivot_wider(id_cols = rp:status, names_from = pop, values_from = res) %&gt;%
+    select(ALL:SAS) %&gt;%
+    correlate(method = &quot;spearman&quot;, diagonal = 1) %&gt;%
+    shave() %&gt;%
+    fashion(decimals = 3) %&gt;%
+    print()
+}
+
+single_pos_analysis(subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00  .99  .99 1.00          
+5  EUR 1.00 1.00 1.00  .99 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .72 1.00                    
+3  AMR  .60  .50 1.00               
+4  EAS  .68  .54  .49 1.00          
+5  EUR  .66  .54  .49  .55 1.00     
+6  SAS  .68  .55  .51  .54  .53 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
+    z     cells    name           grob
+1   1 (1-1,1-1) arrange gtable[layout]
+2   2 (1-1,2-2) arrange gtable[layout]
+3   3 (1-1,3-3) arrange gtable[layout]
+4   4 (2-2,1-1) arrange gtable[layout]
+5   5 (2-2,2-2) arrange gtable[layout]
+6   6 (2-2,3-3) arrange gtable[layout]
+7   7 (3-3,1-1) arrange gtable[layout]
+8   8 (3-3,2-2) arrange gtable[layout]
+9   9 (3-3,3-3) arrange gtable[layout]
+10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .951 1.000                        
+3  AMR  .951  .995 1.000                  
+4  EAS  .940  .975  .985 1.000            
+5  EUR  .948  .988  .996  .989 1.000      
+6  SAS  .939  .988  .976  .949  .968 1.000</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .984 1.000                        
+3  AMR  .983  .995 1.000                  
+4  EAS  .976  .983  .980 1.000            
+5  EUR  .982  .988  .991  .985 1.000      
+6  SAS  .982  .990  .983  .972  .981 1.000</code></pre>
+</div>
+<div id="a-g" class="section level3">
+<h3>A &gt; G</h3>
+<pre class="r"><code>subtype &lt;- &quot;AT_GC&quot;
+single_pos_analysis(subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00 1.00 1.00 1.00          
+5  EUR 1.00 1.00 1.00 1.00 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .78 1.00                    
+3  AMR  .70  .63 1.00               
+4  EAS  .75  .62  .60 1.00          
+5  EUR  .73  .63  .60  .62 1.00     
+6  SAS  .75  .63  .63  .64  .62 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
+    z     cells    name           grob
+1   1 (1-1,1-1) arrange gtable[layout]
+2   2 (1-1,2-2) arrange gtable[layout]
+3   3 (1-1,3-3) arrange gtable[layout]
+4   4 (2-2,1-1) arrange gtable[layout]
+5   5 (2-2,2-2) arrange gtable[layout]
+6   6 (2-2,3-3) arrange gtable[layout]
+7   7 (3-3,1-1) arrange gtable[layout]
+8   8 (3-3,2-2) arrange gtable[layout]
+9   9 (3-3,3-3) arrange gtable[layout]
+10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .952 1.000                        
+3  AMR  .952  .999 1.000                  
+4  EAS  .952  .999 1.000 1.000            
+5  EUR  .952  .999  .999  .999 1.000      
+6  SAS  .952  .999 1.000  .999  .999 1.000</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .988 1.000                        
+3  AMR  .985  .990 1.000                  
+4  EAS  .989  .995  .996 1.000            
+5  EUR  .988  .997  .988  .994 1.000      
+6  SAS  .990  .996  .994  .997  .997 1.000</code></pre>
+</div>
+<div id="a-t" class="section level3">
+<h3>A &gt; T</h3>
+<pre class="r"><code>subtype &lt;- &quot;AT_TA&quot;
+single_pos_analysis(subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00 1.00 1.00 1.00          
+5  EUR 1.00 1.00 1.00 1.00 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .73 1.00                    
+3  AMR  .60  .54 1.00               
+4  EAS  .68  .54  .49 1.00          
+5  EUR  .67  .53  .52  .53 1.00     
+6  SAS  .66  .54  .49  .51  .52 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
+    z     cells    name           grob
+1   1 (1-1,1-1) arrange gtable[layout]
+2   2 (1-1,2-2) arrange gtable[layout]
+3   3 (1-1,3-3) arrange gtable[layout]
+4   4 (2-2,1-1) arrange gtable[layout]
+5   5 (2-2,2-2) arrange gtable[layout]
+6   6 (2-2,3-3) arrange gtable[layout]
+7   7 (3-3,1-1) arrange gtable[layout]
+8   8 (3-3,2-2) arrange gtable[layout]
+9   9 (3-3,3-3) arrange gtable[layout]
+10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .949 1.000                        
+3  AMR  .950  .993 1.000                  
+4  EAS  .949  .989  .993 1.000            
+5  EUR  .951  .994  .997  .994 1.000      
+6  SAS  .951  .993  .998  .996  .997 1.000</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .980 1.000                        
+3  AMR  .983  .991 1.000                  
+4  EAS  .979  .982  .991 1.000            
+5  EUR  .984  .988  .994  .993 1.000      
+6  SAS  .983  .989  .997  .995  .995 1.000</code></pre>
+</div>
+<div id="c-t" class="section level3">
+<h3>C &gt; T</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_AT&quot;
+single_pos_analysis(subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00  .99 1.00               
+4  EAS 1.00 1.00 1.00 1.00          
+5  EUR 1.00  .99 1.00  .99 1.00     
+6  SAS  .99  .98 1.00  .99 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .76 1.00                    
+3  AMR  .68  .60 1.00               
+4  EAS  .73  .62  .59 1.00          
+5  EUR  .69  .62  .61  .60 1.00     
+6  SAS  .73  .61  .60  .63  .62 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
+    z     cells    name           grob
+1   1 (1-1,1-1) arrange gtable[layout]
+2   2 (1-1,2-2) arrange gtable[layout]
+3   3 (1-1,3-3) arrange gtable[layout]
+4   4 (2-2,1-1) arrange gtable[layout]
+5   5 (2-2,2-2) arrange gtable[layout]
+6   6 (2-2,3-3) arrange gtable[layout]
+7   7 (3-3,1-1) arrange gtable[layout]
+8   8 (3-3,2-2) arrange gtable[layout]
+9   9 (3-3,3-3) arrange gtable[layout]
+10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .950 1.000                        
+3  AMR  .952  .996 1.000                  
+4  EAS  .950  .994  .995 1.000            
+5  EUR  .951  .994  .997  .994 1.000      
+6  SAS  .950  .992  .997  .992  .999 1.000</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .987 1.000                        
+3  AMR  .987  .994 1.000                  
+4  EAS  .986  .991  .992 1.000            
+5  EUR  .988  .996  .994  .994 1.000      
+6  SAS  .987  .993  .992  .993  .997 1.000</code></pre>
+</div>
+<div id="c-a" class="section level3">
+<h3>C &gt; A</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_TA&quot;
+single_pos_analysis(subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00  .99 1.00 1.00          
+5  EUR 1.00 1.00 1.00  .99 1.00     
+6  SAS 1.00  .99 1.00 1.00  .99 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .76 1.00                    
+3  AMR  .64  .55 1.00               
+4  EAS  .71  .61  .56 1.00          
+5  EUR  .68  .60  .55  .56 1.00     
+6  SAS  .69  .57  .56  .58  .58 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
+    z     cells    name           grob
+1   1 (1-1,1-1) arrange gtable[layout]
+2   2 (1-1,2-2) arrange gtable[layout]
+3   3 (1-1,3-3) arrange gtable[layout]
+4   4 (2-2,1-1) arrange gtable[layout]
+5   5 (2-2,2-2) arrange gtable[layout]
+6   6 (2-2,3-3) arrange gtable[layout]
+7   7 (3-3,1-1) arrange gtable[layout]
+8   8 (3-3,2-2) arrange gtable[layout]
+9   9 (3-3,3-3) arrange gtable[layout]
+10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .952 1.000                        
+3  AMR  .952  .998 1.000                  
+4  EAS  .951  .996  .999 1.000            
+5  EUR  .951  .999  .998  .995 1.000      
+6  SAS  .952  .997  .999  .999  .996 1.000</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .990 1.000                        
+3  AMR  .989  .996 1.000                  
+4  EAS  .987  .996  .997 1.000            
+5  EUR  .986  .995  .991  .992 1.000      
+6  SAS  .987  .996  .996  .999  .992 1.000</code></pre>
+</div>
+<div id="c-g" class="section level3">
+<h3>C &gt; G</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_CG&quot;
+single_pos_analysis(subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00  .99 1.00 1.00          
+5  EUR 1.00  .99 1.00 1.00 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .73 1.00                    
+3  AMR  .59  .53 1.00               
+4  EAS  .68  .56  .50 1.00          
+5  EUR  .65  .57  .50  .56 1.00     
+6  SAS  .68  .59  .49  .56  .53 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
+    z     cells    name           grob
+1   1 (1-1,1-1) arrange gtable[layout]
+2   2 (1-1,2-2) arrange gtable[layout]
+3   3 (1-1,3-3) arrange gtable[layout]
+4   4 (2-2,1-1) arrange gtable[layout]
+5   5 (2-2,2-2) arrange gtable[layout]
+6   6 (2-2,3-3) arrange gtable[layout]
+7   7 (3-3,1-1) arrange gtable[layout]
+8   8 (3-3,2-2) arrange gtable[layout]
+9   9 (3-3,3-3) arrange gtable[layout]
+10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .951 1.000                        
+3  AMR  .952  .996 1.000                  
+4  EAS  .951  .993  .998 1.000            
+5  EUR  .952  .996  .998  .997 1.000      
+6  SAS  .952  .996  .999  .998  .999 1.000</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .989 1.000                        
+3  AMR  .989  .991 1.000                  
+4  EAS  .985  .982  .994 1.000            
+5  EUR  .989  .993  .994  .987 1.000      
+6  SAS  .990  .993  .992  .989  .992 1.000</code></pre>
+</div>
+<div id="cpg-tpg" class="section level3">
+<h3>CpG &gt; TpG</h3>
+<pre class="r"><code>subtype &lt;- &quot;cpg_GC_AT&quot;
+single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00 1.00 1.00 1.00          
+5  EUR 1.00 1.00 1.00 1.00 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .94 1.00                    
+3  AMR  .88  .83 1.00               
+4  EAS  .92  .85  .81 1.00          
+5  EUR  .90  .84  .80  .82 1.00     
+6  SAS  .92  .85  .82  .85  .83 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
+    z     cells    name           grob
+1   1 (1-1,1-1) arrange gtable[layout]
+2   2 (1-1,2-2) arrange gtable[layout]
+3   3 (1-1,3-3) arrange gtable[layout]
+4   4 (2-2,1-1) arrange gtable[layout]
+5   5 (2-2,2-2) arrange gtable[layout]
+6   6 (2-2,3-3) arrange gtable[layout]
+7   7 (3-3,1-1) arrange gtable[layout]
+8   8 (3-3,2-2) arrange gtable[layout]
+9   9 (3-3,3-3) arrange gtable[layout]
+10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .952 1.000                        
+3  AMR  .952  .998 1.000                  
+4  EAS  .952  .998  .998 1.000            
+5  EUR  .952  .998  .998  .998 1.000      
+6  SAS  .952  .999  .998  .998  .999 1.000</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .981 1.000                        
+3  AMR  .980  .997 1.000                  
+4  EAS  .980  .997  .996 1.000            
+5  EUR  .979  .997  .997  .995 1.000      
+6  SAS  .980  .998  .997  .996  .998 1.000</code></pre>
+</div>
+<div id="cpg-apg" class="section level3">
+<h3>CpG &gt; ApG</h3>
+<pre class="r"><code>subtype &lt;- &quot;cpg_GC_TA&quot;
+single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00 1.00 1.00 1.00          
+5  EUR 1.00 1.00  .99 1.00 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .80 1.00                    
+3  AMR  .60  .47 1.00               
+4  EAS  .72  .53  .44 1.00          
+5  EUR  .66  .52  .41  .46 1.00     
+6  SAS  .70  .50  .42  .48  .44 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
+    z     cells    name           grob
+1   1 (1-1,1-1) arrange gtable[layout]
+2   2 (1-1,2-2) arrange gtable[layout]
+3   3 (1-1,3-3) arrange gtable[layout]
+4   4 (2-2,1-1) arrange gtable[layout]
+5   5 (2-2,2-2) arrange gtable[layout]
+6   6 (2-2,3-3) arrange gtable[layout]
+7   7 (3-3,1-1) arrange gtable[layout]
+8   8 (3-3,2-2) arrange gtable[layout]
+9   9 (3-3,3-3) arrange gtable[layout]
+10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .951 1.000                        
+3  AMR  .950  .996 1.000                  
+4  EAS  .951  .996  .996 1.000            
+5  EUR  .949  .994  .994  .994 1.000      
+6  SAS  .951  .996  .995  .996  .993 1.000</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .983 1.000                        
+3  AMR  .980  .989 1.000                  
+4  EAS  .982  .992  .987 1.000            
+5  EUR  .980  .992  .989  .986 1.000      
+6  SAS  .981  .988  .987  .990  .986 1.000</code></pre>
+</div>
+<div id="cpg-gpg" class="section level3">
+<h3>CpG &gt; GpG</h3>
+<pre class="r"><code>subtype &lt;- &quot;cpg_GC_CG&quot;
+single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .99 1.00                    
+3  AMR  .99  .98 1.00               
+4  EAS  .99  .97  .99 1.00          
+5  EUR  .99  .96  .98  .99 1.00     
+6  SAS 1.00  .98  .99  .99  .99 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .69 1.00                    
+3  AMR  .52  .38 1.00               
+4  EAS  .64  .45  .38 1.00          
+5  EUR  .57  .45  .37  .41 1.00     
+6  SAS  .62  .44  .38  .45  .39 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
+    z     cells    name           grob
+1   1 (1-1,1-1) arrange gtable[layout]
+2   2 (1-1,2-2) arrange gtable[layout]
+3   3 (1-1,3-3) arrange gtable[layout]
+4   4 (2-2,1-1) arrange gtable[layout]
+5   5 (2-2,2-2) arrange gtable[layout]
+6   6 (2-2,3-3) arrange gtable[layout]
+7   7 (3-3,1-1) arrange gtable[layout]
+8   8 (3-3,2-2) arrange gtable[layout]
+9   9 (3-3,3-3) arrange gtable[layout]
+10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .945 1.000                        
+3  AMR  .949  .986 1.000                  
+4  EAS  .949  .981  .991 1.000            
+5  EUR  .946  .974  .987  .990 1.000      
+6  SAS  .949  .984  .990  .991  .990 1.000</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .977 1.000                        
+3  AMR  .979  .980 1.000                  
+4  EAS  .979  .975  .987 1.000            
+5  EUR  .977  .973  .981  .978 1.000      
+6  SAS  .981  .985  .983  .983  .983 1.000</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -661,20 +1457,29 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] workflowr_1.7.1
+ [1] corrr_0.4.4     knitr_1.49      reactable_0.4.4 ggpubfigs_0.0.1
+ [5] lubridate_1.9.3 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
+ [9] purrr_1.0.2     readr_2.1.5     tidyr_1.3.1     tibble_3.2.1   
+[13] ggplot2_3.5.1   tidyverse_2.0.0 workflowr_1.7.1
 
 loaded via a namespace (and not attached):
- [1] vctrs_0.6.5       httr_1.4.7        cli_3.6.3         knitr_1.49       
- [5] rlang_1.1.4       xfun_0.49         stringi_1.8.4     processx_3.8.4   
- [9] promises_1.3.0    jsonlite_1.8.9    glue_1.8.0        rprojroot_2.0.4  
-[13] git2r_0.33.0      htmltools_0.5.8.1 httpuv_1.6.15     ps_1.8.1         
-[17] sass_0.4.9        fansi_1.0.6       rmarkdown_2.29    jquerylib_0.1.4  
-[21] tibble_3.2.1      evaluate_1.0.1    fastmap_1.2.0     yaml_2.3.10      
-[25] lifecycle_1.0.4   whisker_0.4.1     stringr_1.5.1     compiler_4.4.2   
-[29] fs_1.6.5          pkgconfig_2.0.3   Rcpp_1.0.13-1     rstudioapi_0.17.1
-[33] later_1.3.2       digest_0.6.37     R6_2.5.1          utf8_1.2.4       
-[37] pillar_1.9.0      callr_3.7.6       magrittr_2.0.3    bslib_0.8.0      
-[41] tools_4.4.2       cachem_1.1.0      getPass_0.2-4    </code></pre>
+ [1] gtable_0.3.6      xfun_0.49         bslib_0.8.0       htmlwidgets_1.6.4
+ [5] processx_3.8.4    callr_3.7.6       tzdb_0.4.0        vctrs_0.6.5      
+ [9] tools_4.4.2       ps_1.8.1          generics_0.1.3    parallel_4.4.2   
+[13] fansi_1.0.6       pkgconfig_2.0.3   lifecycle_1.0.4   farver_2.1.2     
+[17] compiler_4.4.2    git2r_0.33.0      munsell_0.5.1     getPass_0.2-4    
+[21] httpuv_1.6.15     htmltools_0.5.8.1 sass_0.4.9        yaml_2.3.10      
+[25] later_1.3.2       pillar_1.9.0      crayon_1.5.3      jquerylib_0.1.4  
+[29] whisker_0.4.1     cachem_1.1.0      tidyselect_1.2.1  digest_0.6.37    
+[33] stringi_1.8.4     labeling_0.4.3    rprojroot_2.0.4   fastmap_1.2.0    
+[37] grid_4.4.2        archive_1.1.8     colorspace_2.1-1  cli_3.6.3        
+[41] magrittr_2.0.3    utf8_1.2.4        withr_3.0.2       scales_1.3.0     
+[45] promises_1.3.0    bit64_4.0.5       timechange_0.3.0  rmarkdown_2.29   
+[49] httr_1.4.7        bit_4.5.0.1       gridExtra_2.3     hms_1.1.3        
+[53] evaluate_1.0.1    rlang_1.1.4       Rcpp_1.0.13-1     glue_1.8.0       
+[57] rstudioapi_0.17.1 vroom_1.6.5       jsonlite_1.8.9    R6_2.5.1         
+[61] fs_1.6.5         </code></pre>
+</div>
 </div>
 </div>
 
