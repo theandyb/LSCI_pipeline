@@ -513,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreecfc74e4f3ec881fd3b92f27ae4ea7eab05563ed1targetblankcfc74e4a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree57ede4f04a652b27b1eae913cdcb562cecd7dc85targetblank57ede4fa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/cfc74e4f3ec881fd3b92f27ae4ea7eab05563ed1" target="_blank">cfc74e4</a>
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/57ede4f04a652b27b1eae913cdcb562cecd7dc85" target="_blank">57ede4f</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreecfc74e4f3ec881fd3b92f27ae4ea7eab05563ed1targetblankcfc74e4a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree57ede4f04a652b27b1eae913cdcb562cecd7dc85targetblank57ede4fa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -531,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/cfc74e4f3ec881fd3b92f27ae4ea7eab05563ed1" target="_blank">cfc74e4</a>.
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/57ede4f04a652b27b1eae913cdcb562cecd7dc85" target="_blank">57ede4f</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -603,6 +603,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/57ede4f04a652b27b1eae913cdcb562cecd7dc85/analysis/pop_comparison.Rmd" target="_blank">57ede4f</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+<td>
+wflow_publish("analysis/pop_comparison.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/theandyb/LSCI_pipeline/76579d5e6e199049974b0d639aba207b6e8c4072/docs/pop_comparison.html" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -707,33 +741,34 @@ library(corrr)</code></pre>
   f_name &lt;- paste0(res_dir, &quot;/&quot;, pop, &quot;/&quot;, subtype, &quot;.csv&quot;)
   df &lt;- read_csv(f_name, show_col_types = FALSE) %&gt;%
     rowwise() %&gt;%
-    mutate(re = dev / (2 * (singletons+controls)))
+    mutate(re = dev / (2 * (singletons+controls)),
+           is_sig = dev &gt; qchisq(0.05, df = 3, lower.tail = F))
   return(df)
 }
 
 sp_re_all_pop &lt;- function(res_dir, subtype){
   df_ALL &lt;- sp_deviance_df_load(res_dir, &quot;ALL&quot;, subtype) %&gt;%
-    select(offset, re) %&gt;%
+    select(offset, re, is_sig) %&gt;%
     mutate(pop=&quot;ALL&quot;)
   
   df_AFR &lt;- sp_deviance_df_load(res_dir, &quot;AFR&quot;, subtype) %&gt;%
-    select(offset, re) %&gt;%
+    select(offset, re, is_sig) %&gt;%
     mutate(pop=&quot;AFR&quot;)
   
   df_AMR &lt;- sp_deviance_df_load(res_dir, &quot;AMR&quot;, subtype) %&gt;%
-    select(offset, re) %&gt;%
+    select(offset, re, is_sig) %&gt;%
     mutate(pop=&quot;AMR&quot;)
   
   df_EAS &lt;- sp_deviance_df_load(res_dir, &quot;EAS&quot;, subtype) %&gt;%
-    select(offset, re) %&gt;%
+    select(offset, re, is_sig) %&gt;%
     mutate(pop=&quot;EAS&quot;)
   
   df_EUR &lt;- sp_deviance_df_load(res_dir, &quot;EUR&quot;, subtype) %&gt;%
-    select(offset, re) %&gt;%
+    select(offset, re, is_sig) %&gt;%
     mutate(pop=&quot;EUR&quot;)
   
   df_SAS &lt;- sp_deviance_df_load(res_dir, &quot;SAS&quot;, subtype) %&gt;%
-    select(offset, re) %&gt;%
+    select(offset, re, is_sig) %&gt;%
     mutate(pop=&quot;SAS&quot;)
   
   #return(bind_rows(df_ALL, df_AFR, df_AMR, df_EAS, df_EUR, df_SAS) %&gt;%
@@ -849,6 +884,7 @@ single_pos_analysis &lt;- function(subtype, rp = c(-10:-1, 1:10)){
   print(p)
   
   df_res %&gt;%
+    select(-is_sig) %&gt;%
     pivot_wider(id_cols = offset, names_from = pop, values_from = re) %&gt;%
     correlate(method = &quot;pearson&quot;, diagonal = 1) %&gt;%
     focus(-offset, mirror = T) %&gt;%
@@ -857,6 +893,7 @@ single_pos_analysis &lt;- function(subtype, rp = c(-10:-1, 1:10)){
     print()
   
   df_res %&gt;%
+    select(-is_sig) %&gt;%
     pivot_wider(id_cols = offset, names_from = pop, values_from = re) %&gt;%
     correlate(method = &quot;spearman&quot;, diagonal = 1) %&gt;%
     focus(-offset, mirror = T) %&gt;%
@@ -865,6 +902,7 @@ single_pos_analysis &lt;- function(subtype, rp = c(-10:-1, 1:10)){
     print()
   
   df_wide &lt;- df_res %&gt;%
+    select(-is_sig) %&gt;%
     pivot_wider(id_cols = offset, names_from = pop, values_from = re)
   
   nms &lt;- combn(names(df_wide %&gt;% select(-offset, -ALL)), 2, simplify = T) %&gt;% 
@@ -880,6 +918,21 @@ single_pos_analysis &lt;- function(subtype, rp = c(-10:-1, 1:10)){
             )
   
   print(gridExtra::grid.arrange(grobs = plts))
+  
+  for(poppy in c(&quot;ALL&quot;, &quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;)){
+    p &lt;- df_res %&gt;%
+      filter(pop == poppy) %&gt;%
+      ggplot(aes(x = offset, y = re, colour = is_sig)) +
+      geom_point() +
+      scale_colour_manual(values = friendly_pal(&quot;vibrant_seven&quot;)) +
+      theme_classic() +
+      labs(colour = &quot;Significant&quot;) +
+      xlab(&quot;Relative Position&quot;) +
+      ylab(&quot;Relative Entropy&quot;) +
+      ggtitle(paste0(&quot;Population: &quot;, poppy, &quot;; Subtype: &quot;, subtype)) +
+      scale_y_log10()
+    print(p)
+  }
   
   df_resid %&gt;%
     pivot_wider(id_cols = rp:status, names_from = pop, values_from = res) %&gt;%
@@ -899,7 +952,82 @@ single_pos_analysis &lt;- function(subtype, rp = c(-10:-1, 1:10)){
 }
 
 single_pos_analysis(subtype)</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-6-1.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-2">
+Past versions of unnamed-chunk-6-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-6-2.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -921,6 +1049,43 @@ single_pos_analysis(subtype)</code></pre>
 5  EUR  .66  .54  .49  .55 1.00     
 6  SAS  .68  .55  .51  .54  .53 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-3">
+Past versions of unnamed-chunk-6-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-6-3.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -933,6 +1098,7 @@ single_pos_analysis(subtype)</code></pre>
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-9.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -958,7 +1124,82 @@ single_pos_analysis(subtype)</code></pre>
 <h3>A &gt; G</h3>
 <pre class="r"><code>subtype &lt;- &quot;AT_GC&quot;
 single_pos_analysis(subtype)</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
+Past versions of unnamed-chunk-7-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-7-1.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-2">
+Past versions of unnamed-chunk-7-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-7-2.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -980,6 +1221,43 @@ single_pos_analysis(subtype)</code></pre>
 5  EUR  .73  .63  .60  .62 1.00     
 6  SAS  .75  .63  .63  .64  .62 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-3">
+Past versions of unnamed-chunk-7-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-7-3.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -992,6 +1270,7 @@ single_pos_analysis(subtype)</code></pre>
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-9.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -1017,7 +1296,82 @@ single_pos_analysis(subtype)</code></pre>
 <h3>A &gt; T</h3>
 <pre class="r"><code>subtype &lt;- &quot;AT_TA&quot;
 single_pos_analysis(subtype)</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-8-1.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-2">
+Past versions of unnamed-chunk-8-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-8-2.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -1039,6 +1393,43 @@ single_pos_analysis(subtype)</code></pre>
 5  EUR  .67  .53  .52  .53 1.00     
 6  SAS  .66  .54  .49  .51  .52 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-3">
+Past versions of unnamed-chunk-8-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-8-3.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -1051,6 +1442,7 @@ single_pos_analysis(subtype)</code></pre>
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-9.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -1076,7 +1468,82 @@ single_pos_analysis(subtype)</code></pre>
 <h3>C &gt; T</h3>
 <pre class="r"><code>subtype &lt;- &quot;GC_AT&quot;
 single_pos_analysis(subtype)</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-9-1.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-2">
+Past versions of unnamed-chunk-9-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-9-2.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -1098,6 +1565,43 @@ single_pos_analysis(subtype)</code></pre>
 5  EUR  .69  .62  .61  .60 1.00     
 6  SAS  .73  .61  .60  .63  .62 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-3">
+Past versions of unnamed-chunk-9-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-9-3.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -1110,6 +1614,7 @@ single_pos_analysis(subtype)</code></pre>
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-9.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -1135,7 +1640,82 @@ single_pos_analysis(subtype)</code></pre>
 <h3>C &gt; A</h3>
 <pre class="r"><code>subtype &lt;- &quot;GC_TA&quot;
 single_pos_analysis(subtype)</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-10-1.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-2">
+Past versions of unnamed-chunk-10-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-10-2.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -1157,6 +1737,43 @@ single_pos_analysis(subtype)</code></pre>
 5  EUR  .68  .60  .55  .56 1.00     
 6  SAS  .69  .57  .56  .58  .58 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-3">
+Past versions of unnamed-chunk-10-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-10-3.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -1169,6 +1786,7 @@ single_pos_analysis(subtype)</code></pre>
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-9.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -1194,7 +1812,82 @@ single_pos_analysis(subtype)</code></pre>
 <h3>C &gt; G</h3>
 <pre class="r"><code>subtype &lt;- &quot;GC_CG&quot;
 single_pos_analysis(subtype)</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-11-1.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-2">
+Past versions of unnamed-chunk-11-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-11-2.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -1216,6 +1909,43 @@ single_pos_analysis(subtype)</code></pre>
 5  EUR  .65  .57  .50  .56 1.00     
 6  SAS  .68  .59  .49  .56  .53 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-3">
+Past versions of unnamed-chunk-11-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-11-3.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -1228,6 +1958,7 @@ single_pos_analysis(subtype)</code></pre>
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-9.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -1253,7 +1984,82 @@ single_pos_analysis(subtype)</code></pre>
 <h3>CpG &gt; TpG</h3>
 <pre class="r"><code>subtype &lt;- &quot;cpg_GC_AT&quot;
 single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-12-1.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-2">
+Past versions of unnamed-chunk-12-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-12-2.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -1275,6 +2081,43 @@ single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
 5  EUR  .90  .84  .80  .82 1.00     
 6  SAS  .92  .85  .82  .85  .83 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-3">
+Past versions of unnamed-chunk-12-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-12-3.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -1287,6 +2130,7 @@ single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-9.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -1312,7 +2156,82 @@ single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
 <h3>CpG &gt; ApG</h3>
 <pre class="r"><code>subtype &lt;- &quot;cpg_GC_TA&quot;
 single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-13-1.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-2">
+Past versions of unnamed-chunk-13-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-13-2.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -1334,6 +2253,43 @@ single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
 5  EUR  .66  .52  .41  .46 1.00     
 6  SAS  .70  .50  .42  .48  .44 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-3">
+Past versions of unnamed-chunk-13-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-13-3.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -1346,6 +2302,7 @@ single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-9.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -1371,7 +2328,82 @@ single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
 <h3>CpG &gt; GpG</h3>
 <pre class="r"><code>subtype &lt;- &quot;cpg_GC_CG&quot;
 single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-14-1.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-2">
+Past versions of unnamed-chunk-14-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-14-2.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
@@ -1393,6 +2425,43 @@ single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
 5  EUR  .57  .45  .37  .41 1.00     
 6  SAS  .62  .44  .38  .45  .39 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-3">
+Past versions of unnamed-chunk-14-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-14-3.png" target="_blank">76579d5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -1405,6 +2474,7 @@ single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-9.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
