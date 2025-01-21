@@ -14,4 +14,4 @@ Welcome to my research website.
 * [Two Position Results](two_position_results.html)
 * [Single Position Single Chromosome Comparisons](single_position_single_chromosome.html)
 * [Statistic Calibration](statistic_calibration.html)
-* [Population Comparisons](pop_comp.html)
+* [Population Comparisons](pop_comparison.html)
