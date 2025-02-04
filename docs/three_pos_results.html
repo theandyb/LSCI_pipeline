@@ -513,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree853231a03ada8bd6b0747945d6b455a58504551ctargetblank853231aa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree6904a6ee71a178b28cd54bcfa87eda90c73f682ctargetblank6904a6ea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/853231a03ada8bd6b0747945d6b455a58504551c" target="_blank">853231a</a>
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/6904a6ee71a178b28cd54bcfa87eda90c73f682c" target="_blank">6904a6e</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree853231a03ada8bd6b0747945d6b455a58504551ctargetblank853231aa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree6904a6ee71a178b28cd54bcfa87eda90c73f682ctargetblank6904a6ea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -531,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/853231a03ada8bd6b0747945d6b455a58504551c" target="_blank">853231a</a>.
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/6904a6ee71a178b28cd54bcfa87eda90c73f682c" target="_blank">6904a6e</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -612,6 +612,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/6904a6ee71a178b28cd54bcfa87eda90c73f682c/analysis/three_pos_results.Rmd" target="_blank">6904a6e</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-04
+</td>
+<td>
+wflow_publish("analysis/three_pos_results.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/theandyb/LSCI_pipeline/e19e40126de8a146a370f031cf8a3ea3b206039a/docs/three_pos_results.html" target="_blank">e19e401</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -757,15 +791,56 @@ plot_ranked_re &lt;- function(single_dir, two_dir, three_dir, pop, subtype, rank
           legend.position.inside = c(.8, .8)) +
     ylab(&quot;% of Max RE&quot;) +
     xlab(paste0(&quot;Within-class Rank: &quot;, subtype_print_names(subtype)))
-  print(p)
-  print(reactable(df))
+  return(list(df=df, fig=p))
 }</code></pre>
 </div>
 </div>
 <div id="figures-and-tables" class="section level2">
 <h2>Figures and Tables</h2>
-<pre class="r"><code>plot_ranked_re(single_dir, two_dir, three_dir, &quot;ALL&quot;, &quot;AT_GC&quot;)</code></pre>
+<pre class="r"><code>for(st in c(&quot;AT_CG&quot;, &quot;AT_GC&quot;)){
+  res &lt;- plot_ranked_re(single_dir, two_dir, three_dir, &quot;ALL&quot;, st)
+  reactable(res$df)
+  print(res$fig)
+}</code></pre>
 <p><img src="figure/three_pos_results.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
+Past versions of unnamed-chunk-5-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/e19e40126de8a146a370f031cf8a3ea3b206039a/docs/figure/three_pos_results.Rmd/unnamed-chunk-5-1.png" target="_blank">e19e401</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/three_pos_results.Rmd/unnamed-chunk-5-2.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -805,8 +880,8 @@ other attached packages:
 
 loaded via a namespace (and not attached):
  [1] gtable_0.3.6      xfun_0.49         bslib_0.8.0       htmlwidgets_1.6.4
- [5] processx_3.8.4    callr_3.7.6       tzdb_0.4.0        crosstalk_1.2.1  
- [9] vctrs_0.6.5       tools_4.4.2       ps_1.8.1          generics_0.1.3   
+ [5] processx_3.8.4    callr_3.7.6       tzdb_0.4.0        vctrs_0.6.5      
+ [9] tools_4.4.2       crosstalk_1.2.1   ps_1.8.1          generics_0.1.3   
 [13] parallel_4.4.2    fansi_1.0.6       pkgconfig_2.0.3   lifecycle_1.0.4  
 [17] farver_2.1.2      compiler_4.4.2    git2r_0.33.0      munsell_0.5.1    
 [21] getPass_0.2-4     httpuv_1.6.15     htmltools_0.5.8.1 sass_0.4.9       
