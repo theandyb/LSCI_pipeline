@@ -31,6 +31,10 @@ single_dir <- paste0(base_dir, "/single_pos") # template: base_dir/single_pos/{p
 ### Data Reading
 
 ```{r}
+subtypes <- c("AT_CG", "AT_GC", "AT_TA",
+            "GC_AT", "GC_TA", "GC_CG",
+            "cpg_GC_AT", "cpg_GC_TA", "cpg_GC_CG")
+
 read_single <- function(res_dir, pop, subtype, tp=FALSE){
   
   f_name <- paste0(res_dir, "/", pop, "/", subtype, ".csv")
@@ -124,16 +128,21 @@ plot_ranked_re <- function(single_dir, two_dir, three_dir, pop, subtype, rank_li
 
 ## Figures and Tables
 
+Let's look at mtcars instead of local sequence context non-sense...
+
 ```{r eval=TRUE}
 reactable(mtcars[1:4, 1:5])
 ```
 
+And now that the reactable stuff has been attached to our document, let's look at local sequence context results :)
 
-```{r results='asis'}
-for(st in c("AT_CG", "AT_GC")){
+### ALL
+
+```{r results='asis', echo=FALSE}
+subtype <- "ALL"
+for(st in subtypes){
   res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
-  #print(res$fig)
-  
+  print(res$fig)
   print(htmltools::tagList(reactable(res$df)))
 }
 ```
