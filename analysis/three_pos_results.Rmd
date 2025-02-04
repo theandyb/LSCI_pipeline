@@ -124,6 +124,11 @@ plot_ranked_re <- function(single_dir, two_dir, three_dir, pop, subtype, rank_li
 
 ## Figures and Tables
 
+```{r eval=TRUE}
+reactable(mtcars[1:4, 1:5])
+```
+
+
 ```{r results='asis'}
 for(st in c("AT_CG", "AT_GC")){
   res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
