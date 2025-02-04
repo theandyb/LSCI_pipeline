@@ -127,7 +127,7 @@ plot_ranked_re <- function(single_dir, two_dir, three_dir, pop, subtype, rank_li
 ```{r results='asis', echo=FALSE}
 for(st in c("AT_CG", "AT_GC")){
   res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
-  print(res$fig)
+  #print(res$fig)
   
   print(htmltools::tagList(reactable(res$df)))
 }
