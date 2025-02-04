@@ -129,10 +129,7 @@ for(st in c("AT_CG", "AT_GC")){
   res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
   print(res$fig)
   
-  htmlwidgets::saveWidget(reactable(res$df),
-                          file = 'temp.html')
-  cat(readr::read_lines('temp.html')[-1])
-  file.remove('temp.html')
+  print(htmltools::tagList(reactable(res$df)))
 }
 ```
 
