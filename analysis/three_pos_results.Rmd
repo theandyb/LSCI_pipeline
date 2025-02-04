@@ -127,8 +127,12 @@ plot_ranked_re <- function(single_dir, two_dir, three_dir, pop, subtype, rank_li
 ```{r results='asis', echo=FALSE}
 for(st in c("AT_CG", "AT_GC")){
   res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
-  reactable(res$df)
   print(res$fig)
+  
+  htmlwidgets::saveWidget(reactable(res$df),
+                          file = 'temp.html')
+  cat(readr::read_lines('temp.html')[-1])
+  file.remove('temp.html')
 }
 ```
 
