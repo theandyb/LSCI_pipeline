@@ -1,0 +1,131 @@
+---
+title: "three_pos_results"
+author: "Andy Beck"
+date: "2025-02-04"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+In this document we will evaluate the results from three-way interaction models. Our primary interest is contrasting their strength to single-position and two-way interactions.
+
+## Setup
+
+### Libraries
+
+```{r}
+library(tidyverse)
+library(ggpubfigs) # functions for color blind friendly palettes
+library(reactable)
+```
+
+### Paths
+
+```{r}
+base_dir <- "output" 
+three_dir <- paste0(base_dir, "/three_pos") # template: base_dir/three_pos/{population}/{subtype}.csv
+two_dir <- paste0(base_dir, "/two_pos") # template: base_dir/two_pos/{population}/{subtype}.csv
+single_dir <- paste0(base_dir, "/single_pos") # template: base_dir/single_pos/{population}/{subtype}.csv
+```
+
+### Data Reading
+
+```{r}
+read_single <- function(res_dir, pop, subtype, tp=FALSE){
+  
+  f_name <- paste0(res_dir, "/", pop, "/", subtype, ".csv")
+  if(tp){
+    return(read_csv(f_name, show_col_types = F, col_names = c("dev","singletons","controls","rp1","rp2")))
+  }
+  return(read_csv(f_name, show_col_types = FALSE))
+}
+
+read_all <- function(single_dir, two_dir, three_dir, pop, subtype){
+  s_df <- read_single(single_dir, pop, subtype)
+  two_df <- read_single(two_dir, pop, subtype, tp=T)
+  three_df <- read_single(three_dir, pop, subtype)
+  
+  # compute re 
+  three_df <- three_df %>%
+    mutate(re = dev / (2*(singletons + controls)))
+  two_df <- two_df %>%
+    mutate(re = dev / (2 * (singletons + controls)))
+  s_df <- s_df %>%
+    mutate(re = dev / (2 * (singletons + controls)))
+  
+  # rank by re
+  three_df <- three_df %>%
+    mutate(class_rank = dense_rank(desc(re)))
+  two_df <- two_df %>%
+    mutate(class_rank = dense_rank(desc(re)))
+  s_df <- s_df %>%
+    mutate(class_rank = dense_rank(desc(re)))
+  
+  # unify structure: dev, offsets, re, class, class_rank
+  three_df <- three_df %>%
+    rowwise() %>%
+    mutate(offset = paste0(rp1, "_", rp2, "_", rp3)) %>%
+    ungroup() %>%
+    mutate(class = "3-pos") %>%
+    select(dev, offset, re, class ,class_rank) 
+  
+  two_df <- two_df %>%
+    mutate(class = "2-pos") %>%
+    rowwise() %>%
+    mutate(offset = paste0(rp1, "_", rp2)) %>%
+    ungroup() %>%
+    select(dev, offset, re, class, class_rank)
+  
+  s_df <- s_df %>%
+    mutate(class = "1-pos",
+           offset = as.character(offset)) %>%
+    select(dev, offset, re, class, class_rank)
+  
+  final_df <- bind_rows(s_df, two_df, three_df)
+  return(final_df)
+}
+```
+
+### Rank Plots
+
+```{r}
+subtype_print_names <- function(st){
+  if(str_starts(st, "AT")){
+    return(paste0("A → ", str_sub(st, 4, 4)))
+  } else if(str_starts(st, "GC")){
+    return(paste0("C → ", str_sub(st, 5, 5)))
+  } else{
+    return(paste0("CpG → ", str_sub(st, 9, 9), "pG"))
+  }
+}
+
+# function will print both table and plot
+plot_ranked_re <- function(single_dir, two_dir, three_dir, pop, subtype, rank_lim = 20){
+  df <- read_all(single_dir, two_dir, three_dir, pop, subtype)
+  
+  max_re <- max(df$re)
+  df$pct_max <- df$re / max_re
+  
+  p <- df %>%
+    filter(class_rank <= rank_lim) %>%
+    mutate(class2 = recode(class, "1-pos" = "Single", "2-pos" = "Two-Way", "3-pos" = "Three-Way")) %>%
+    ggplot(aes(x = class_rank, y = pct_max, colour = class2, shape = class2)) +
+    geom_point(size = 2.5) +
+    scale_colour_manual(values=friendly_pal("contrast_three"), name = "Type", breaks=c("Single","Two-Way","Three-Way")) +
+    scale_shape_discrete(name = "Type", breaks=c("Single","Two-Way","Three-Way")) +
+    theme_classic(base_size = 12, base_family = "Helvetica") +
+    theme(legend.position = "inside",
+          legend.position.inside = c(.8, .8)) +
+    ylab("% of Max RE") +
+    xlab(paste0("Within-class Rank: ", subtype_print_names(subtype)))
+  print(p)
+  print(reactable(df))
+}
+```
+
+## Figures and Tables
+
+```{r}
+plot_ranked_re(single_dir, two_dir, three_dir, "ALL", "AT_GC")
+```
+
