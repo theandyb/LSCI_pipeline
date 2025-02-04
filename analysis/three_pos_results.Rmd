@@ -142,6 +142,7 @@ And now that the reactable stuff has been attached to our document, let's look a
 subtype <- "ALL"
 for(st in subtypes){
   res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
+  cat(paste0('#### ', st))
   print(res$fig)
   print(htmltools::tagList(reactable(res$df)))
 }
