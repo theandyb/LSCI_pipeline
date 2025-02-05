@@ -302,7 +302,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-02-04
+<strong>Last updated:</strong> 2025-02-05
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -349,15 +349,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreea000fb181cf3b41be2079aba712c49bdb8cfa8f7targetblanka000fb1a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreef5ea9fe700e0743f6f524fb26762009249ae8190targetblankf5ea9fea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/a000fb181cf3b41be2079aba712c49bdb8cfa8f7" target="_blank">a000fb1</a>
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/f5ea9fe700e0743f6f524fb26762009249ae8190" target="_blank">f5ea9fe</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreea000fb181cf3b41be2079aba712c49bdb8cfa8f7targetblanka000fb1a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreef5ea9fe700e0743f6f524fb26762009249ae8190targetblankf5ea9fea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -367,7 +367,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/a000fb181cf3b41be2079aba712c49bdb8cfa8f7" target="_blank">a000fb1</a>.
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/f5ea9fe700e0743f6f524fb26762009249ae8190" target="_blank">f5ea9fe</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -390,6 +390,7 @@ Ignored files:
     Ignored:    output/controls/
     Ignored:    output/figs/
     Ignored:    output/single_pos/
+    Ignored:    output/single_pos_cc/
     Ignored:    output/singletons/
     Ignored:    output/slurm/
     Ignored:    output/three_pos/
@@ -397,13 +398,22 @@ Ignored files:
     Ignored:    scratch/
 
 Untracked files:
-    Untracked:  analysis/three_pos_results.Rmd
     Untracked:  analysis/tvd_other_metrics.Rmd
+    Untracked:  code/batch_c_v_c.sh
     Untracked:  code/batch_three_pos.sh
+    Untracked:  code/sp_control_v_control.py
+    Untracked:  code/sp_control_v_control_v2.py
     Untracked:  code/three_pos_stat.py
 
 Unstaged changes:
+    Modified:   README.md
     Modified:   analysis/statistic_calibration.Rmd
+    Modified:   code/batch_single_pos.sh
+    Modified:   code/batch_single_pos_stat.sh
+    Modified:   code/single_position_models.py
+    Modified:   code/single_position_models_posOnly.py
+    Modified:   code/two_position_model.py
+    Modified:   code/two_position_resid.py
 
 </code></pre>
 <p>
@@ -448,6 +458,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f5ea9fe700e0743f6f524fb26762009249ae8190/analysis/index.Rmd" target="_blank">f5ea9fe</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/theandyb/LSCI_pipeline/1e2c3cd35a9aacb0059d2b957a33a4508a64d998/docs/index.html" target="_blank">1e2c3cd</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -722,6 +766,8 @@ Results</a></li>
 Single Chromosome Comparisons</a></li>
 <li><a href="statistic_calibration.html">Statistic Calibration</a></li>
 <li><a href="pop_comparison.html">Population Comparisons</a></li>
+<li><a href="control_control.html">Control - Control
+Comparisons</a></li>
 </ul>
 
 
