@@ -1,0 +1,187 @@
+---
+title: "control_control"
+author: "Andy Beck"
+date: "2025-02-05"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+## Setup and Functions
+
+### Libraries 
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(reactable)
+```
+
+### Directories and Other Variables
+
+```{r}
+base_dir <- "output/single_pos_cc" # template: {base_dir}/{pop}/{subtype}.csv or {subtype}_v2.csv
+
+subtypes <- c("AT_CG", "AT_GC", "AT_TA",
+            "GC_AT", "GC_TA", "GC_CG",
+            "cpg_GC_AT", "cpg_GC_TA", "cpg_GC_CG")
+```
+
+### Functions
+
+```{r}
+load_res <- function(base_dir, population, subtype){
+  f_name <- paste0(base_dir, "/", population, "/", subtype, ".csv")
+  return(read_csv(f_name, show_col_types = FALSE) %>%
+           mutate(re = dev / (2 * (singletons + controls) ),
+                  sig = dev > qchisq(0.95, 3)))
+}
+
+subtype_print_names <- function(st){
+  if(str_starts(st, "AT")){
+    return(paste0("A → ", str_sub(st, 4, 4)))
+  } else if(str_starts(st, "GC")){
+    return(paste0("C → ", str_sub(st, 5, 5)))
+  } else{
+    return(paste0("CpG → ", str_sub(st, 9, 9), "pG"))
+  }
+}
+
+plot_res <- function(pop, subtype, base_dir){
+  df <- load_res(base_dir, pop, subtype)
+  
+  p <- df %>%
+    ggplot(aes(x = offset, y = re, colour = sig)) +
+    geom_point() +
+    theme_bw() +
+    xlab(paste0("Relative Position: ", subtype_print_names(subtype))) +
+    ylab("Relative Entropy") +
+    theme(text = element_text(family = "Helvetica", size = 12)) +
+    guides(color = guide_legend(title = "Significant"))
+  return(p)
+}
+```
+
+## Closest versus Furthest
+
+These results are based on comparing the distibutions of singletons flanking the controls sampled nearest to the singleton to the distributions of nucleotides flanking the furthest sampled control.
+
+```{r}
+pop <- "ALL"
+subtype <- "AT_CG"
+df <- load_res(base_dir, pop, subtype)
+
+df %>%
+  ggplot(aes(x = offset, y = re, colour = sig)) +
+  geom_point() +
+  theme_bw() +
+  xlab(paste0("Relative Position: ", subtype_print_names(subtype))) +
+  ylab("Relative Entropy") +
+  theme(text = element_text(family = "Helvetica", size = 12),
+        legend.position = "inside",
+        legend.position.inside = c(0.85, 0.85)) +
+  guides(color = guide_legend(title = "Significant"))
+
+```
+
+Well, this is most certainly an interesting result! Let's see what the results look like when we use randomly sampled controls:
+
+```{r}
+pop <- "ALL"
+subtype <- "AT_CG_v2"
+df <- load_res(base_dir, pop, subtype)
+
+df %>%
+  ggplot(aes(x = offset, y = re, colour = sig)) +
+  geom_point() +
+  theme_bw() +
+  xlab(paste0("Relative Position: ", subtype_print_names(subtype))) +
+  ylab("Relative Entropy") +
+  theme(text = element_text(family = "Helvetica", size = 12),
+        legend.position = "inside",
+        legend.position.inside = c(0.85, 0.85)) +
+  guides(color = guide_legend(title = "Significant"))
+```
+
+This looks much more like what we're expecting! But anyways, let's make these figures for all population/subtype pairs.
+
+### ALL
+
+```{r results='asis', echo=FALSE}
+pop <- "ALL"
+for(st in subtypes){
+  cat(paste0('#### ', st))
+  cat('#### Near v Far')
+  print(plot_res(pop, st, base_dir))
+  cat('#### Random Controls')
+  print(plot_res(pop, paste0(st, "_v2"), base_dir))
+}
+```
+
+### AFR
+
+```{r results='asis', echo=FALSE}
+pop <- "AFR"
+for(st in subtypes){
+  cat(paste0('#### ', st))
+  cat('#### Near v Far')
+  print(plot_res(pop, st, base_dir))
+  cat('#### Random Controls')
+  print(plot_res(pop, paste0(st, "_v2"), base_dir))
+}
+```
+
+### AMR
+
+```{r results='asis', echo=FALSE}
+pop <- "AMR"
+for(st in subtypes){
+  cat(paste0('#### ', st))
+  cat('#### Near v Far')
+  print(plot_res(pop, st, base_dir))
+  cat('#### Random Controls')
+  print(plot_res(pop, paste0(st, "_v2"), base_dir))
+}
+```
+
+### EAS
+
+```{r results='asis', echo=FALSE}
+pop <- "EAS"
+for(st in subtypes){
+  cat(paste0('#### ', st))
+  cat('#### Near v Far')
+  print(plot_res(pop, st, base_dir))
+  cat('#### Random Controls')
+  print(plot_res(pop, paste0(st, "_v2"), base_dir))
+}
+```
+
+### EUR
+
+```{r results='asis', echo=FALSE}
+pop <- "EUR"
+for(st in subtypes){
+  cat(paste0('#### ', st))
+  cat('#### Near v Far')
+  print(plot_res(pop, st, base_dir))
+  cat('#### Random Controls')
+  print(plot_res(pop, paste0(st, "_v2"), base_dir))
+}
+```
+
+### SAS
+
+```{r results='asis', echo=FALSE}
+pop <- "SAS"
+for(st in subtypes){
+  cat(paste0('#### ', st))
+  cat('#### Near v Far')
+  print(plot_res(pop, st, base_dir))
+  cat('#### Random Controls')
+  print(plot_res(pop, paste0(st, "_v2"), base_dir))
+}
+```
+
+
