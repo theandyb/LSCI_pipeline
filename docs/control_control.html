@@ -513,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree99dde63bdbeda0cee871c41768e36ebbaab91744targetblank99dde63a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree6f602c8093ad56de00aaee53feab1b462845b0datargetblank6f602c8a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/99dde63bdbeda0cee871c41768e36ebbaab91744" target="_blank">99dde63</a>
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/6f602c8093ad56de00aaee53feab1b462845b0da" target="_blank">6f602c8</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree99dde63bdbeda0cee871c41768e36ebbaab91744targetblank99dde63a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree6f602c8093ad56de00aaee53feab1b462845b0datargetblank6f602c8a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -531,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/99dde63bdbeda0cee871c41768e36ebbaab91744" target="_blank">99dde63</a>.
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/6f602c8093ad56de00aaee53feab1b462845b0da" target="_blank">6f602c8</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -548,7 +548,6 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/figure/
     Ignored:    data/1kgp/
     Ignored:    data/hgdp/
     Ignored:    data/reference/
@@ -567,9 +566,11 @@ Untracked files:
 
 Unstaged changes:
     Modified:   README.md
+    Modified:   analysis/single_position_results.Rmd
     Modified:   analysis/statistic_calibration.Rmd
     Modified:   code/batch_single_pos.sh
     Modified:   code/batch_single_pos_stat.sh
+    Modified:   code/sample_control.py
     Modified:   code/single_position_models.py
     Modified:   code/single_position_models_posOnly.py
     Modified:   code/two_position_model.py
@@ -619,6 +620,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/6f602c8093ad56de00aaee53feab1b462845b0da/analysis/control_control.Rmd" target="_blank">6f602c8</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+<td>
+wflow_publish("analysis/control_control.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/theandyb/LSCI_pipeline/f2936099da81969aac8697317599c82f92b35fb8/docs/control_control.html" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -715,6 +750,43 @@ df %&gt;%
         legend.position.inside = c(0.85, 0.85)) +
   guides(color = guide_legend(title = &quot;Significant&quot;))</code></pre>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-1">
+Past versions of unnamed-chunk-4-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-4-1.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Well, this is most certainly an interesting result! Let’s see what
 the results look like when we use randomly sampled controls:</p>
 <pre class="r"><code>pop &lt;- &quot;ALL&quot;
@@ -732,264 +804,4411 @@ df %&gt;%
         legend.position.inside = c(0.85, 0.85)) +
   guides(color = guide_legend(title = &quot;Significant&quot;))</code></pre>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
+Past versions of unnamed-chunk-5-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-5-1.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>This looks much more like what we’re expecting! But anyways, let’s
 make these figures for all population/subtype pairs.</p>
 <div id="all" class="section level3">
 <h3>ALL</h3>
-<div
-id="at_cg-near-v-far-random-controls-at_gc-near-v-far-random-controls-at_ta-near-v-far-random-controls-gc_at-near-v-far-random-controls-gc_ta-near-v-far-random-controls-gc_cg-near-v-far-random-controls-cpg_gc_at-near-v-far-random-controls-cpg_gc_ta-near-v-far-random-controls-cpg_gc_cg-near-v-far-random-controls"
-class="section level4">
-<h4>AT_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" />####
-AT_GC#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-6-3.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-6-4.png" width="672" style="display: block; margin: auto;" />####
-AT_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-6-5.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-6-6.png" width="672" style="display: block; margin: auto;" />####
-GC_AT#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-6-7.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-6-8.png" width="672" style="display: block; margin: auto;" />####
-GC_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-6-9.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-6-10.png" width="672" style="display: block; margin: auto;" />####
-GC_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-6-11.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-6-12.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_AT#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-6-13.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-6-14.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-6-15.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-6-16.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-6-17.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-6-18.png" width="672" style="display: block; margin: auto;" /></h4>
+<div id="at_cg" class="section level4">
+<h4>AT_CG</h4>
+</div>
+<div id="near-v-far" class="section level4">
+<h4>Near v Far</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-1.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-2">
+Past versions of unnamed-chunk-6-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-2.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### AT_GC #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-6-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-3">
+Past versions of unnamed-chunk-6-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-3.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-1" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-6-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-4">
+Past versions of unnamed-chunk-6-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-4.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### AT_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-6-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-5">
+Past versions of unnamed-chunk-6-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-5.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-2" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-6-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-6">
+Past versions of unnamed-chunk-6-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-6.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_AT #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-6-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-7">
+Past versions of unnamed-chunk-6-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-7.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-3" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-6-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-8">
+Past versions of unnamed-chunk-6-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-8.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-6-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-9">
+Past versions of unnamed-chunk-6-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-9.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-4" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-6-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-10">
+Past versions of unnamed-chunk-6-10.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-10.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-6-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-11">
+Past versions of unnamed-chunk-6-11.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-11.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-5" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-6-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-12">
+Past versions of unnamed-chunk-6-12.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-12.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_AT #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-6-13.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-13">
+Past versions of unnamed-chunk-6-13.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-13.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-6" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-6-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-14">
+Past versions of unnamed-chunk-6-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-14.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-6-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-15">
+Past versions of unnamed-chunk-6-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-15.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-7" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-6-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-16">
+Past versions of unnamed-chunk-6-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-16.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-6-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-17">
+Past versions of unnamed-chunk-6-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-17.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-8" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-6-18.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-18">
+Past versions of unnamed-chunk-6-18.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-18" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-6-18.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="afr" class="section level3">
 <h3>AFR</h3>
-<div
-id="at_cg-near-v-far-random-controls-at_gc-near-v-far-random-controls-at_ta-near-v-far-random-controls-gc_at-near-v-far-random-controls-gc_ta-near-v-far-random-controls-gc_cg-near-v-far-random-controls-cpg_gc_at-near-v-far-random-controls-cpg_gc_ta-near-v-far-random-controls-cpg_gc_cg-near-v-far-random-controls-1"
-class="section level4">
-<h4>AT_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" />####
-AT_GC#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-7-3.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-7-4.png" width="672" style="display: block; margin: auto;" />####
-AT_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-7-5.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-7-6.png" width="672" style="display: block; margin: auto;" />####
-GC_AT#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-7-7.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-7-8.png" width="672" style="display: block; margin: auto;" />####
-GC_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-7-9.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-7-10.png" width="672" style="display: block; margin: auto;" />####
-GC_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-7-11.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-7-12.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_AT#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-7-13.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-7-14.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-7-15.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-7-16.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-7-17.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-7-18.png" width="672" style="display: block; margin: auto;" /></h4>
+<div id="at_cg-1" class="section level4">
+<h4>AT_CG</h4>
+</div>
+<div id="near-v-far-1" class="section level4">
+<h4>Near v Far</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
+Past versions of unnamed-chunk-7-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-1.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-9" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-2">
+Past versions of unnamed-chunk-7-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-2.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### AT_GC #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-7-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-3">
+Past versions of unnamed-chunk-7-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-3.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-10" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-7-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-4">
+Past versions of unnamed-chunk-7-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-4.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### AT_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-7-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-5">
+Past versions of unnamed-chunk-7-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-5.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-11" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-7-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-6">
+Past versions of unnamed-chunk-7-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-6.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_AT #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-7-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-7">
+Past versions of unnamed-chunk-7-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-7.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-12" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-7-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-8">
+Past versions of unnamed-chunk-7-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-8.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-7-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-9">
+Past versions of unnamed-chunk-7-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-9.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-13" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-7-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-10">
+Past versions of unnamed-chunk-7-10.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-10.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-7-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-11">
+Past versions of unnamed-chunk-7-11.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-11.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-14" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-7-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-12">
+Past versions of unnamed-chunk-7-12.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-12.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_AT #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-7-13.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-13">
+Past versions of unnamed-chunk-7-13.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-13.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-15" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-7-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-14">
+Past versions of unnamed-chunk-7-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-14.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-7-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-15">
+Past versions of unnamed-chunk-7-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-15.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-16" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-7-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-16">
+Past versions of unnamed-chunk-7-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-16.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-7-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-17">
+Past versions of unnamed-chunk-7-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-17.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-17" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-7-18.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-18">
+Past versions of unnamed-chunk-7-18.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-18" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-7-18.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="amr" class="section level3">
 <h3>AMR</h3>
-<div
-id="at_cg-near-v-far-random-controls-at_gc-near-v-far-random-controls-at_ta-near-v-far-random-controls-gc_at-near-v-far-random-controls-gc_ta-near-v-far-random-controls-gc_cg-near-v-far-random-controls-cpg_gc_at-near-v-far-random-controls-cpg_gc_ta-near-v-far-random-controls-cpg_gc_cg-near-v-far-random-controls-2"
-class="section level4">
-<h4>AT_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" />####
-AT_GC#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-8-3.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-8-4.png" width="672" style="display: block; margin: auto;" />####
-AT_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-8-5.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-8-6.png" width="672" style="display: block; margin: auto;" />####
-GC_AT#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-8-7.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-8-8.png" width="672" style="display: block; margin: auto;" />####
-GC_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-8-9.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-8-10.png" width="672" style="display: block; margin: auto;" />####
-GC_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-8-11.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-8-12.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_AT#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-8-13.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-8-14.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-8-15.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-8-16.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-8-17.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-8-18.png" width="672" style="display: block; margin: auto;" /></h4>
+<div id="at_cg-2" class="section level4">
+<h4>AT_CG</h4>
+</div>
+<div id="near-v-far-2" class="section level4">
+<h4>Near v Far</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-1.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-18" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-2">
+Past versions of unnamed-chunk-8-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-2.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### AT_GC #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-8-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-3">
+Past versions of unnamed-chunk-8-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-3.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-19" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-8-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-4">
+Past versions of unnamed-chunk-8-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-4.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### AT_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-8-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-5">
+Past versions of unnamed-chunk-8-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-5.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-20" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-8-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-6">
+Past versions of unnamed-chunk-8-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-6.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_AT #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-8-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-7">
+Past versions of unnamed-chunk-8-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-7.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-21" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-8-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-8">
+Past versions of unnamed-chunk-8-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-8.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-8-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-9">
+Past versions of unnamed-chunk-8-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-9.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-22" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-8-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-10">
+Past versions of unnamed-chunk-8-10.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-10.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-8-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-11">
+Past versions of unnamed-chunk-8-11.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-11.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-23" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-8-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-12">
+Past versions of unnamed-chunk-8-12.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-12.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_AT #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-8-13.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-13">
+Past versions of unnamed-chunk-8-13.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-13.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-24" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-8-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-14">
+Past versions of unnamed-chunk-8-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-14.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-8-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-15">
+Past versions of unnamed-chunk-8-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-15.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-25" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-8-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-16">
+Past versions of unnamed-chunk-8-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-16.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-8-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-17">
+Past versions of unnamed-chunk-8-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-17.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-26" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-8-18.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-18">
+Past versions of unnamed-chunk-8-18.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-18" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-8-18.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="eas" class="section level3">
 <h3>EAS</h3>
-<div
-id="at_cg-near-v-far-random-controls-at_gc-near-v-far-random-controls-at_ta-near-v-far-random-controls-gc_at-near-v-far-random-controls-gc_ta-near-v-far-random-controls-gc_cg-near-v-far-random-controls-cpg_gc_at-near-v-far-random-controls-cpg_gc_ta-near-v-far-random-controls-cpg_gc_cg-near-v-far-random-controls-3"
-class="section level4">
-<h4>AT_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-9-2.png" width="672" style="display: block; margin: auto;" />####
-AT_GC#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-9-3.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-9-4.png" width="672" style="display: block; margin: auto;" />####
-AT_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-9-5.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-9-6.png" width="672" style="display: block; margin: auto;" />####
-GC_AT#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-9-7.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-9-8.png" width="672" style="display: block; margin: auto;" />####
-GC_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-9-9.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-9-10.png" width="672" style="display: block; margin: auto;" />####
-GC_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-9-11.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-9-12.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_AT#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-9-13.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-9-14.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-9-15.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-9-16.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-9-17.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-9-18.png" width="672" style="display: block; margin: auto;" /></h4>
+<div id="at_cg-3" class="section level4">
+<h4>AT_CG</h4>
+</div>
+<div id="near-v-far-3" class="section level4">
+<h4>Near v Far</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-1.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-27" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-9-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-2">
+Past versions of unnamed-chunk-9-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-2.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### AT_GC #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-9-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-3">
+Past versions of unnamed-chunk-9-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-3.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-28" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-9-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-4">
+Past versions of unnamed-chunk-9-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-4.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### AT_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-9-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-5">
+Past versions of unnamed-chunk-9-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-5.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-29" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-9-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-6">
+Past versions of unnamed-chunk-9-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-6.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_AT #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-9-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-7">
+Past versions of unnamed-chunk-9-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-7.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-30" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-9-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-8">
+Past versions of unnamed-chunk-9-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-8.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-9-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-9">
+Past versions of unnamed-chunk-9-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-9.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-31" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-9-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-10">
+Past versions of unnamed-chunk-9-10.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-10.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-9-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-11">
+Past versions of unnamed-chunk-9-11.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-11.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-32" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-9-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-12">
+Past versions of unnamed-chunk-9-12.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-12.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_AT #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-9-13.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-13">
+Past versions of unnamed-chunk-9-13.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-13.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-33" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-9-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-14">
+Past versions of unnamed-chunk-9-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-14.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-9-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-15">
+Past versions of unnamed-chunk-9-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-15.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-34" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-9-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-16">
+Past versions of unnamed-chunk-9-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-16.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-9-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-17">
+Past versions of unnamed-chunk-9-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-17.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-35" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-9-18.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-18">
+Past versions of unnamed-chunk-9-18.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-18" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-9-18.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="eur" class="section level3">
 <h3>EUR</h3>
-<div
-id="at_cg-near-v-far-random-controls-at_gc-near-v-far-random-controls-at_ta-near-v-far-random-controls-gc_at-near-v-far-random-controls-gc_ta-near-v-far-random-controls-gc_cg-near-v-far-random-controls-cpg_gc_at-near-v-far-random-controls-cpg_gc_ta-near-v-far-random-controls-cpg_gc_cg-near-v-far-random-controls-4"
-class="section level4">
-<h4>AT_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" />####
-AT_GC#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-10-3.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-10-4.png" width="672" style="display: block; margin: auto;" />####
-AT_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-10-5.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-10-6.png" width="672" style="display: block; margin: auto;" />####
-GC_AT#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-10-7.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-10-8.png" width="672" style="display: block; margin: auto;" />####
-GC_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-10-9.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-10-10.png" width="672" style="display: block; margin: auto;" />####
-GC_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-10-11.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-10-12.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_AT#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-10-13.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-10-14.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-10-15.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-10-16.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-10-17.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-10-18.png" width="672" style="display: block; margin: auto;" /></h4>
+<div id="at_cg-4" class="section level4">
+<h4>AT_CG</h4>
+</div>
+<div id="near-v-far-4" class="section level4">
+<h4>Near v Far</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-1.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-36" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-2">
+Past versions of unnamed-chunk-10-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-2.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### AT_GC #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-10-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-3">
+Past versions of unnamed-chunk-10-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-3.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-37" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-10-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-4">
+Past versions of unnamed-chunk-10-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-4.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### AT_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-10-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-5">
+Past versions of unnamed-chunk-10-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-5.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-38" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-10-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-6">
+Past versions of unnamed-chunk-10-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-6.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_AT #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-10-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-7">
+Past versions of unnamed-chunk-10-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-7.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-39" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-10-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-8">
+Past versions of unnamed-chunk-10-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-8.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-10-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-9">
+Past versions of unnamed-chunk-10-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-9.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-40" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-10-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-10">
+Past versions of unnamed-chunk-10-10.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-10.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-10-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-11">
+Past versions of unnamed-chunk-10-11.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-11.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-41" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-10-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-12">
+Past versions of unnamed-chunk-10-12.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-12.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_AT #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-10-13.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-13">
+Past versions of unnamed-chunk-10-13.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-13.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-42" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-10-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-14">
+Past versions of unnamed-chunk-10-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-14.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-10-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-15">
+Past versions of unnamed-chunk-10-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-15.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-43" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-10-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-16">
+Past versions of unnamed-chunk-10-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-16.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-10-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-17">
+Past versions of unnamed-chunk-10-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-17.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-44" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-10-18.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-18">
+Past versions of unnamed-chunk-10-18.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-18" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-10-18.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="sas" class="section level3">
 <h3>SAS</h3>
-<div
-id="at_cg-near-v-far-random-controls-at_gc-near-v-far-random-controls-at_ta-near-v-far-random-controls-gc_at-near-v-far-random-controls-gc_ta-near-v-far-random-controls-gc_cg-near-v-far-random-controls-cpg_gc_at-near-v-far-random-controls-cpg_gc_ta-near-v-far-random-controls-cpg_gc_cg-near-v-far-random-controls-5"
-class="section level4">
-<h4>AT_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" />####
-AT_GC#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-11-3.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-11-4.png" width="672" style="display: block; margin: auto;" />####
-AT_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-11-5.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-11-6.png" width="672" style="display: block; margin: auto;" />####
-GC_AT#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-11-7.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-11-8.png" width="672" style="display: block; margin: auto;" />####
-GC_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-11-9.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-11-10.png" width="672" style="display: block; margin: auto;" />####
-GC_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-11-11.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-11-12.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_AT#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-11-13.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-11-14.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_TA#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-11-15.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-11-16.png" width="672" style="display: block; margin: auto;" />####
-cpg_GC_CG#### Near v
-Far<img src="figure/control_control.Rmd/unnamed-chunk-11-17.png" width="672" style="display: block; margin: auto;" />####
-Random
-Controls<img src="figure/control_control.Rmd/unnamed-chunk-11-18.png" width="672" style="display: block; margin: auto;" /></h4>
+<div id="at_cg-5" class="section level4">
+<h4>AT_CG</h4>
+</div>
+<div id="near-v-far-5" class="section level4">
+<h4>Near v Far</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-1.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-45" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-2">
+Past versions of unnamed-chunk-11-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-2.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### AT_GC #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-11-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-3">
+Past versions of unnamed-chunk-11-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-3.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-46" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-11-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-4">
+Past versions of unnamed-chunk-11-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-4.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### AT_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-11-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-5">
+Past versions of unnamed-chunk-11-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-5.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-47" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-11-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-6">
+Past versions of unnamed-chunk-11-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-6.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_AT #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-11-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-7">
+Past versions of unnamed-chunk-11-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-7.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-48" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-11-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-8">
+Past versions of unnamed-chunk-11-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-8.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-11-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-9">
+Past versions of unnamed-chunk-11-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-9.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-49" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-11-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-10">
+Past versions of unnamed-chunk-11-10.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-10.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-11-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-11">
+Past versions of unnamed-chunk-11-11.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-11.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-50" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-11-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-12">
+Past versions of unnamed-chunk-11-12.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-12.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_AT #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-11-13.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-13">
+Past versions of unnamed-chunk-11-13.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-13.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-51" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-11-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-14">
+Past versions of unnamed-chunk-11-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-14.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-11-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-15">
+Past versions of unnamed-chunk-11-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-15.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-52" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-11-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-16">
+Past versions of unnamed-chunk-11-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-16.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### cpg_GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-11-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-17">
+Past versions of unnamed-chunk-11-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-17.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="random-controls-53" class="section level4">
+<h4>Random Controls</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-11-18.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-18">
+Past versions of unnamed-chunk-11-18.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-18" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f2936099da81969aac8697317599c82f92b35fb8/docs/figure/control_control.Rmd/unnamed-chunk-11-18.png" target="_blank">f293609</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
