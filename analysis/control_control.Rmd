@@ -111,10 +111,10 @@ This looks much more like what we're expecting! But anyways, let's make these fi
 ```{r results='asis', echo=FALSE}
 pop <- "ALL"
 for(st in subtypes){
-  cat(paste0('#### ', st))
-  cat('#### Near v Far')
+  cat(paste0('#### ', st, "\n"))
+  cat('#### Near v Far \n')
   print(plot_res(pop, st, base_dir))
-  cat('#### Random Controls')
+  cat('\n#### Random Controls\n')
   print(plot_res(pop, paste0(st, "_v2"), base_dir))
 }
 ```
@@ -124,10 +124,10 @@ for(st in subtypes){
 ```{r results='asis', echo=FALSE}
 pop <- "AFR"
 for(st in subtypes){
-  cat(paste0('#### ', st))
-  cat('#### Near v Far')
+  cat(paste0('#### ', st, "\n"))
+  cat('#### Near v Far \n')
   print(plot_res(pop, st, base_dir))
-  cat('#### Random Controls')
+  cat('\n#### Random Controls\n')
   print(plot_res(pop, paste0(st, "_v2"), base_dir))
 }
 ```
@@ -137,10 +137,10 @@ for(st in subtypes){
 ```{r results='asis', echo=FALSE}
 pop <- "AMR"
 for(st in subtypes){
-  cat(paste0('#### ', st))
-  cat('#### Near v Far')
+  cat(paste0('#### ', st, "\n"))
+  cat('#### Near v Far \n')
   print(plot_res(pop, st, base_dir))
-  cat('#### Random Controls')
+  cat('\n#### Random Controls\n')
   print(plot_res(pop, paste0(st, "_v2"), base_dir))
 }
 ```
@@ -150,10 +150,10 @@ for(st in subtypes){
 ```{r results='asis', echo=FALSE}
 pop <- "EAS"
 for(st in subtypes){
-  cat(paste0('#### ', st))
-  cat('#### Near v Far')
+  cat(paste0('#### ', st, "\n"))
+  cat('#### Near v Far \n')
   print(plot_res(pop, st, base_dir))
-  cat('#### Random Controls')
+  cat('\n#### Random Controls\n')
   print(plot_res(pop, paste0(st, "_v2"), base_dir))
 }
 ```
@@ -163,10 +163,10 @@ for(st in subtypes){
 ```{r results='asis', echo=FALSE}
 pop <- "EUR"
 for(st in subtypes){
-  cat(paste0('#### ', st))
-  cat('#### Near v Far')
+  cat(paste0('#### ', st, "\n"))
+  cat('#### Near v Far \n')
   print(plot_res(pop, st, base_dir))
-  cat('#### Random Controls')
+  cat('\n#### Random Controls\n')
   print(plot_res(pop, paste0(st, "_v2"), base_dir))
 }
 ```
@@ -176,10 +176,10 @@ for(st in subtypes){
 ```{r results='asis', echo=FALSE}
 pop <- "SAS"
 for(st in subtypes){
-  cat(paste0('#### ', st))
-  cat('#### Near v Far')
+  cat(paste0('#### ', st, "\n"))
+  cat('#### Near v Far \n')
   print(plot_res(pop, st, base_dir))
-  cat('#### Random Controls')
+  cat('\n#### Random Controls\n')
   print(plot_res(pop, paste0(st, "_v2"), base_dir))
 }
 ```
