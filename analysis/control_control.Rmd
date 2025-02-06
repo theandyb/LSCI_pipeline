@@ -109,6 +109,7 @@ This looks much more like what we're expecting! But anyways, let's make these fi
 ### ALL
 
 ```{r results='asis', echo=FALSE}
+
 pop <- "ALL"
 for(st in subtypes){
   cat(paste0('\n#### ', st, "\n"))
@@ -117,6 +118,7 @@ for(st in subtypes){
   cat('\n#### Random Controls\n')
   print(plot_res(pop, paste0(st, "_v2"), base_dir))
 }
+
 ```
 
 ### AFR
@@ -174,14 +176,14 @@ for(st in subtypes){
 ### SAS
 
 ```{r results='asis', echo=FALSE}
-pop <- "SAS"
-for(st in subtypes){
-  cat(paste0('\n#### ', st, "\n"))
-  cat('#### Near v Far \n')
-  print(plot_res(pop, st, base_dir))
-  cat('\n#### Random Controls\n')
-  print(plot_res(pop, paste0(st, "_v2"), base_dir))
-}
+# pop <- "SAS"
+# for(st in subtypes){
+#   cat(paste0('\n#### ', st, "\n"))
+#   cat('#### Near v Far \n')
+#   print(plot_res(pop, st, base_dir))
+#   cat('\n#### Random Controls\n')
+#   print(plot_res(pop, paste0(st, "_v2"), base_dir))
+# }
 ```
 
 
