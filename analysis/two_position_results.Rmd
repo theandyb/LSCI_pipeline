@@ -45,9 +45,7 @@ resid_df_load <- function(base_dir, pop, subtype, p, q){
 ### Plot data
 
 ```{r}
-deviance_heatmap_1 <- function(base_dir, pop, subtype, max_rp = 20){
-  df <- deviance_df_load(base_dir, pop, subtype)
-  
+deviance_heatmap_1 <- function(df, max_rp = 20){
   p <- df %>%
     filter(abs(rp1) <= max_rp, abs(rp2) <= max_rp) %>%
     ggplot(aes(x = rp2, y = rp1, fill = re)) +
@@ -62,9 +60,7 @@ deviance_heatmap_1 <- function(base_dir, pop, subtype, max_rp = 20){
   return(p)
 }
 
-deviance_heatmap_2 <- function(base_dir, pop, subtype, max_rp = 20){
-  df <- deviance_df_load(base_dir, pop, subtype)
-  
+deviance_heatmap_2 <- function(df, max_rp = 20){
   p <- df %>%
     filter(abs(rp1) <= max_rp, abs(rp2) <= max_rp) %>%
     ggplot(aes(x = rp2, y = rp1, fill = re)) +
@@ -82,14 +78,16 @@ deviance_heatmap_2 <- function(base_dir, pop, subtype, max_rp = 20){
 
 ```{r}
 main_analysis <- function(base_dir, pop, subtype, max_rp = 20){
-  deviance_heatmap_1(base_dir, pop, subtype, max_rp) %>% print()
+  df <- deviance_df_load(base_dir, pop, subtype)
+  deviance_heatmap_1(df, max_rp) %>% print()
+  reactable(df)
 }
 ```
 
 ## Results
 
 ```{r}
-max_rp <- 10
+max_rp <- 20
 ```
 
 
