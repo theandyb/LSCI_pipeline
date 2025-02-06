@@ -513,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree5e0801a9c2608f7ebfb365abec8585e341e2c79etargetblank5e0801aa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreec016b9bb1a9ea271d77160a60eeb58242c754407targetblankc016b9ba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/5e0801a9c2608f7ebfb365abec8585e341e2c79e" target="_blank">5e0801a</a>
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/c016b9bb1a9ea271d77160a60eeb58242c754407" target="_blank">c016b9b</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree5e0801a9c2608f7ebfb365abec8585e341e2c79etargetblank5e0801aa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreec016b9bb1a9ea271d77160a60eeb58242c754407targetblankc016b9ba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -531,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/5e0801a9c2608f7ebfb365abec8585e341e2c79e" target="_blank">5e0801a</a>.
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/c016b9bb1a9ea271d77160a60eeb58242c754407" target="_blank">c016b9b</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -620,6 +620,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/c016b9bb1a9ea271d77160a60eeb58242c754407/analysis/single_position_results.Rmd" target="_blank">c016b9b</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+<td>
+wflow_publish("analysis/single_position_results.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/theandyb/LSCI_pipeline/8a5952aad1324ccddea7e039003f3f83472956c0/docs/single_position_results.html" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -899,7 +933,7 @@ get_pos_resid_all &lt;- function(res_dir, pop, subtype, rp = c(-500:-1, 1:500)){
 
 pos_level_dot &lt;- function(res_df, palette_name = &quot;contrast_three&quot;){
   p &lt;- res_df %&gt;%
-    mutate(sig = dev &lt; qchisq(0.95, 3)) %&gt;%
+    mutate(sig = dev &gt; qchisq(0.95, 3)) %&gt;%
     ggplot(aes(x = offset, y = re, color = sig)) +
     scale_y_log10() +
     geom_point() +
@@ -971,6 +1005,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-7-1.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/27e28dff385541d62c69111b79924fdddd54bc8b/docs/figure/single_position_results.Rmd/unnamed-chunk-7-1.png" target="_blank">27e28df</a>
 </td>
 <td>
@@ -1010,6 +1055,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-7-2.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/27e28dff385541d62c69111b79924fdddd54bc8b/docs/figure/single_position_results.Rmd/unnamed-chunk-7-2.png" target="_blank">27e28df</a>
 </td>
 <td>
@@ -1047,6 +1103,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-7-3.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/27e28dff385541d62c69111b79924fdddd54bc8b/docs/figure/single_position_results.Rmd/unnamed-chunk-7-3.png" target="_blank">27e28df</a>
@@ -1108,6 +1175,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-8-1.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-8-1.png" target="_blank">ec99807</a>
@@ -2068,6 +2146,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-15-1.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-15-1.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -2115,6 +2204,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-15-2.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-15-2.png" target="_blank">ec99807</a>
@@ -2166,6 +2266,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-15-3.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-15-3.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -2213,6 +2324,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-15-4.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-15-4.png" target="_blank">ec99807</a>
@@ -3146,6 +3268,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-22-1.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-22-1.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -3193,6 +3326,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-22-2.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-22-2.png" target="_blank">ec99807</a>
@@ -3244,6 +3388,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-22-3.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-22-3.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -3291,6 +3446,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-22-4.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-22-4.png" target="_blank">ec99807</a>
@@ -4224,6 +4390,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-29-1.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-29-1.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -4271,6 +4448,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-29-2.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-29-2.png" target="_blank">ec99807</a>
@@ -4322,6 +4510,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-29-3.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-29-3.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -4369,6 +4568,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-29-4.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-29-4.png" target="_blank">ec99807</a>
@@ -5302,6 +5512,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-36-1.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-36-1.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -5349,6 +5570,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-36-2.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-36-2.png" target="_blank">ec99807</a>
@@ -5400,6 +5632,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-36-3.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-36-3.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -5447,6 +5690,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-36-4.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-36-4.png" target="_blank">ec99807</a>
@@ -6380,6 +6634,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-43-1.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-43-1.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -6427,6 +6692,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-43-2.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-43-2.png" target="_blank">ec99807</a>
@@ -6478,6 +6754,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-43-3.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-43-3.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -6525,6 +6812,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-43-4.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-43-4.png" target="_blank">ec99807</a>
@@ -7458,6 +7756,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-50-1.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-50-1.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -7505,6 +7814,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-50-2.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-50-2.png" target="_blank">ec99807</a>
@@ -7556,6 +7876,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-50-3.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-50-3.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -7603,6 +7934,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-50-4.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-50-4.png" target="_blank">ec99807</a>
@@ -8536,6 +8878,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-57-1.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-57-1.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -8583,6 +8936,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-57-2.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-57-2.png" target="_blank">ec99807</a>
@@ -8634,6 +8998,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-57-3.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-57-3.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -8681,6 +9056,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-57-4.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-57-4.png" target="_blank">ec99807</a>
@@ -9614,6 +10000,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-64-1.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-64-1.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -9661,6 +10058,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-64-2.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-64-2.png" target="_blank">ec99807</a>
@@ -9712,6 +10120,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-64-3.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-64-3.png" target="_blank">ec99807</a>
 </td>
 <td>
@@ -9759,6 +10178,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-64-4.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/ec998077f116591cbae85618eb0a1a4d84793663/docs/figure/single_position_results.Rmd/unnamed-chunk-64-4.png" target="_blank">ec99807</a>
@@ -10711,7 +11141,44 @@ Removed 2 rows containing missing values or values outside the scale range
 (`geom_point()`).</code></pre>
 <pre><code>Warning: Removed 1 row containing missing values or values outside the scale range
 (`geom_line()`).</code></pre>
-<p><img src="figure/single_position_results.Rmd/unnamed-chunk-70-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/single_position_results.Rmd/unnamed-chunk-70-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-70-1">
+Past versions of unnamed-chunk-70-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-70-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8a5952aad1324ccddea7e039003f3f83472956c0/docs/figure/single_position_results.Rmd/unnamed-chunk-70-1.png" target="_blank">8a5952a</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
