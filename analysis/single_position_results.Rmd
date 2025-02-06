@@ -37,12 +37,27 @@ figure_output = paste0(base_dir, "/figs/single_pos")
 Load position-level results:
 
 ```{r}
+subtypes <- c("AT_CG", "AT_GC", "AT_TA",
+            "GC_AT", "GC_TA", "GC_CG",
+            "cpg_GC_AT", "cpg_GC_TA", "cpg_GC_CG")
+
 get_pos_results <- function(res_dir, pop, subtype){
   f_name <- paste0(res_dir, "/", pop, "/", subtype, ".csv")
   df <- read_csv(f_name, show_col_types = FALSE) %>%
     rowwise() %>%
     mutate(re = dev / (2 * (singletons+controls)))
   return(df)
+}
+
+get_pos_results_all <- function(res_dir, pop, subtypes){
+  results <- vector(mode = "list", length = length(subtypes))
+  
+  for(i in 1:length(subtypes)){
+    results[[i]] <- get_pos_results(res_dir, pop, subtypes[[i]])
+    results[[i]]$subtype <- subtypes[[i]]
+  }
+  
+  return(bind_rows(results))
 }
 ```
 
@@ -587,3 +602,51 @@ all_results(single_pos_dir, pop, subtype)
 pop <- "EUR"
 all_results(single_pos_dir, pop, subtype)
 ```
+
+## All-in-one Figures
+
+Here we explore options for displaying results across multiple mutation subtypes in one (or more, but less than 9) figure(s).
+
+```{r}
+df <- get_pos_results_all(single_pos_dir, "ALL", subtypes)
+
+df <- df %>% mutate(from_n = ifelse(str_starts(subtype, "A"), "A", ifelse(str_starts(subtype, "cpg"), "CpG", "C")),
+         to_n = ifelse(str_starts(subtype, "A"), str_sub(subtype, 4, 4), str_sub(subtype, -1)))
+
+p1 <- df %>%
+  filter(from_n == "A", abs(offset) < 11) %>%
+  ggplot(aes(x = offset, y = re)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  facet_grid(vars(to_n), vars(from_n)) +
+  xlab("Relative Position") +
+  ylab("Relative Entropy")
+
+y_lim_all <- ggplot_build(p1)$layout$panel_scales_y[[1]]$range$range
+
+p2 <- df %>%
+  filter(from_n == "C", abs(offset) < 11) %>%
+  ggplot(aes(x = offset, y = re)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  facet_grid(vars(to_n), vars(from_n)) +
+  xlab("Relative Position") +
+  ylab("Relative Entropy") +
+  ylim(y_lim_all)
+
+p3 <- df %>%
+  filter(from_n == "CpG", abs(offset) < 11) %>%
+  ggplot(aes(x = offset, y = re)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  facet_grid(vars(to_n), vars(from_n)) +
+  xlab("Relative Position") +
+  ylab("Relative Entropy") +
+  ylim(y_lim_all)
+
+gridExtra::grid.arrange(p1, p2, p3, nrow = 1)
+```
+
