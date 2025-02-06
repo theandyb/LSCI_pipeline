@@ -102,7 +102,7 @@ pos_level_line <- function(res_df, rp_lim = 20){
 
 pos_level_dot <- function(res_df, palette_name = "contrast_three"){
   p <- res_df %>%
-    mutate(sig = dev < qchisq(0.95, 3)) %>%
+    mutate(sig = dev > qchisq(0.95, 3)) %>%
     ggplot(aes(x = offset, y = re, color = sig)) +
     scale_y_log10() +
     geom_point() +
@@ -607,7 +607,7 @@ all_results(single_pos_dir, pop, subtype)
 
 Here we explore options for displaying results across multiple mutation subtypes in one (or more, but less than 9) figure(s).
 
-```{r}
+```{r fig.dim = c(10, 6)}
 df <- get_pos_results_all(single_pos_dir, "ALL", subtypes)
 
 df <- df %>% mutate(from_n = ifelse(str_starts(subtype, "A"), "A", ifelse(str_starts(subtype, "cpg"), "CpG", "C")),
