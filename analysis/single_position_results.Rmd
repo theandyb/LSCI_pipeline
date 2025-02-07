@@ -27,6 +27,7 @@ library(knitr) # PDF table output
 ```{r}
 base_dir = "output"
 single_pos_dir = paste0(base_dir, "/single_pos")
+control_control <- paste0(base_dir, "/single_pos_cc")
 
 figure_output = paste0(base_dir, "/figs/single_pos")
 ```
@@ -49,6 +50,13 @@ get_pos_results <- function(res_dir, pop, subtype){
   return(df)
 }
 
+get_pos_cc <- function(control_control, pop, subtype){
+  f_name <- paste0(control_control, "/", pop, "/", subtype, "_v2.csv")
+  df <- read_csv(f_name, show_col_types = FALSE) %>%
+           mutate(re = dev / (2 * (singletons + controls) ))
+  return(df)
+}
+
 get_pos_results_all <- function(res_dir, pop, subtypes){
   results <- vector(mode = "list", length = length(subtypes))
   
@@ -58,6 +66,16 @@ get_pos_results_all <- function(res_dir, pop, subtypes){
   }
   
   return(bind_rows(results))
+}
+
+subtype_print_names <- function(st){
+  if(str_starts(st, "AT")){
+    return(paste0("A → ", str_sub(st, 4, 4)))
+  } else if(str_starts(st, "GC")){
+    return(paste0("C → ", str_sub(st, 5, 5)))
+  } else{
+    return(paste0("CpG → ", str_sub(st, 9, 9), "pG"))
+  }
 }
 ```
 
@@ -95,7 +113,7 @@ pos_level_line <- function(res_df, rp_lim = 20){
     theme(text = element_text(family = "Arial"),
           legend.position = "inside",
           legend.position.inside = c(.85, .8)) +
-    xlab("Relative Position") +
+    xlab(paste0("Relative Position: ", subtype_print_names(subtype))) +
     ylab("Relative Entropy")
   return(p)
 }
@@ -111,7 +129,24 @@ pos_level_dot <- function(res_df, palette_name = "contrast_three"){
     theme(text = element_text(family = "Arial"),
           legend.position = "inside",
           legend.position.inside = c(.85, .8)) +
-    xlab("Relative Position") +
+    xlab(paste0("Relative Position: ", subtype_print_names(subtype))) +
+    ylab("Log10 Relative Entropy") +
+    labs(color = "Significant")
+  return(p)
+}
+
+pos_level_dot_cc <- function(res_df){
+  p <- res_df %>%
+    ggplot(aes(x = offset, y = re, color = sig, alpha = sig)) +
+    scale_y_log10() +
+    geom_point() +
+    scale_alpha_manual(values = c(0.2, 1, 1)) + guides(alpha="none") +
+    scale_color_manual(values = friendly_pals$wong_eight[c(3,1:2)]) +
+    theme_classic() +
+    theme(text = element_text(family = "Arial"),
+          legend.position = "inside",
+          legend.position.inside = c(.85, .8)) +
+    xlab(paste0("Relative Position: ", subtype_print_names(subtype))) +
     ylab("Log10 Relative Entropy") +
     labs(color = "Significant")
   return(p)
@@ -128,7 +163,7 @@ resid_plot <- function(res_dir, pop, subtype, rp = c(-10:-1, 1:10), palette_name
     geom_bar(position="stack", stat="identity") +
     scale_fill_manual(values = friendly_pal(palette_name)) +
     theme_classic() +
-    xlab("Relative Position") +
+    xlab(paste0("Relative Position: ", subtype_print_names(subtype))) +
     ylab("Singleton Enrichment") +
     labs(fill = "Nucleotide") +
     theme(legend.position = "inside", legend.position.inside = c(0.9, 0.8),
@@ -153,9 +188,15 @@ subtype <- "AT_GC"
 ```{r}
 pop <- "ALL"
 df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
+df_cc <- get_pos_cc(control_control, pop, subtype)
+
+df_results$sig  <- ifelse(df_results$dev > qchisq(0.95,3), "Significant", "Non-significant")
+df_cc$sig <- "Control"
+df <- bind_rows(df_results, df_cc)
 
 pos_level_line(df_results) 
 pos_level_dot(df_results)
+pos_level_dot_cc(df) 
 pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
 ```
 
@@ -173,50 +214,57 @@ resid_plot(single_pos_dir, pop, subtype, rp = c(-5:-1,1:5))
 ```{r}
 pop <- "AFR"
 
-all_results <- function(single_pos_dir, pop, subtype){
+all_results <- function(single_pos_dir, pop, subtype, control_control){
   df_results <- get_pos_results(single_pos_dir, pop = pop, subtype = subtype)
-
+  df_cc <- get_pos_cc(control_control, pop, subtype)
+  
+  df_results$sig  <- ifelse(df_results$dev > qchisq(0.95,3), "Significant", "Non-significant")
+  df_cc$sig <- "Control"
+  df <- bind_rows(df_results, df_cc)
+  
   p1 <- pos_level_line(df_results) 
   p2 <- pos_level_dot(df_results) 
   p3 <- pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
 
   p4 <- resid_plot(single_pos_dir, pop, subtype, rp = c(-5:-1,1:5))
+  p5 <- pos_level_dot_cc(df) 
   
   print(p1)
   print(p2)
   print(p3)
   print(p4)
+  print(p5)
 }
 
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AMR
 
 ```{r}
 pop <- "AMR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EAS
 
 ```{r}
 pop <- "EAS"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EUR
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### SAS
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 ### A > C
@@ -229,42 +277,42 @@ subtype <- "AT_CG"
 
 ```{r}
 pop <- "ALL"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AFR
 
 ```{r}
 pop <- "AFR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AMR
 
 ```{r}
 pop <- "AMR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EAS
 
 ```{r}
 pop <- "EAS"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EUR
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### SAS
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 ### A > T
@@ -277,42 +325,42 @@ subtype <- "AT_TA"
 
 ```{r}
 pop <- "ALL"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AFR
 
 ```{r}
 pop <- "AFR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AMR
 
 ```{r}
 pop <- "AMR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EAS
 
 ```{r}
 pop <- "EAS"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EUR
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### SAS
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 ### C > T
@@ -325,42 +373,42 @@ subtype <- "GC_AT"
 
 ```{r}
 pop <- "ALL"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AFR
 
 ```{r}
 pop <- "AFR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AMR
 
 ```{r}
 pop <- "AMR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EAS
 
 ```{r}
 pop <- "EAS"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EUR
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### SAS
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 ### C > A
@@ -373,42 +421,42 @@ subtype <- "GC_TA"
 
 ```{r}
 pop <- "ALL"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AFR
 
 ```{r}
 pop <- "AFR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AMR
 
 ```{r}
 pop <- "AMR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EAS
 
 ```{r}
 pop <- "EAS"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EUR
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### SAS
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 ### C > G
@@ -421,42 +469,42 @@ subtype <- "GC_CG"
 
 ```{r}
 pop <- "ALL"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AFR
 
 ```{r}
 pop <- "AFR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AMR
 
 ```{r}
 pop <- "AMR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EAS
 
 ```{r}
 pop <- "EAS"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EUR
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### SAS
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 ### CpG > TpG
@@ -469,42 +517,42 @@ subtype <- "cpg_GC_AT"
 
 ```{r}
 pop <- "ALL"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AFR
 
 ```{r}
 pop <- "AFR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AMR
 
 ```{r}
 pop <- "AMR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EAS
 
 ```{r}
 pop <- "EAS"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EUR
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### SAS
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 ### CpG > ApG
@@ -517,42 +565,42 @@ subtype <- "cpg_GC_TA"
 
 ```{r}
 pop <- "ALL"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AFR
 
 ```{r}
 pop <- "AFR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AMR
 
 ```{r}
 pop <- "AMR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EAS
 
 ```{r}
 pop <- "EAS"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EUR
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### SAS
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 ### CpG > GpG
@@ -565,42 +613,42 @@ subtype <- "cpg_GC_CG"
 
 ```{r}
 pop <- "ALL"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AFR
 
 ```{r}
 pop <- "AFR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### AMR
 
 ```{r}
 pop <- "AMR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EAS
 
 ```{r}
 pop <- "EAS"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### EUR
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 #### SAS
 
 ```{r}
 pop <- "EUR"
-all_results(single_pos_dir, pop, subtype)
+all_results(single_pos_dir, pop, subtype, control_control)
 ```
 
 ## All-in-one Figures
