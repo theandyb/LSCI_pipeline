@@ -503,7 +503,7 @@ for(st in subtypes){
   cat(paste0("### ", st, "\n"))
   for(pop in c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
     cat(paste0("#### ", pop, "\n"))
-    df_cc <- load_res_cc(base_dir, pop, st)
+    df_cc <- load_res_cc(base_dir, pop, paste0(st, "_v2"))
     
     p <- df_cc %>%
       ggplot(aes(x = dev)) +
