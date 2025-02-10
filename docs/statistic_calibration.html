@@ -513,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree284015c3a6277329196b3c14a830ff6647832386targetblank284015ca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree8d8f7a504242a8508c756bf790de3cc8ab361532targetblank8d8f7a5a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/284015c3a6277329196b3c14a830ff6647832386" target="_blank">284015c</a>
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/8d8f7a504242a8508c756bf790de3cc8ab361532" target="_blank">8d8f7a5</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree284015c3a6277329196b3c14a830ff6647832386targetblank284015ca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree8d8f7a504242a8508c756bf790de3cc8ab361532targetblank8d8f7a5a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -531,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/284015c3a6277329196b3c14a830ff6647832386" target="_blank">284015c</a>.
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/8d8f7a504242a8508c756bf790de3cc8ab361532" target="_blank">8d8f7a5</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -621,6 +621,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8d8f7a504242a8508c756bf790de3cc8ab361532/analysis/statistic_calibration.Rmd" target="_blank">8d8f7a5</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-10
+</td>
+<td>
+wflow_publish("analysis/statistic_calibration.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/theandyb/LSCI_pipeline/cb3d1e9c592b2f77fa4cae1056407cd7eda41548/docs/statistic_calibration.html" target="_blank">cb3d1e9</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -2559,7 +2593,7 @@ Andy Beck
   cat(paste0(&quot;### &quot;, st, &quot;\n&quot;))
   for(pop in c(&quot;ALL&quot;, &quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;)){
     cat(paste0(&quot;#### &quot;, pop, &quot;\n&quot;))
-    df_cc &lt;- load_res_cc(base_dir, pop, st)
+    df_cc &lt;- load_res_cc(base_dir, pop, paste0(st, &quot;_v2&quot;))
     
     p &lt;- df_cc %&gt;%
       ggplot(aes(x = dev)) +
