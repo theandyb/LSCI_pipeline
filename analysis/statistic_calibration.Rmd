@@ -9,12 +9,60 @@ editor_options:
 
 ```{r}
 library(tidyverse)
+library(gt)
+library(reactable)
 ```
-
 
 ## Introduction
 
 In this document, we will use simulation to evaluate the calibration of our relative entropy statistic for the influence of local sequence context on mutation rates.
+
+### Aside: loading null from control-control comparisons
+
+#### Directories and Other Variables
+
+```{r}
+base_dir <- "output/single_pos_cc" # template: {base_dir}/{pop}/{subtype}.csv or {subtype}_v2.csv
+
+subtypes <- c("AT_CG", "AT_GC", "AT_TA",
+            "GC_AT", "GC_TA", "GC_CG",
+            "cpg_GC_AT", "cpg_GC_TA", "cpg_GC_CG")
+```
+
+#### Functions
+
+```{r}
+load_res_cc <- function(base_dir, population, subtype){
+  f_name <- paste0(base_dir, "/", population, "/", subtype, ".csv")
+  return(read_csv(f_name, show_col_types = FALSE) %>%
+           mutate(re = dev / (2 * (singletons + controls) ),
+                  sig = dev > qchisq(0.95, 3)))
+}
+
+subtype_print_names <- function(st){
+  if(str_starts(st, "AT")){
+    return(paste0("A → ", str_sub(st, 4, 4)))
+  } else if(str_starts(st, "GC")){
+    return(paste0("C → ", str_sub(st, 5, 5)))
+  } else{
+    return(paste0("CpG → ", str_sub(st, 9, 9), "pG"))
+  }
+}
+
+plot_res_cc <- function(pop, subtype, base_dir){
+  df <- load_res(base_dir, pop, subtype)
+  
+  p <- df %>%
+    ggplot(aes(x = offset, y = re, colour = sig)) +
+    geom_point() +
+    theme_bw() +
+    xlab(paste0("Relative Position: ", subtype_print_names(subtype))) +
+    ylab("Relative Entropy") +
+    theme(text = element_text(family = "Helvetica", size = 12)) +
+    guides(color = guide_legend(title = "Significant"))
+  return(p)
+}
+```
 
 ### Parameters
 
@@ -38,6 +86,13 @@ df_singleton <- df_singleton %>%
     select(pop, subtype, n_s)})
 ```
 
+```{r}
+df_singleton %>%
+  pivot_wider(id_cols = subtype, names_from = pop, values_from = n_s) %>%
+  knitr::kable()
+```
+
+
 #### Nucleotide frequencies in chr22
 
 For some of our simulations, we will want proportions of nucleotides. While we could fiddle around with this, for a starting point let's get the frequency of each nucleotide in chromosome 22:
@@ -58,8 +113,6 @@ n_nuc_22 <- df_22 %>%
 
 prop_nuc_22 <- n_nuc_22 / sum(n_nuc_22)
 ```
-
-
 
 ## Single Position Models
 
@@ -151,6 +204,590 @@ df_sim %>%
 
 ```{r}
 MASS::fitdistr(df_sim$deviance, "chi-squared", start = list("df" = 4))
+```
+
+## Simulating more multinomials
+
+* Measure total variation distance
+    * How does this change with sample size?
+
+```{r}
+simulate_1_pos <- function(n_s, s_prop, c_prop, c_s_ratio = 5){
+  singletons <- rmultinom(1, n_s, s_prop)
+  controls <- rmultinom(1, n_s * c_s_ratio, c_prop)
+  
+  test_df <- data.frame(nuc = c("A", "C", "G", "T"),
+                        singletons = singletons,
+                        controls = controls) 
+    
+  mod_obj <- glm(n ~ nuc + status, 
+                 {test_df %>% pivot_longer(singletons:controls, names_to = "status", values_to = "n") },
+                 family = poisson())
+  
+  test_df$p_obs <- test_df$singletons / sum(test_df$singletons) 
+  test_df$p_exp <- test_df$controls / sum(test_df$controls)
+  test_df$re_d <- test_df$p_obs * log(test_df$p_obs / test_df$p_exp)
+  test_df$chisq <- (((test_df$p_obs - test_df$p_exp)^2 )/ test_df$p_exp) * sum(test_df$singletons)
+  
+  tvd <- 0.5 * sum(abs(test_df$p_obs - test_df$p_exp))
+  
+  dev_stat <- deviance(mod_obj)
+  chi_sq <- sum(test_df$chisq)
+  re_val <- dev_stat / (2 * (n_s * (1 + c_s_ratio)))
+  re_d <- sum(test_df$re_d)
+  
+  freq_s <- test_df %>% 
+    select(nuc, p_obs) %>% 
+    pivot_wider(names_from = nuc, values_from = p_obs) %>%
+    rename(A_s = A, C_s = C, G_s = G, T_s = T)
+  
+  freq_c <- test_df %>% 
+    select(nuc, p_exp) %>% 
+    pivot_wider(names_from = nuc, values_from = p_exp) %>%
+    rename(A_c = A, C_c = C, G_c = G, T_c = T)
+  
+  return(data.frame(deviance = dev_stat, re = re_val, chi_sq = chi_sq, tvd = tvd, re_d = re_d) %>% bind_cols(freq_c, freq_s))
+}
+```
+
+Our distribution of singleton counts looks like the following:
+
+```{r}
+df_singleton %>% pivot_wider(names_from = subtype, values_from = n_s) %>%
+  gt()
+```
+
+### First simulation
+
+```{r}
+n_s <- 14402284
+
+n_sim <- 2000
+
+set.seed(1212)
+#s_prop <- c(0.25, 0.25, 0.25, 0.25)
+s_prop <- prop_nuc_22
+c_prop <- s_prop
+df_sim <- vector(mode = "list", length = n_sim)
+for(i in 1:n_sim){
+  df_sim[[i]] <- simulate_1_pos(n_s, s_prop, c_prop)
+}
+
+df_sim <- df_sim %>% bind_rows()
+```
+
+The distribution of deviance statistics:
+
+```{r}
+df_sim %>%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red", linetype = "dotdash") + 
+  geom_vline(xintercept = 1, colour = "red", linetype = 2)
+
+sum(df_sim$deviance > qchisq(0.95, 3))
+
+MASS::fitdistr(df_sim$deviance, "chi-squared", start = list("df" = 4))
+
+mean(df_sim$deviance)
+```
+
+Compare to theoretcal quantiles of $\chi^2_{\textrm{df=3}}$:
+
+```{r}
+ggplot() +
+  aes(sample = df_sim$deviance) +
+  stat_qq(distribution = qchisq, dparams = 3) +
+  stat_qq_line(col = "blue", distribution = qchisq, dparams = 3) +
+  xlab("Quantile") + ylab("Deviance")
+```
+
+Corresponding distribution of relative entropy statistics:
+
+```{r}
+df_sim %>%
+  ggplot(aes(x = re)) +
+  geom_density()
+
+df_sim %>%
+  ggplot(aes(x = re_d)) +
+  geom_density()
+
+df_sim %>%
+  ggplot(aes(x = re, y = re_d)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0)
+```
+
+Chi-square goodness of fit:
+
+```{r}
+df_sim %>%
+  ggplot(aes(x = chi_sq)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red", linetype = "dotdash") + 
+  geom_vline(xintercept = 1, colour = "red", linetype = 2) +
+  xlab("Chi-sq. GoF")
+
+sum(df_sim$chi_sq > qchisq(0.95, 3))
+```
+
+```{r}
+ggplot() +
+  aes(sample = df_sim$chi_sq) +
+  stat_qq(distribution = qchisq, dparams = 3) +
+  stat_qq_line(col = "blue", distribution = qchisq, dparams = 3) +
+  xlab("Quantile") + ylab("Chi-sq. GoF")
+```
+
+
+TVD:
+
+```{r}
+df_sim %>%
+  ggplot(aes(x = tvd)) +
+  geom_density() +
+  xlab("Total Variation Distance")
+
+df_sim %>%
+  select(tvd) %>%
+  summarize(min=min(tvd),median=median(tvd),mean=mean(tvd),max=max(tvd))
+
+df_sim %>%
+  filter(deviance > qchisq(0.95, 3)) %>%
+  select(tvd) %>%
+  summarize(min=min(tvd),median=median(tvd),mean=mean(tvd),max=max(tvd))
+```
+
+Question: what do the two distributions look like for the significant statistic with the lowest TVD?:
+
+```{r}
+df_sim %>%
+  filter(deviance > qchisq(0.95, 3)) %>% 
+  arrange(tvd) %>%
+  head(1)
+```
+
+And the highest?:
+
+```{r}
+df_sim %>%
+  filter(deviance > qchisq(0.95, 3)) %>% 
+  arrange(desc(tvd)) %>%
+  head(1)
+```
+
+What about largest non-significant?
+
+```{r}
+df_sim %>%
+  filter(deviance <= qchisq(0.95, 3)) %>% 
+  arrange(desc(tvd)) %>%
+  head(1)
+```
+
+
+### Second Simulation
+
+Here we'll use the smallest category size (55,814):
+
+```{r}
+n_s <- 55814
+
+n_sim <- 2000
+
+set.seed(76108008)
+#s_prop <- c(0.25, 0.25, 0.25, 0.25)
+s_prop <- prop_nuc_22
+c_prop <- s_prop
+df_sim <- vector(mode = "list", length = n_sim)
+for(i in 1:n_sim){
+  df_sim[[i]] <- simulate_1_pos(n_s, s_prop, c_prop)
+}
+
+df_sim <- df_sim %>% bind_rows()
+```
+
+The distribution of deviance statistics:
+
+```{r}
+df_sim %>%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red", linetype = "dotdash") + 
+  geom_vline(xintercept = 1, colour = "red", linetype = 2)
+
+sum(df_sim$deviance > qchisq(0.95, 3))
+
+MASS::fitdistr(df_sim$deviance, "chi-squared", start = list("df" = 4))
+
+mean(df_sim$deviance)
+```
+
+```{r}
+ggplot() +
+  aes(sample = df_sim$deviance) +
+  stat_qq(distribution = qchisq, dparams = 3) +
+  stat_qq_line(col = "blue", distribution = qchisq, dparams = 3) +
+  xlab("Quantile") + ylab("Deviance")
+```
+
+
+Chi square GOF:
+
+```{r}
+df_sim %>%
+  ggplot(aes(x = chi_sq)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red", linetype = "dotdash") + 
+  geom_vline(xintercept = 1, colour = "red", linetype = 2) +
+  xlab("Chi Sq. GoF")
+
+sum(df_sim$chi_sq > qchisq(0.95, 3))
+```
+
+```{r}
+ggplot() +
+  aes(sample = df_sim$chi_sq) +
+  stat_qq(distribution = qchisq, dparams = 3) +
+  stat_qq_line(col = "blue", distribution = qchisq, dparams = 3) +
+  xlab("Quantile") + ylab("Chi-sq. GoF")
+```
+
+TVD:
+
+```{r}
+df_sim %>%
+  ggplot(aes(x = tvd)) +
+  geom_density() +
+  xlab("Total Variation Distance")
+
+df_sim %>%
+  select(tvd) %>%
+  summarize(min=min(tvd),median=median(tvd),mean=mean(tvd),max=max(tvd), sd = sd(tvd))
+
+df_sim %>%
+  filter(deviance > qchisq(0.95, 3)) %>%
+  select(tvd) %>%
+  summarize(min=min(tvd),median=median(tvd),mean=mean(tvd),max=max(tvd), sd = sd(tvd))
+```
+
+Question: what do the two distributions look like for the significant statistic with the lowest TVD?:
+
+```{r}
+df_sim %>%
+  filter(deviance > qchisq(0.95, 3)) %>% 
+  arrange(tvd) %>%
+  head(1)
+```
+
+## Control-control Single Position Results
+
+```{r}
+pop <- "ALL"
+st <- "AT_GC_v2"
+df_cc <- load_res_cc(base_dir, pop, st)
+
+df_cc %>%
+  ggplot(aes(x = dev)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red", linetype = "dotdash") +
+  geom_vline(xintercept = 1, colour = "red", linetype = 2) +
+  xlab(paste0("Deviance: ", subtype_print_names(st), "; Pop: ", pop)) 
+
+sum(df_cc$dev > qchisq(0.95, 3))
+```
+
+```{r, results='asis'}
+for(st in subtypes){
+  cat(paste0("### ", st))
+  for(pop in c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
+    cat(paste0("#### ", pop))
+    df_cc <- load_res_cc(base_dir, pop, st)
+    
+    p <- df_cc %>%
+      ggplot(aes(x = dev)) +
+      geom_density() +
+      stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red", linetype = "dotdash") +
+      geom_vline(xintercept = 1, colour = "red", linetype = 2) +
+      xlab(paste0("Deviance: ", subtype_print_names(st), "; Pop: ", pop)) +
+      ggtitle(pop)
+    
+    print(p)
+  }
+}
+```
+
+
+## Simulate Two Position Statistics
+
+```{r}
+simulate_2_pos <- function(n_s, s_prop, c_prop, c_s_ratio = 5){
+  singletons <- rmultinom(1, n_s, s_prop)
+  controls <- rmultinom(1, n_s * c_s_ratio, c_prop)
+  
+  test_df <- data.frame(nuc1 = rep(c("A", "C", "G", "T"), times = 4),
+                        nuc2 = rep(c("A","C","G","T"), each=4),
+                        singletons = singletons,
+                        controls = controls) 
+    
+  mod_obj <- glm(n ~ nuc1 +nuc2 + status + nuc1:nuc2 + nuc1:status + nuc2:status, 
+                 {test_df %>% pivot_longer(singletons:controls, names_to = "status", values_to = "n") },
+                 family = poisson())
+  
+  # mod_obj2 <- glm(n ~ nuc1*nuc2*status, 
+  #                {test_df %>% pivot_longer(singletons:controls, names_to = "status", values_to = "n") },
+  #                family = poisson())
+  
+  test_df$p_obs <- test_df$singletons / sum(test_df$singletons) 
+  test_df$p_exp <- test_df$controls / sum(test_df$controls)
+  test_df$re_d <- test_df$p_obs * log(test_df$p_obs / test_df$p_exp)
+  test_df$chisq <- (((test_df$p_obs - test_df$p_exp)^2 )/ test_df$p_exp) * sum(test_df$singletons)
+  
+  tvd <- 0.5 * sum(abs(test_df$p_obs - test_df$p_exp))
+  
+  dev_stat <- deviance(mod_obj)
+  chi_sq <- sum(test_df$chisq)
+  re_val <- dev_stat / (2 * (n_s * (1 + c_s_ratio)))
+  re_d <- sum(test_df$re_d)
+  
+  # freq_s <- test_df %>% 
+  #   select(nuc1, nuc2, p_obs) %>% 
+  #   pivot_wider(names_from = starts_with("nuc"), values_from = p_obs) %>%
+  #   rename(A_s = A, C_s = C, G_s = G, T_s = T)
+  # 
+  # freq_c <- test_df %>% 
+  #   select(nuc, p_exp) %>% 
+  #   pivot_wider(names_from = nuc, values_from = p_exp) %>%
+  #   rename(A_c = A, C_c = C, G_c = G, T_c = T)
+  
+  return(data.frame(deviance = dev_stat, re = re_val, chi_sq = chi_sq, tvd = tvd, re_d = re_d))
+}
+
+design_df <- read_csv("scratch/design_mat.csv")
+design_mat <- as.matrix(design_df)
+
+simulate_2_pos_rand_par <- function(design_mat, intercept, status, mu =0 ){
+  betas <- c(intercept, rnorm(6, mean = mu), status, rnorm(15, mean = mu))
+  vals <- matrix(rpois(32, exp(as.vector(design_mat %*% t(t(betas))))), ncol = 1)
+  nuc2 <- rep(rep(c("A","C","G","T"), each = 4), 2)
+  nuc1 <- rep(rep(c("A","C","G","T"), times = 4), 2)
+  status <- rep(c("control", "singleton"), each = 16)
+  test_df <- data.frame(status = status, n1 = nuc1, n2 = nuc2, n = vals)
+  mod_obj <- glm(n ~ n1*n2 + status + n1:status + n2:status, data = test_df, family = poisson)
+  
+  return(deviance(mod_obj))
+}
+```
+
+### First simulation
+
+```{r}
+n_s <- 14402284
+
+n_sim <- 2000
+
+set.seed(1212)
+#s_prop <- c(0.25, 0.25, 0.25, 0.25)
+s_prop <- rep(1/16, 16)
+c_prop <- rep(1/16, 16)
+df_sim <- vector(mode = "list", length = n_sim)
+for(i in 1:n_sim){
+  df_sim[[i]] <- simulate_2_pos(n_s, s_prop, c_prop)
+}
+
+df_sim <- df_sim %>% bind_rows()
+```
+
+The distribution of deviance statistics:
+
+```{r}
+df_sim %>%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(9), n = 2000, colour = "red", linetype = "dotdash") + 
+  geom_vline(xintercept = 7, colour = "red", linetype = 2)
+
+sum(df_sim$deviance > qchisq(0.95, 9))
+
+MASS::fitdistr(df_sim$deviance, "chi-squared", start = list("df" = 9))
+
+mean(df_sim$deviance)
+```
+
+```{r}
+ggplot() +
+  aes(sample = df_sim$deviance) +
+  stat_qq(distribution = qchisq, dparams = 9) +
+  stat_qq_line(col = "blue", distribution = qchisq, dparams = 9) +
+  xlab("Quantile") + ylab("Deviance")
+```
+
+### Second Simulation Setting
+
+For this setting, we are going to have a less restrictive null: rather than having a shared 16-cell frequency density between the singletons and their matched controls, we'll allow for the singletons and controls to have separate marginal densities for the two nucleotides. We'll start with the simple case in which the two nucleotide densities within each status are the same, and we'll assume no interaction between the nucleotides at the two positions (i.e., the "shared interaction" between the singletons and the matched controls is "no interaction").
+
+```{r}
+n_s <- 14402284
+n_sim <- 2000
+set.seed(1212)
+#s_prop <- c(0.25, 0.25, 0.25, 0.25)
+s_nuc <- c(0.27, 0.23, 0.23, 0.27)
+s_prop <- c(t(outer(s_nuc, s_nuc)))
+c_nuc <- c(0.23, 0.27, 0.27, 0.23)
+c_prop <- c(t(outer(c_nuc, c_nuc)))
+df_sim <- vector(mode = "list", length = n_sim)
+for(i in 1:n_sim){
+  df_sim[[i]] <- simulate_2_pos(n_s, s_prop, c_prop)
+}
+
+df_sim <- df_sim %>% bind_rows()
+```
+
+The distribution of deviance statistics:
+
+```{r}
+df_sim %>%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(9), n = 2000, colour = "red", linetype = "dotdash") + 
+  geom_vline(xintercept = 7, colour = "red", linetype = 2)
+
+sum(df_sim$deviance > qchisq(0.95, 9))
+
+MASS::fitdistr(df_sim$deviance, "chi-squared", start = list("df" = 9))
+
+mean(df_sim$deviance)
+```
+
+```{r}
+ggplot() +
+  aes(sample = df_sim$deviance) +
+  stat_qq(distribution = qchisq, dparams = 9) +
+  stat_qq_line(col = "blue", distribution = qchisq, dparams = 9) +
+  xlab("Quantile") + ylab("Deviance")
+```
+
+### Third Simulation
+
+```{r}
+n_s <- 14402284
+n_sim <- 2000
+set.seed(1212)
+#s_prop <- c(0.25, 0.25, 0.25, 0.25)
+s_nuc1 <- c(0.27, 0.23, 0.23, 0.27)
+s_nuc2 <- c(0.25, 0.25, 0.25, 0.25)
+s_prop <- c(t(outer(s_nuc1, s_nuc2)))
+c_nuc1 <- c(0.23, 0.27, 0.27, 0.23)
+c_nuc2 <- c(0.24, 0.26, 0.25, 0.25)
+c_prop <- c(t(outer(c_nuc1, c_nuc2)))
+df_sim <- vector(mode = "list", length = n_sim)
+for(i in 1:n_sim){
+  df_sim[[i]] <- simulate_2_pos(n_s, s_prop, c_prop)
+}
+
+df_sim <- df_sim %>% bind_rows()
+```
+
+```{r}
+df_sim %>%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(9), n = 2000, colour = "red", linetype = "dotdash") + 
+  geom_vline(xintercept = 7, colour = "red", linetype = 2)
+
+sum(df_sim$deviance > qchisq(0.95, 9))
+
+MASS::fitdistr(df_sim$deviance, "chi-squared", start = list("df" = 9))
+
+mean(df_sim$deviance)
+```
+
+```{r}
+ggplot() +
+  aes(sample = df_sim$deviance) +
+  stat_qq(distribution = qchisq, dparams = 9) +
+  stat_qq_line(col = "blue", distribution = qchisq, dparams = 9) +
+  xlab("Quantile") + ylab("Deviance")
+```
+
+
+### Fourth Simulation
+
+Here we'll adjust the third simulation by adding an "interaction matrix" to the outer product of the marginal frequency vectors. The point of this is to add an interaction between the nucleotides at the two positions. We'll use the same interaction matrix for the singletons and the controls, but not necessarily the same marginal distributions (again, our goal here is to simulate under the null hypothesis that there is a shared interaction between the nucleotides at the two positions between the singletons and their matched controls).
+
+```{r}
+n_s <- 1000
+n_sim <- 2000
+set.seed(1212)
+
+interaction_mat <- matrix(c(0.02, -0.005, -0.005, -0.01,
+                     -0.005, 0.005, 0, 0,
+                     -0.005, 0, 0.005, 0,
+                     -0.01, 0, 0, 0.01), byrow = T, ncol = 4)
+
+#s_prop <- c(0.25, 0.25, 0.25, 0.25)
+s_nuc1 <- c(0.27, 0.23, 0.23, 0.27)
+s_nuc2 <- c(0.25, 0.25, 0.25, 0.25)
+s_prop <- c( t( outer(s_nuc1, s_nuc2) + interaction_mat ) )
+c_nuc1 <- c(0.23, 0.27, 0.27, 0.23)
+c_nuc2 <- c(0.24, 0.26, 0.25, 0.25)
+c_prop <- c( t( outer(s_nuc1, s_nuc2) + interaction_mat ) )
+df_sim <- vector(mode = "list", length = n_sim)
+for(i in 1:n_sim){
+  df_sim[[i]] <- simulate_2_pos(n_s, s_prop, c_prop)
+}
+
+df_sim <- df_sim %>% bind_rows()
+```
+
+```{r}
+df_sim %>%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(9), n = 2000, colour = "red", linetype = "dotdash") + 
+  geom_vline(xintercept = 7, colour = "red", linetype = 2)
+
+sum(df_sim$deviance > qchisq(0.95, 9))
+
+MASS::fitdistr(df_sim$deviance, "chi-squared", start = list("df" = 9))
+
+mean(df_sim$deviance)
+```
+
+```{r}
+ggplot() +
+  aes(sample = df_sim$deviance) +
+  stat_qq(distribution = qchisq, dparams = 9) +
+  stat_qq_line(col = "blue", distribution = qchisq, dparams = 9) +
+  xlab("Quantile") + ylab("Deviance")
+```
+
+### Fifth Simulation
+
+Here we'll simulate directly from the loglinear poisson model. For this we need to specify values for 23 parameters; to simplfy things at the start, we will set only the intercept and status parameters, and sample the remaining 21 from a normal distribution (initially with mean 0)
+
+```{r}
+n_sim <- 2000
+intercept <- 9
+status <- -1.5
+
+set.seed(114425)
+dev_vals <- vector(mode = "list", length = n_sim)
+for(i in 1:n_sim){
+  dev_vals[[i]] <- simulate_2_pos_rand_par(design_mat, intercept, status, mu = 0)
+}
+dev_vals <- unlist(dev_vals)
+
+sum(dev_vals > qchisq(0.95, 9))
+```
+
+```{r}
+data.frame(deviance = dev_vals) %>%
+  ggplot(aes(x = deviance)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(9), n = 2000, colour = "red", linetype = "dotdash") + 
+  geom_vline(xintercept = 7, colour = "red", linetype = 2)
 ```
 
 
