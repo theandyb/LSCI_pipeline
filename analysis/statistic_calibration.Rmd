@@ -500,9 +500,9 @@ sum(df_cc$dev > qchisq(0.95, 3))
 
 ```{r, results='asis'}
 for(st in subtypes){
-  cat(paste0("### ", st))
+  cat(paste0("### ", st, "\n"))
   for(pop in c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
-    cat(paste0("#### ", pop))
+    cat(paste0("#### ", pop, "\n"))
     df_cc <- load_res_cc(base_dir, pop, st)
     
     p <- df_cc %>%
