@@ -51,7 +51,7 @@ read_all <- function(single_dir, two_dir, three_dir, pop, subtype){
   
   # compute re 
   three_df <- three_df %>%
-    mutate(re = dev / (2*(singletons + controls)))
+    mutate(re = dev / (2 * (singletons + controls)))
   two_df <- two_df %>%
     mutate(re = dev / (2 * (singletons + controls)))
   s_df <- s_df %>%
@@ -142,7 +142,7 @@ And now that the reactable stuff has been attached to our document, let's look a
 subtype <- "ALL"
 for(st in subtypes){
   res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
-  cat(paste0('#### ', st))
+  cat(paste0('#### ', st, "\n"))
   print(res$fig)
   print(htmltools::tagList(reactable(res$df)))
 }
@@ -154,7 +154,7 @@ for(st in subtypes){
 subtype <- "AFR"
 for(st in subtypes){
   res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
-  cat(paste0('#### ', st))
+  cat(paste0('#### ', st, "\n"))
   print(res$fig)
   print(htmltools::tagList(reactable(res$df)))
 }
@@ -166,7 +166,7 @@ for(st in subtypes){
 subtype <- "AMR"
 for(st in subtypes){
   res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
-  cat(paste0('#### ', st))
+  cat(paste0('#### ', st, "\n"))
   print(res$fig)
   print(htmltools::tagList(reactable(res$df)))
 }
@@ -178,7 +178,7 @@ for(st in subtypes){
 subtype <- "EAS"
 for(st in subtypes){
   res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
-  cat(paste0('#### ', st))
+  cat(paste0('#### ', st, "\n"))
   print(res$fig)
   print(htmltools::tagList(reactable(res$df)))
 }
@@ -190,7 +190,7 @@ for(st in subtypes){
 subtype <- "EUR"
 for(st in subtypes){
   res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
-  cat(paste0('#### ', st))
+  cat(paste0('#### ', st, "\n"))
   print(res$fig)
   print(htmltools::tagList(reactable(res$df)))
 }
@@ -202,7 +202,7 @@ for(st in subtypes){
 subtype <- "SAS"
 for(st in subtypes){
   res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
-  cat(paste0('#### ', st))
+  cat(paste0('#### ', st, "\n"))
   print(res$fig)
   print(htmltools::tagList(reactable(res$df)))
 }
