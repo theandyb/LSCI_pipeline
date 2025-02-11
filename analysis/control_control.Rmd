@@ -124,13 +124,13 @@ for(st in subtypes){
   print(plot_res(pop, st, base_dir))
   cat('\n#### Random Controls\n')
   print(plot_res(pop, paste0(st, "_v2"), base_dir))
-  df <- load_res(base_dir, pop, subtype)
+  df <- load_res(base_dir, pop, st)
   p <- df %>%
     ggplot(aes(x = dev)) +
     geom_density() +
     stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red") + 
     geom_vline(xintercept = 1, colour = "red", linetype = 2) +
-    xlab(paste0("Deviance: ", subtype_print_names(substr(subtype,1,nchar(subtype)-3) )))
+    xlab(paste0("Deviance: ", subtype_print_names(substr(st,1,nchar(st)-3) )))
   print(p)
 }
 
@@ -146,13 +146,13 @@ for(st in subtypes){
   print(plot_res(pop, st, base_dir))
   cat('\n#### Random Controls\n')
   print(plot_res(pop, paste0(st, "_v2"), base_dir))
-  df <- load_res(base_dir, pop, subtype)
+  df <- load_res(base_dir, pop, st)
   p <- df %>%
     ggplot(aes(x = dev)) +
     geom_density() +
     stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red") + 
     geom_vline(xintercept = 1, colour = "red", linetype = 2) +
-    xlab(paste0("Deviance: ", subtype_print_names(substr(subtype,1,nchar(subtype)-3) )))
+    xlab(paste0("Deviance: ", subtype_print_names(substr(st,1,nchar(st)-3) )))
   print(p)
 }
 ```
@@ -167,13 +167,13 @@ for(st in subtypes){
   print(plot_res(pop, st, base_dir))
   cat('\n#### Random Controls\n')
   print(plot_res(pop, paste0(st, "_v2"), base_dir))
-  df <- load_res(base_dir, pop, subtype)
+  df <- load_res(base_dir, pop, st)
   p <- df %>%
     ggplot(aes(x = dev)) +
     geom_density() +
     stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red") + 
     geom_vline(xintercept = 1, colour = "red", linetype = 2) +
-    xlab(paste0("Deviance: ", subtype_print_names(substr(subtype,1,nchar(subtype)-3) )))
+    xlab(paste0("Deviance: ", subtype_print_names(substr(st,1,nchar(st)-3) )))
   print(p)
 }
 ```
@@ -188,13 +188,13 @@ for(st in subtypes){
   print(plot_res(pop, st, base_dir))
   cat('\n#### Random Controls\n')
   print(plot_res(pop, paste0(st, "_v2"), base_dir))
-  df <- load_res(base_dir, pop, subtype)
+  df <- load_res(base_dir, pop, st)
   p <- df %>%
     ggplot(aes(x = dev)) +
     geom_density() +
     stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red") + 
     geom_vline(xintercept = 1, colour = "red", linetype = 2) +
-    xlab(paste0("Deviance: ", subtype_print_names(substr(subtype,1,nchar(subtype)-3) )))
+    xlab(paste0("Deviance: ", subtype_print_names(substr(st,1,nchar(st)-3) )))
   print(p)
 }
 ```
@@ -209,13 +209,13 @@ for(st in subtypes){
   print(plot_res(pop, st, base_dir))
   cat('\n#### Random Controls\n')
   print(plot_res(pop, paste0(st, "_v2"), base_dir))
-  df <- load_res(base_dir, pop, subtype)
+  df <- load_res(base_dir, pop, st)
   p <- df %>%
     ggplot(aes(x = dev)) +
     geom_density() +
     stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red") + 
     geom_vline(xintercept = 1, colour = "red", linetype = 2) +
-    xlab(paste0("Deviance: ", subtype_print_names(substr(subtype,1,nchar(subtype)-3) )))
+    xlab(paste0("Deviance: ", subtype_print_names(substr(st,1,nchar(st)-3) )))
   print(p)
 }
 ```
@@ -230,13 +230,13 @@ for(st in subtypes){
   print(plot_res(pop, st, base_dir))
   cat('\n#### Random Controls\n')
   print(plot_res(pop, paste0(st, "_v2"), base_dir))
-  df <- load_res(base_dir, pop, subtype)
+  df <- load_res(base_dir, pop, st)
   p <- df %>%
     ggplot(aes(x = dev)) +
     geom_density() +
     stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red") + 
     geom_vline(xintercept = 1, colour = "red", linetype = 2) +
-    xlab(paste0("Deviance: ", subtype_print_names(substr(subtype,1,nchar(subtype)-3) )))
+    xlab(paste0("Deviance: ", subtype_print_names(substr(st,1,nchar(st)-3) )))
   print(p)
 }
 ```
