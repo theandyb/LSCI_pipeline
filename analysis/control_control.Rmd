@@ -107,8 +107,13 @@ df %>%
   ggplot(aes(x = dev)) +
   geom_density() +
   stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red") + 
-  geom_vline(xintercept = 1, colour = "red", linetype = 2) +
-  xlab(paste0("Deviance: ", subtype_print_names(substr(subtype,1,nchar(subtype)-3) )))
+  geom_vline(xintercept = 1, colour = "red", linetype = 2) + 
+  geom_vline(xintercept = qchisq(0.95, 3), colour = "blue", linetype = 3) +
+  xlab(paste0("Deviance: ", subtype_print_names(substr(subtype,1,nchar(subtype)-3) ))) +
+  annotate("text", 
+           x = 11, 
+           y = 0.05, 
+           label = paste0("FPR: ", sum(df$dev > qchisq(0.95,3)) / length(df$dev)) )
 ```
 
 This looks much more like what we're expecting! But anyways, let's make these figures for all population/subtype pairs.
@@ -130,7 +135,11 @@ for(st in subtypes){
     geom_density() +
     stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red") + 
     geom_vline(xintercept = 1, colour = "red", linetype = 2) +
-    xlab(paste0("Deviance: ", subtype_print_names( st ) ))
+    xlab(paste0("Deviance: ", subtype_print_names( st ) )) +
+    annotate("text", 
+           x = 11, 
+           y = 0.05, 
+           label = paste0("FPR: ", sum(df$dev > qchisq(0.95,3)) / length(df$dev)) )
   print(p)
 }
 
@@ -152,7 +161,11 @@ for(st in subtypes){
     geom_density() +
     stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red") + 
     geom_vline(xintercept = 1, colour = "red", linetype = 2) +
-    xlab(paste0("Deviance: ", subtype_print_names( st ) ))
+    xlab(paste0("Deviance: ", subtype_print_names( st ) )) +
+    annotate("text", 
+           x = 11, 
+           y = 0.05, 
+           label = paste0("FPR: ", sum(df$dev > qchisq(0.95,3)) / length(df$dev)) )
   print(p)
 }
 ```
@@ -173,7 +186,11 @@ for(st in subtypes){
     geom_density() +
     stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red") + 
     geom_vline(xintercept = 1, colour = "red", linetype = 2) +
-    xlab(paste0("Deviance: ", subtype_print_names( st ) ))
+    xlab(paste0("Deviance: ", subtype_print_names( st ) )) +
+    annotate("text", 
+           x = 11, 
+           y = 0.05, 
+           label = paste0("FPR: ", sum(df$dev > qchisq(0.95,3)) / length(df$dev)) )
   print(p)
 }
 ```
@@ -194,7 +211,11 @@ for(st in subtypes){
     geom_density() +
     stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red") + 
     geom_vline(xintercept = 1, colour = "red", linetype = 2) +
-    xlab(paste0("Deviance: ", subtype_print_names( st ) ))
+    xlab(paste0("Deviance: ", subtype_print_names( st ) )) +
+    annotate("text", 
+           x = 11, 
+           y = 0.05, 
+           label = paste0("FPR: ", sum(df$dev > qchisq(0.95,3)) / length(df$dev)) )
   print(p)
 }
 ```
@@ -215,7 +236,11 @@ for(st in subtypes){
     geom_density() +
     stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red") + 
     geom_vline(xintercept = 1, colour = "red", linetype = 2) +
-    xlab(paste0("Deviance: ", subtype_print_names( st ) ))
+    xlab(paste0("Deviance: ", subtype_print_names( st ) )) +
+    annotate("text", 
+           x = 11, 
+           y = 0.05, 
+           label = paste0("FPR: ", sum(df$dev > qchisq(0.95,3)) / length(df$dev)) )
   print(p)
 }
 ```
@@ -236,7 +261,11 @@ for(st in subtypes){
     geom_density() +
     stat_function(fun = dchisq, args = c(3), n = 1000, colour = "red") + 
     geom_vline(xintercept = 1, colour = "red", linetype = 2) +
-    xlab(paste0("Deviance: ", subtype_print_names( st ) ))
+    xlab(paste0("Deviance: ", subtype_print_names( st ) )) +
+    annotate("text", 
+           x = 11, 
+           y = 0.05, 
+           label = paste0("FPR: ", sum(df$dev > qchisq(0.95,3)) / length(df$dev)) )
   print(p)
 }
 ```
