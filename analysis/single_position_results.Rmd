@@ -118,13 +118,13 @@ pos_level_line <- function(res_df, rp_lim = 20){
   return(p)
 }
 
-pos_level_dot <- function(res_df, palette_name = "contrast_three"){
+pos_level_dot <- function(res_df, palette_name = friendly_pal("contrast_three")){
   p <- res_df %>%
     mutate(sig = dev > qchisq(0.95, 3)) %>%
     ggplot(aes(x = offset, y = re, color = sig)) +
     scale_y_log10() +
     geom_point() +
-    scale_color_manual(values = friendly_pal(palette_name)) +
+    scale_color_manual(values = palette_name) +
     theme_classic() +
     theme(text = element_text(family = "Arial"),
           legend.position = "inside",
@@ -135,13 +135,13 @@ pos_level_dot <- function(res_df, palette_name = "contrast_three"){
   return(p)
 }
 
-pos_level_dot_cc <- function(res_df){
+pos_level_dot_cc <- function(res_df, color_pal = friendly_pals$wong_eight[c(3,1:2)]){
   p <- res_df %>%
     ggplot(aes(x = offset, y = re, color = sig, alpha = sig)) +
     scale_y_log10() +
     geom_point() +
     scale_alpha_manual(values = c(0.2, 1, 1)) + guides(alpha="none") +
-    scale_color_manual(values = friendly_pals$wong_eight[c(3,1:2)]) +
+    scale_color_manual(values = color_pal) +
     theme_classic() +
     theme(text = element_text(family = "Arial"),
           legend.position = "inside",
@@ -152,7 +152,7 @@ pos_level_dot_cc <- function(res_df){
   return(p)
 }
 
-resid_plot <- function(res_dir, pop, subtype, rp = c(-10:-1, 1:10), palette_name = "nickel_five"){
+resid_plot <- function(res_dir, pop, subtype, rp = c(-10:-1, 1:10), palette_name = friendly_pal("nickel_five")){
   res_df <- get_pos_resid_all(res_dir, pop, subtype, rp)
   p <- res_df %>%
     select(rp, nuc, status, res) %>%
@@ -161,13 +161,13 @@ resid_plot <- function(res_dir, pop, subtype, rp = c(-10:-1, 1:10), palette_name
     mutate(dev_cont = sign(singletons) * (singletons ^ 2 + controls ^ 2)) %>%
     ggplot(aes(x = rp, y = dev_cont, fill = nuc)) +
     geom_bar(position="stack", stat="identity") +
-    scale_fill_manual(values = friendly_pal(palette_name)) +
+    scale_fill_manual(values = palette_name) +
     theme_classic() +
     xlab(paste0("Relative Position: ", subtype_print_names(subtype))) +
     ylab("Singleton Enrichment") +
     labs(fill = "Nucleotide") +
     theme(legend.position = "inside", legend.position.inside = c(0.9, 0.8),
-          legend.box.background = element_rect(color="black", size=1)) +
+          legend.box.background = element_rect(color="black", linewidth =1)) +
     geom_hline(yintercept = 0, colour = "black", linetype = 3)
   return(p)
 }
@@ -195,7 +195,7 @@ df_cc$sig <- "Control"
 df <- bind_rows(df_results, df_cc)
 
 pos_level_line(df_results) 
-pos_level_dot(df_results)
+pos_level_dot(df_results, friendly_pals$wong_eight)
 pos_level_dot_cc(df) 
 pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
 ```
@@ -206,6 +206,100 @@ Next, we plot the nucleotide contribution to each position's deviance statistic:
 
 ```{r}
 resid_plot(single_pos_dir, pop, subtype, rp = c(-5:-1,1:5))
+```
+
+Here we are interested in the result at the +1 position, since this is the largest statistic observed overall subtypes for the single-position models (and as we'll later see, the largest statistic we observe in any of our analyses). While we can easily discuss the magnitude of this statistic relative to other relative entropy statistics, it isn't necessarily as simple to describe the practical interpretation of this statistic. For that, let's first examine the distribution of counts for the singletons and the matched controls at this position:
+
+```{r}
+df_resid <- get_pos_resid(single_pos_dir, pop, subtype, rp = 1)
+
+df_resid %>%
+  select(nuc, status, n) %>%
+  pivot_wider(id_cols = nuc, names_from = status, values_from = n) %>%
+  mutate(p_sing = singletons / sum(singletons),
+         p_con = controls / sum(controls)) %>%
+  knitr::kable()
+```
+
+How does this compare to what we observe for the C>T subtype at +1 when we do not control for CpG status?
+
+```{r}
+df_cpg_resid <- get_pos_resid(single_pos_dir, pop, "all_GC_AT", rp = 1)
+
+df_cpg_resid %>%
+  select(nuc, status, n) %>%
+  pivot_wider(id_cols = nuc, names_from = status, values_from = n) %>%
+  mutate(p_sing = singletons / sum(singletons),
+         p_con = controls / sum(controls)) %>%
+  mutate(abs_diff = abs(p_sing - p_con)) %>%
+  knitr::kable()
+  
+resid_plot(single_pos_dir, pop, "all_GC_AT", rp = c(-5:-1,1:5))
+```
+
+Finally, I would like to look at the "significant" results between +/- 10 or so to +/- 250 (so the significant results not most central to the focal position). For these less extreme relative entropy values, what kinds of shifts in distribution do these correspond to?
+
+```{r}
+max_max_re <- max(df_results$max_var)
+max_tot_var <- 0.5 * max(df_results$tot_var)
+
+df_results %>%
+  ggplot(aes(x = re, y = simple_re)) +
+  geom_point()
+
+df_results %>%
+  filter(abs(offset) > 26, abs(offset) < 40) %>%
+  ggplot(aes(x = re, y = simple_re)) +
+  geom_point()
+
+df_results %>%
+  filter(re > 1e-6, re < 6e-6) %>%
+  ggplot(aes(x = re, y = simple_re)) +
+  geom_point()
+
+df_results %>%
+  filter(re > 1e-6, re < 6e-6) %>%
+  ggplot(aes(x = re, y = max_var * 14402284)) +
+  geom_point()
+
+df_results %>%
+  filter(re > 1e-6, re < 6e-6) %>%
+  ggplot(aes(x = re, y = max_var / max_max_re)) +
+  geom_point()
+
+df_results %>%
+  filter(re > 1e-6, re < 6e-6) %>%
+  ggplot(aes(x = offset, y = max_var * 14402284)) +
+  geom_point()
+
+df_results %>%
+  ggplot(aes(x = offset, y = max_var)) +
+  geom_point()
+
+df_results %>%
+  filter(re > 1e-6, re < 6e-6) %>%
+  ggplot(aes(x = offset, y = max_var / max_max_re)) +
+  geom_point()
+
+df_results %>%
+  filter(re > 1e-6, re < 6e-6) %>%
+  ggplot(aes(x = offset, y = (max_max_re - max_var) / max_max_re)) +
+  geom_point()
+
+df_results %>%
+  filter(re > 1e-6, re < 6e-6) %>%
+  ggplot(aes(x = offset, y = (max_tot_var - 0.5*tot_var) / max_tot_var)) +
+  geom_point()
+
+df_results %>%
+  filter(re > 1e-6, re < 6e-6) %>%
+  ggplot(aes(x = offset, y = 0.5 * tot_var)) +
+  geom_point()
+
+df_results %>%
+  filter(re > 1e-6, re < 6e-6) %>%
+  ggplot(aes(x = offset, y = (0.5 * tot_var) / max_tot_var)) +
+  geom_point()
 ```
 
 
@@ -223,7 +317,7 @@ all_results <- function(single_pos_dir, pop, subtype, control_control){
   df <- bind_rows(df_results, df_cc)
   
   p1 <- pos_level_line(df_results) 
-  p2 <- pos_level_dot(df_results) 
+  p2 <- pos_level_dot(df_results, friendly_pals$wong_eight) 
   p3 <- pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
 
   p4 <- resid_plot(single_pos_dir, pop, subtype, rp = c(-5:-1,1:5))
@@ -326,6 +420,17 @@ subtype <- "AT_TA"
 ```{r}
 pop <- "ALL"
 all_results(single_pos_dir, pop, subtype, control_control)
+```
+
+```{r}
+df_resid <- get_pos_resid(single_pos_dir, pop, subtype, rp = 1)
+
+df_resid %>%
+  select(nuc, status, n) %>%
+  pivot_wider(id_cols = nuc, names_from = status, values_from = n) %>%
+  mutate(p_sing = singletons / sum(singletons),
+         p_con = controls / sum(controls)) %>%
+  knitr::kable()
 ```
 
 #### AFR
