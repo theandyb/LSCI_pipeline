@@ -382,7 +382,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-02-07
+<strong>Last updated:</strong> 2025-02-10
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -513,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree56da582852c24329ccd0ea2b444935e30ffe329btargetblank56da582a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreec31d9e492ac1b516324cf6ee785a0f0808dacf1ctargetblankc31d9e4a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/56da582852c24329ccd0ea2b444935e30ffe329b" target="_blank">56da582</a>
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/c31d9e492ac1b516324cf6ee785a0f0808dacf1c" target="_blank">c31d9e4</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree56da582852c24329ccd0ea2b444935e30ffe329btargetblank56da582a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreec31d9e492ac1b516324cf6ee785a0f0808dacf1ctargetblankc31d9e4a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -531,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/56da582852c24329ccd0ea2b444935e30ffe329b" target="_blank">56da582</a>.
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/c31d9e492ac1b516324cf6ee785a0f0808dacf1c" target="_blank">c31d9e4</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -566,7 +566,7 @@ Untracked files:
 
 Unstaged changes:
     Modified:   README.md
-    Modified:   analysis/statistic_calibration.Rmd
+    Modified:   analysis/single_position_results.Rmd
     Modified:   code/batch_c_v_c.sh
     Modified:   code/batch_single_pos.sh
     Modified:   code/batch_single_pos_stat.sh
@@ -622,6 +622,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/c31d9e492ac1b516324cf6ee785a0f0808dacf1c/analysis/control_control.Rmd" target="_blank">c31d9e4</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-10
+</td>
+<td>
+wflow_publish("analysis/control_control.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/theandyb/LSCI_pipeline/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/control_control.html" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -956,6 +990,13 @@ Andy Beck
 </table>
 </div>
 </div>
+<pre class="r"><code>df %&gt;%
+  ggplot(aes(x = dev)) +
+  geom_density() +
+  stat_function(fun = dchisq, args = c(3), n = 1000, colour = &quot;red&quot;) + 
+  geom_vline(xintercept = 1, colour = &quot;red&quot;, linetype = 2) +
+  xlab(paste0(&quot;Deviance: &quot;, subtype_print_names(substr(subtype,1,nchar(subtype)-3) )))</code></pre>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-5-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>This looks much more like what we’re expecting! But anyways, let’s
 make these figures for all population/subtype pairs.</p>
 <div id="all" class="section level3">
@@ -1055,12 +1096,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="at_gc" class="section level4">
-<h4>AT_GC</h4>
-</div>
-<div id="near-v-far-1" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-3">
@@ -1100,8 +1135,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-1" class="section level4">
-<h4>Random Controls</h4>
+<div id="at_gc" class="section level4">
+<h4>AT_GC</h4>
+</div>
+<div id="near-v-far-1" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-4">
@@ -1152,11 +1190,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="at_ta" class="section level4">
-<h4>AT_TA</h4>
-</div>
-<div id="near-v-far-2" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-1" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-5">
@@ -1195,9 +1230,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-2" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-6.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-6">
@@ -1248,10 +1280,10 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="gc_at" class="section level4">
-<h4>GC_AT</h4>
+<div id="at_ta" class="section level4">
+<h4>AT_TA</h4>
 </div>
-<div id="near-v-far-3" class="section level4">
+<div id="near-v-far-2" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-7.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1292,7 +1324,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-3" class="section level4">
+<div id="random-controls-2" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1343,12 +1375,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="gc_ta" class="section level4">
-<h4>GC_TA</h4>
-</div>
-<div id="near-v-far-4" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-9.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-9">
@@ -1388,8 +1414,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-4" class="section level4">
-<h4>Random Controls</h4>
+<div id="gc_at" class="section level4">
+<h4>GC_AT</h4>
+</div>
+<div id="near-v-far-3" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-10.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-10">
@@ -1440,11 +1469,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="gc_cg" class="section level4">
-<h4>GC_CG</h4>
-</div>
-<div id="near-v-far-5" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-3" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-11.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-11">
@@ -1483,9 +1509,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-5" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-12.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-12">
@@ -1536,10 +1559,10 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="cpg_gc_at" class="section level4">
-<h4>cpg_GC_AT</h4>
+<div id="gc_ta" class="section level4">
+<h4>GC_TA</h4>
 </div>
-<div id="near-v-far-6" class="section level4">
+<div id="near-v-far-4" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-13.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1580,7 +1603,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-6" class="section level4">
+<div id="random-controls-4" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-14.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1631,12 +1654,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="cpg_gc_ta" class="section level4">
-<h4>cpg_GC_TA</h4>
-</div>
-<div id="near-v-far-7" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-15.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-15">
@@ -1676,8 +1693,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-7" class="section level4">
-<h4>Random Controls</h4>
+<div id="gc_cg" class="section level4">
+<h4>GC_CG</h4>
+</div>
+<div id="near-v-far-5" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-16.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-16">
@@ -1728,11 +1748,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="cpg_gc_cg" class="section level4">
-<h4>cpg_GC_CG</h4>
-</div>
-<div id="near-v-far-8" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-5" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-17.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-17">
@@ -1771,9 +1788,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-8" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-6-18.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-18">
@@ -1824,13 +1838,30 @@ Andy Beck
 </div>
 </div>
 </div>
+<div id="cpg_gc_at" class="section level4">
+<h4>cpg_GC_AT</h4>
+</div>
+<div id="near-v-far-6" class="section level4">
+<h4>Near v Far</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-6-19.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-6-20.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-6-21.png" width="672" style="display: block; margin: auto;" />
+#### cpg_GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-6-22.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-6-23.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-6-24.png" width="672" style="display: block; margin: auto;" />
+#### cpg_GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-6-25.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-6-26.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-6-27.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 </div>
 <div id="afr" class="section level3">
 <h3>AFR</h3>
 <div id="at_cg-1" class="section level4">
 <h4>AT_CG</h4>
 </div>
-<div id="near-v-far-9" class="section level4">
+<div id="near-v-far-7" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1882,7 +1913,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-9" class="section level4">
+<div id="random-controls-6" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1933,12 +1964,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="at_gc-1" class="section level4">
-<h4>AT_GC</h4>
-</div>
-<div id="near-v-far-10" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-3">
@@ -1989,8 +2014,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-10" class="section level4">
-<h4>Random Controls</h4>
+<div id="at_gc-1" class="section level4">
+<h4>AT_GC</h4>
+</div>
+<div id="near-v-far-8" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-4">
@@ -2041,11 +2069,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="at_ta-1" class="section level4">
-<h4>AT_TA</h4>
-</div>
-<div id="near-v-far-11" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-7" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-5">
@@ -2095,9 +2120,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-11" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-6.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-6">
@@ -2148,10 +2170,10 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="gc_at-1" class="section level4">
-<h4>GC_AT</h4>
+<div id="at_ta-1" class="section level4">
+<h4>AT_TA</h4>
 </div>
-<div id="near-v-far-12" class="section level4">
+<div id="near-v-far-9" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-7.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -2203,7 +2225,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-12" class="section level4">
+<div id="random-controls-8" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -2254,12 +2276,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="gc_ta-1" class="section level4">
-<h4>GC_TA</h4>
-</div>
-<div id="near-v-far-13" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-9.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-9">
@@ -2310,8 +2326,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-13" class="section level4">
-<h4>Random Controls</h4>
+<div id="gc_at-1" class="section level4">
+<h4>GC_AT</h4>
+</div>
+<div id="near-v-far-10" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-10.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-10">
@@ -2362,11 +2381,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="gc_cg-1" class="section level4">
-<h4>GC_CG</h4>
-</div>
-<div id="near-v-far-14" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-9" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-11.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-11">
@@ -2416,9 +2432,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-14" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-12.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-12">
@@ -2469,10 +2482,10 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="cpg_gc_at-1" class="section level4">
-<h4>cpg_GC_AT</h4>
+<div id="gc_ta-1" class="section level4">
+<h4>GC_TA</h4>
 </div>
-<div id="near-v-far-15" class="section level4">
+<div id="near-v-far-11" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-13.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -2524,7 +2537,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-15" class="section level4">
+<div id="random-controls-10" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-14.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -2575,12 +2588,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="cpg_gc_ta-1" class="section level4">
-<h4>cpg_GC_TA</h4>
-</div>
-<div id="near-v-far-16" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-15.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-15">
@@ -2631,8 +2638,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-16" class="section level4">
-<h4>Random Controls</h4>
+<div id="gc_cg-1" class="section level4">
+<h4>GC_CG</h4>
+</div>
+<div id="near-v-far-12" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-16.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-16">
@@ -2683,11 +2693,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="cpg_gc_cg-1" class="section level4">
-<h4>cpg_GC_CG</h4>
-</div>
-<div id="near-v-far-17" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-11" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-17.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-17">
@@ -2737,9 +2744,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-17" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-7-18.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-18">
@@ -2790,13 +2794,30 @@ Andy Beck
 </div>
 </div>
 </div>
+<div id="cpg_gc_at-1" class="section level4">
+<h4>cpg_GC_AT</h4>
+</div>
+<div id="near-v-far-13" class="section level4">
+<h4>Near v Far</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-7-19.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-7-20.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-7-21.png" width="672" style="display: block; margin: auto;" />
+#### cpg_GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-7-22.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-7-23.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-7-24.png" width="672" style="display: block; margin: auto;" />
+#### cpg_GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-7-25.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-7-26.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-7-27.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 </div>
 <div id="amr" class="section level3">
 <h3>AMR</h3>
 <div id="at_cg-2" class="section level4">
 <h4>AT_CG</h4>
 </div>
-<div id="near-v-far-18" class="section level4">
+<div id="near-v-far-14" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -2848,7 +2869,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-18" class="section level4">
+<div id="random-controls-12" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -2899,12 +2920,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="at_gc-2" class="section level4">
-<h4>AT_GC</h4>
-</div>
-<div id="near-v-far-19" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-3">
@@ -2955,8 +2970,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-19" class="section level4">
-<h4>Random Controls</h4>
+<div id="at_gc-2" class="section level4">
+<h4>AT_GC</h4>
+</div>
+<div id="near-v-far-15" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-4">
@@ -3007,11 +3025,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="at_ta-2" class="section level4">
-<h4>AT_TA</h4>
-</div>
-<div id="near-v-far-20" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-13" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-5">
@@ -3061,9 +3076,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-20" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-6.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-6">
@@ -3114,10 +3126,10 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="gc_at-2" class="section level4">
-<h4>GC_AT</h4>
+<div id="at_ta-2" class="section level4">
+<h4>AT_TA</h4>
 </div>
-<div id="near-v-far-21" class="section level4">
+<div id="near-v-far-16" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-7.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -3169,7 +3181,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-21" class="section level4">
+<div id="random-controls-14" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -3220,12 +3232,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="gc_ta-2" class="section level4">
-<h4>GC_TA</h4>
-</div>
-<div id="near-v-far-22" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-9.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-9">
@@ -3276,8 +3282,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-22" class="section level4">
-<h4>Random Controls</h4>
+<div id="gc_at-2" class="section level4">
+<h4>GC_AT</h4>
+</div>
+<div id="near-v-far-17" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-10.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-10">
@@ -3328,11 +3337,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="gc_cg-2" class="section level4">
-<h4>GC_CG</h4>
-</div>
-<div id="near-v-far-23" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-15" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-11.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-11">
@@ -3382,9 +3388,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-23" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-12.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-12">
@@ -3435,10 +3438,10 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="cpg_gc_at-2" class="section level4">
-<h4>cpg_GC_AT</h4>
+<div id="gc_ta-2" class="section level4">
+<h4>GC_TA</h4>
 </div>
-<div id="near-v-far-24" class="section level4">
+<div id="near-v-far-18" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-13.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -3490,7 +3493,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-24" class="section level4">
+<div id="random-controls-16" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-14.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -3541,12 +3544,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="cpg_gc_ta-2" class="section level4">
-<h4>cpg_GC_TA</h4>
-</div>
-<div id="near-v-far-25" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-15.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-15">
@@ -3597,8 +3594,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-25" class="section level4">
-<h4>Random Controls</h4>
+<div id="gc_cg-2" class="section level4">
+<h4>GC_CG</h4>
+</div>
+<div id="near-v-far-19" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-16.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-16">
@@ -3649,11 +3649,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="cpg_gc_cg-2" class="section level4">
-<h4>cpg_GC_CG</h4>
-</div>
-<div id="near-v-far-26" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-17" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-17.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-17">
@@ -3703,9 +3700,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-26" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-8-18.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-18">
@@ -3756,13 +3750,30 @@ Andy Beck
 </div>
 </div>
 </div>
+<div id="cpg_gc_at-2" class="section level4">
+<h4>cpg_GC_AT</h4>
+</div>
+<div id="near-v-far-20" class="section level4">
+<h4>Near v Far</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-8-19.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-8-20.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-8-21.png" width="672" style="display: block; margin: auto;" />
+#### cpg_GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-8-22.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-8-23.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-8-24.png" width="672" style="display: block; margin: auto;" />
+#### cpg_GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-8-25.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-8-26.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-8-27.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 </div>
 <div id="eas" class="section level3">
 <h3>EAS</h3>
 <div id="at_cg-3" class="section level4">
 <h4>AT_CG</h4>
 </div>
-<div id="near-v-far-27" class="section level4">
+<div id="near-v-far-21" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -3814,7 +3825,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-27" class="section level4">
+<div id="random-controls-18" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -3865,12 +3876,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="at_gc-3" class="section level4">
-<h4>AT_GC</h4>
-</div>
-<div id="near-v-far-28" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-3">
@@ -3921,8 +3926,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-28" class="section level4">
-<h4>Random Controls</h4>
+<div id="at_gc-3" class="section level4">
+<h4>AT_GC</h4>
+</div>
+<div id="near-v-far-22" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-4">
@@ -3973,11 +3981,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="at_ta-3" class="section level4">
-<h4>AT_TA</h4>
-</div>
-<div id="near-v-far-29" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-19" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-5">
@@ -4027,9 +4032,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-29" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-6.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-6">
@@ -4080,10 +4082,10 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="gc_at-3" class="section level4">
-<h4>GC_AT</h4>
+<div id="at_ta-3" class="section level4">
+<h4>AT_TA</h4>
 </div>
-<div id="near-v-far-30" class="section level4">
+<div id="near-v-far-23" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-7.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -4135,7 +4137,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-30" class="section level4">
+<div id="random-controls-20" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -4186,12 +4188,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="gc_ta-3" class="section level4">
-<h4>GC_TA</h4>
-</div>
-<div id="near-v-far-31" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-9.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-9">
@@ -4242,8 +4238,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-31" class="section level4">
-<h4>Random Controls</h4>
+<div id="gc_at-3" class="section level4">
+<h4>GC_AT</h4>
+</div>
+<div id="near-v-far-24" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-10.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-10">
@@ -4294,11 +4293,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="gc_cg-3" class="section level4">
-<h4>GC_CG</h4>
-</div>
-<div id="near-v-far-32" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-21" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-11.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-11">
@@ -4348,9 +4344,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-32" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-12.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-12">
@@ -4401,10 +4394,10 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="cpg_gc_at-3" class="section level4">
-<h4>cpg_GC_AT</h4>
+<div id="gc_ta-3" class="section level4">
+<h4>GC_TA</h4>
 </div>
-<div id="near-v-far-33" class="section level4">
+<div id="near-v-far-25" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-13.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -4456,7 +4449,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-33" class="section level4">
+<div id="random-controls-22" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-14.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -4507,12 +4500,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="cpg_gc_ta-3" class="section level4">
-<h4>cpg_GC_TA</h4>
-</div>
-<div id="near-v-far-34" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-15.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-15">
@@ -4563,8 +4550,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-34" class="section level4">
-<h4>Random Controls</h4>
+<div id="gc_cg-3" class="section level4">
+<h4>GC_CG</h4>
+</div>
+<div id="near-v-far-26" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-16.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-16">
@@ -4615,11 +4605,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="cpg_gc_cg-3" class="section level4">
-<h4>cpg_GC_CG</h4>
-</div>
-<div id="near-v-far-35" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-23" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-17.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-17">
@@ -4669,9 +4656,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-35" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-9-18.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-18">
@@ -4722,13 +4706,30 @@ Andy Beck
 </div>
 </div>
 </div>
+<div id="cpg_gc_at-3" class="section level4">
+<h4>cpg_GC_AT</h4>
+</div>
+<div id="near-v-far-27" class="section level4">
+<h4>Near v Far</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-9-19.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-9-20.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-9-21.png" width="672" style="display: block; margin: auto;" />
+#### cpg_GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-9-22.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-9-23.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-9-24.png" width="672" style="display: block; margin: auto;" />
+#### cpg_GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-9-25.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-9-26.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-9-27.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 </div>
 <div id="eur" class="section level3">
 <h3>EUR</h3>
 <div id="at_cg-4" class="section level4">
 <h4>AT_CG</h4>
 </div>
-<div id="near-v-far-36" class="section level4">
+<div id="near-v-far-28" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -4769,7 +4770,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-36" class="section level4">
+<div id="random-controls-24" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -4820,12 +4821,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="at_gc-4" class="section level4">
-<h4>AT_GC</h4>
-</div>
-<div id="near-v-far-37" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-3">
@@ -4865,8 +4860,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-37" class="section level4">
-<h4>Random Controls</h4>
+<div id="at_gc-4" class="section level4">
+<h4>AT_GC</h4>
+</div>
+<div id="near-v-far-29" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-4">
@@ -4917,11 +4915,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="at_ta-4" class="section level4">
-<h4>AT_TA</h4>
-</div>
-<div id="near-v-far-38" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-25" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-5">
@@ -4960,9 +4955,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-38" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-6.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-6">
@@ -5013,10 +5005,10 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="gc_at-4" class="section level4">
-<h4>GC_AT</h4>
+<div id="at_ta-4" class="section level4">
+<h4>AT_TA</h4>
 </div>
-<div id="near-v-far-39" class="section level4">
+<div id="near-v-far-30" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-7.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -5057,7 +5049,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-39" class="section level4">
+<div id="random-controls-26" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -5108,12 +5100,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="gc_ta-4" class="section level4">
-<h4>GC_TA</h4>
-</div>
-<div id="near-v-far-40" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-9.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-9">
@@ -5153,8 +5139,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-40" class="section level4">
-<h4>Random Controls</h4>
+<div id="gc_at-4" class="section level4">
+<h4>GC_AT</h4>
+</div>
+<div id="near-v-far-31" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-10.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-10">
@@ -5205,11 +5194,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="gc_cg-4" class="section level4">
-<h4>GC_CG</h4>
-</div>
-<div id="near-v-far-41" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-27" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-11.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-11">
@@ -5248,9 +5234,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-41" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-12.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-12">
@@ -5301,10 +5284,10 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="cpg_gc_at-4" class="section level4">
-<h4>cpg_GC_AT</h4>
+<div id="gc_ta-4" class="section level4">
+<h4>GC_TA</h4>
 </div>
-<div id="near-v-far-42" class="section level4">
+<div id="near-v-far-32" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-13.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -5345,7 +5328,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-42" class="section level4">
+<div id="random-controls-28" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-14.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -5396,12 +5379,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="cpg_gc_ta-4" class="section level4">
-<h4>cpg_GC_TA</h4>
-</div>
-<div id="near-v-far-43" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-15.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-15">
@@ -5441,8 +5418,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-43" class="section level4">
-<h4>Random Controls</h4>
+<div id="gc_cg-4" class="section level4">
+<h4>GC_CG</h4>
+</div>
+<div id="near-v-far-33" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-16.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-16">
@@ -5493,11 +5473,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="cpg_gc_cg-4" class="section level4">
-<h4>cpg_GC_CG</h4>
-</div>
-<div id="near-v-far-44" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-29" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-17.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-17">
@@ -5536,9 +5513,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-44" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-10-18.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-18">
@@ -5589,13 +5563,30 @@ Andy Beck
 </div>
 </div>
 </div>
+<div id="cpg_gc_at-4" class="section level4">
+<h4>cpg_GC_AT</h4>
+</div>
+<div id="near-v-far-34" class="section level4">
+<h4>Near v Far</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-10-19.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-10-20.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-10-21.png" width="672" style="display: block; margin: auto;" />
+#### cpg_GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-10-22.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-10-23.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-10-24.png" width="672" style="display: block; margin: auto;" />
+#### cpg_GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-10-25.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-10-26.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-10-27.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 </div>
 <div id="sas" class="section level3">
 <h3>SAS</h3>
 <div id="at_cg-5" class="section level4">
 <h4>AT_CG</h4>
 </div>
-<div id="near-v-far-45" class="section level4">
+<div id="near-v-far-35" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -5620,6 +5611,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-1.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-1.png" target="_blank">b86709b</a>
@@ -5647,7 +5649,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-45" class="section level4">
+<div id="random-controls-30" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -5674,6 +5676,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-2.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-2.png" target="_blank">b86709b</a>
 </td>
 <td>
@@ -5698,12 +5711,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="at_gc-5" class="section level4">
-<h4>AT_GC</h4>
-</div>
-<div id="near-v-far-46" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-3">
@@ -5727,6 +5734,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-3.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-3.png" target="_blank">b86709b</a>
@@ -5754,8 +5772,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-46" class="section level4">
-<h4>Random Controls</h4>
+<div id="at_gc-5" class="section level4">
+<h4>AT_GC</h4>
+</div>
+<div id="near-v-far-36" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-4">
@@ -5779,6 +5800,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-4.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-4.png" target="_blank">b86709b</a>
@@ -5806,11 +5838,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="at_ta-5" class="section level4">
-<h4>AT_TA</h4>
-</div>
-<div id="near-v-far-47" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-31" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-5">
@@ -5834,6 +5863,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-5.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-5.png" target="_blank">b86709b</a>
@@ -5860,9 +5900,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-47" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-6.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-6">
@@ -5886,6 +5923,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-6.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-6.png" target="_blank">b86709b</a>
@@ -5913,10 +5961,10 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="gc_at-5" class="section level4">
-<h4>GC_AT</h4>
+<div id="at_ta-5" class="section level4">
+<h4>AT_TA</h4>
 </div>
-<div id="near-v-far-48" class="section level4">
+<div id="near-v-far-37" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-7.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -5941,6 +5989,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-7.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-7.png" target="_blank">b86709b</a>
@@ -5968,7 +6027,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-48" class="section level4">
+<div id="random-controls-32" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -5995,6 +6054,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-8.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-8.png" target="_blank">b86709b</a>
 </td>
 <td>
@@ -6019,12 +6089,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="gc_ta-5" class="section level4">
-<h4>GC_TA</h4>
-</div>
-<div id="near-v-far-49" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-9.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-9">
@@ -6048,6 +6112,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-9.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-9.png" target="_blank">b86709b</a>
@@ -6075,8 +6150,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-49" class="section level4">
-<h4>Random Controls</h4>
+<div id="gc_at-5" class="section level4">
+<h4>GC_AT</h4>
+</div>
+<div id="near-v-far-38" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-10.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-10">
@@ -6100,6 +6178,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-10.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-10.png" target="_blank">b86709b</a>
@@ -6127,11 +6216,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="gc_cg-5" class="section level4">
-<h4>GC_CG</h4>
-</div>
-<div id="near-v-far-50" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-33" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-11.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-11">
@@ -6155,6 +6241,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-11.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-11.png" target="_blank">b86709b</a>
@@ -6181,9 +6278,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-50" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-12.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-12">
@@ -6207,6 +6301,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-12.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-12.png" target="_blank">b86709b</a>
@@ -6234,10 +6339,10 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="cpg_gc_at-5" class="section level4">
-<h4>cpg_GC_AT</h4>
+<div id="gc_ta-5" class="section level4">
+<h4>GC_TA</h4>
 </div>
-<div id="near-v-far-51" class="section level4">
+<div id="near-v-far-39" class="section level4">
 <h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-13.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -6262,6 +6367,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-13.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-13.png" target="_blank">b86709b</a>
@@ -6289,7 +6405,7 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-51" class="section level4">
+<div id="random-controls-34" class="section level4">
 <h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-14.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -6316,6 +6432,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-14.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-14.png" target="_blank">b86709b</a>
 </td>
 <td>
@@ -6340,12 +6467,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="cpg_gc_ta-5" class="section level4">
-<h4>cpg_GC_TA</h4>
-</div>
-<div id="near-v-far-52" class="section level4">
-<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-15.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-15">
@@ -6369,6 +6490,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-15.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-15.png" target="_blank">b86709b</a>
@@ -6396,8 +6528,11 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="random-controls-52" class="section level4">
-<h4>Random Controls</h4>
+<div id="gc_cg-5" class="section level4">
+<h4>GC_CG</h4>
+</div>
+<div id="near-v-far-40" class="section level4">
+<h4>Near v Far</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-16.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-16">
@@ -6421,6 +6556,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-16.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-16.png" target="_blank">b86709b</a>
@@ -6448,11 +6594,8 @@ Andy Beck
 </div>
 </div>
 </div>
-<div id="cpg_gc_cg-5" class="section level4">
-<h4>cpg_GC_CG</h4>
-</div>
-<div id="near-v-far-53" class="section level4">
-<h4>Near v Far</h4>
+<div id="random-controls-35" class="section level4">
+<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-17.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-17">
@@ -6476,6 +6619,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-17.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-17.png" target="_blank">b86709b</a>
@@ -6502,9 +6656,6 @@ Andy Beck
 </table>
 </div>
 </div>
-</div>
-<div id="random-controls-53" class="section level4">
-<h4>Random Controls</h4>
 <p><img src="figure/control_control.Rmd/unnamed-chunk-11-18.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-18">
@@ -6528,6 +6679,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/d2dc4ee28327b1c8152887a2299a36c85626d16d/docs/figure/control_control.Rmd/unnamed-chunk-11-18.png" target="_blank">d2dc4ee</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/theandyb/LSCI_pipeline/blob/b86709b209b6150ec52252834c3099ee9f01bc8c/docs/figure/control_control.Rmd/unnamed-chunk-11-18.png" target="_blank">b86709b</a>
@@ -6554,6 +6716,23 @@ Andy Beck
 </table>
 </div>
 </div>
+</div>
+<div id="cpg_gc_at-5" class="section level4">
+<h4>cpg_GC_AT</h4>
+</div>
+<div id="near-v-far-41" class="section level4">
+<h4>Near v Far</h4>
+<p><img src="figure/control_control.Rmd/unnamed-chunk-11-19.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-11-20.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-11-21.png" width="672" style="display: block; margin: auto;" />
+#### cpg_GC_TA #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-11-22.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-11-23.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-11-24.png" width="672" style="display: block; margin: auto;" />
+#### cpg_GC_CG #### Near v Far
+<img src="figure/control_control.Rmd/unnamed-chunk-11-25.png" width="672" style="display: block; margin: auto;" />
+#### Random Controls
+<img src="figure/control_control.Rmd/unnamed-chunk-11-26.png" width="672" style="display: block; margin: auto;" /><img src="figure/control_control.Rmd/unnamed-chunk-11-27.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
