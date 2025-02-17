@@ -296,6 +296,29 @@ pop <- "ALL"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+C to A has the largest overall RE observed across all subtypes for two position models. Let's take a look at the residuals for this position:
+
+```{r}
+df_resid <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_resid %>%
+  ggplot(aes(y = p1, x = p2, fill = res)) +
+  geom_tile() +
+  facet_grid(cols = vars(status)) +
+  scale_fill_distiller(palette = "YlGn", direction = 1)
+
+df_resid %>%
+  select(p1, p2, status, n) %>%
+  pivot_wider(id_cols = c("p1", "p2"), names_from = status, values_from = n) %>%
+  mutate(p_s = singletons / sum(singletons),
+         p_c = controls / sum(controls)) %>%
+  mutate(p_diff = p_s - p_c) %>%
+  ggplot(aes(y = p1, x = p2, fill = p_diff)) +
+  geom_tile() +
+  scale_fill_distiller(palette = "YlGn", direction = 1)
+```
+
+
 #### AFR
 
 ```{r}

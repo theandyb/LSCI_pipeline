@@ -4,19 +4,28 @@
 
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=beckandy@umich.edu
-#SBATCH --mem-per-cpu=1GB
+#SBATCH --mem-per-cpu=2GB
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=22
-#SBATCH --time 25:00:00
-#SBATCH --job-name=all_C_T
+#SBATCH --time 12:00:00
+#SBATCH --job-name=single
 #SBATCH --requeue
 #SBATCH -p main
-#SBATCH -e output/slurm/all_C_T-%A_%a.err
-#SBATCH -o output/slurm/all_C_T-%A_%a.out
+#SBATCH --array=0-53
+#SBATCH -e output/slurm/singlePos-%A_%a.err
+#SBATCH -o output/slurm/singlePos-%A_%a.out
 
-subtype="GC_AT"
-pop="ALL"
+VAR1_VALUES=("AFR" "AMR" "EAS" "EUR" "SAS", "ALL")
+VAR2_VALUES=("AT_CG" "AT_GC" "AT_TA" "GC_AT" "GC_TA" "GC_CG" "cpg_GC_AT" "cpg_GC_TA" "cpg_GC_CG")
 
-echo "Running single position models for subtype ${subtype} in population ${pop}"
+INDEX=$SLURM_ARRAY_TASK_ID
 
-python code/single_position_models_posOnly.py -p ${pop} -t ${subtype} -s ""
+VAR1_INDEX=$(( INDEX / 9 ))
+VAR2_INDEX=$(( INDEX % 9 ))
+
+VAR1=${VAR1_VALUES[$VAR1_INDEX]}
+VAR2=${VAR2_VALUES[$VAR2_INDEX]}
+
+echo "Running single position models for subtype ${VAR2} in population ${VAR1}"
+
+python code/single_position_models_posOnly.py -p ${VAR1} -t ${VAR2} -o output

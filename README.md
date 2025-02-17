@@ -239,6 +239,18 @@ awk '{if($4==1)print("chr"$1"\t"$2"\t"$3) >> "cpg_GC_CG.txt";
 cd ../../../
 ```
 
+#### Generate list of C>T for ALL
+
+```
+cat output/singletons/AFR/all_GC_AT.txt >> output/singletons/ALL/all_GC_AT.txt
+cat output/singletons/AMR/all_GC_AT.txt >> output/singletons/ALL/all_GC_AT.txt
+cat output/singletons/EAS/all_GC_AT.txt >> output/singletons/ALL/all_GC_AT.txt
+cat output/singletons/EUR/all_GC_AT.txt >> output/singletons/ALL/all_GC_AT.txt
+cat output/singletons/SAS/all_GC_AT.txt >> output/singletons/ALL/all_GC_AT.txt
+sort -k1,1V -k 2,2n output/singletons/ALL/all_GC_AT.txt > /tmp/sorted.text
+mv /tmp/sorted.text output/singletons/ALL/all_GC_AT.txt
+```
+
 ### Sample Control Observations
 
 Run for each super-population. In our analyses, we sampled 5 control observations for each singleton.
@@ -267,6 +279,14 @@ python code/sample_control.py -s output/singletons/${pop}/GC_CG.txt -f ${referen
 python code/sample_control.py -s output/singletons/${pop}/cpg_GC_AT.txt -f ${reference} -o output/controls/${pop}/cpg_GC_AT.csv -t "cpg_GC_AT" -n ${n_control}
 python code/sample_control.py -s output/singletons/${pop}/cpg_GC_TA.txt -f ${reference} -o output/controls/${pop}/cpg_GC_TA.csv -t "cpg_GC_TA" -n ${n_control}
 python code/sample_control.py -s output/singletons/${pop}/cpg_GC_CG.txt -f ${reference} -o output/controls/${pop}/cpg_GC_CG.csv -t "cpg_GC_CG" -n ${n_control}
+
+```
+
+```
+n_control=5
+pop="SAS"
+reference="data/reference/masked.fasta"
+python code/sample_control.py -s output/singletons/ALL/all_GC_AT.txt -f ${reference}  -o output/controls/ALL/all_GC_AT.txt -t all_GC_AT -n 5
 ```
 
 ### Generating Position Files
@@ -304,7 +324,7 @@ cd ../../../
 
 ```
 pop="AFR"
-mkdir output/controls/${pop}/pos_files
+#mkdir output/controls/${pop}/pos_files
 cd output/controls/${pop}
 
 typeset -a subtypes
@@ -325,6 +345,30 @@ done
 cd ../../../
 ```
 
+##### Min/Max Controls
+
+```
+pop="AFR"
+#mkdir output/controls/${pop}/pos_files
+cd output/controls/${pop}
+
+typeset -a subtypes
+subtypes=("AT_CG" "AT_GC" "AT_TA")
+for i ("$subtypes[@]"); do
+  print $i
+  awk -v var=$i -F, '{if($4 == "A")print($7) >> "pos_files/"var"_"substr($2,4)".txt.max"; 
+    else if($4 == "T")print($7) >> "pos_files/"var"_rev_"substr($2,4)".txt.max"; }' $i.csv.max
+done
+
+subtypes=("GC_AT" "GC_TA" "GC_CG" "cpg_GC_AT" "cpg_GC_TA" "cpg_GC_CG")
+for i ("$subtypes[@]"); do
+  print $i
+  awk -v var=$i -F, '{if($4 == "C")print($7) >> "pos_files/"var"_"substr($2,4)".txt.max"; 
+    else if($4 == "G")print($7) >> "pos_files/"var"_rev_"substr($2,4)".txt.max"; }' $i.csv.max
+done
+
+cd ../../../
+```
 
 ### Annotating 1kGP Singletons
 
@@ -394,6 +438,26 @@ for filename in output/singletons/AFR/pos_files/*.txt*; do
   cat output/singletons/EAS/pos_files/${f_name} >> output/singletons/ALL/pos_files/${f_name}
   cat output/singletons/EUR/pos_files/${f_name} >> output/singletons/ALL/pos_files/${f_name}
   cat output/singletons/SAS/pos_files/${f_name} >> output/singletons/ALL/pos_files/${f_name}
+done
+```
+
+### Generating combined GC_AT, cpg_GC_AT pos files for ALL
+
+For reference, we'll assess the influence of local sequence influence for C>T mutations without separating CpG and non CpG C sites (i.e. how strong is the CpG effect relative to what we observe in our results?).
+
+```
+for i in `seq 1 22`; do
+cat output/controls/ALL/pos_files/GC_AT_${i}.txt >> output/controls/ALL/pos_files/all_GC_AT_${i}.txt
+cat output/controls/ALL/pos_files/cpg_GC_AT_${i}.txt >> output/controls/ALL/pos_files/all_GC_AT_${i}.txt
+cat output/controls/ALL/pos_files/GC_AT_rev_${i}.txt >> output/controls/ALL/pos_files/all_GC_AT_rev_${i}.txt
+cat output/controls/ALL/pos_files/cpg_GC_AT_rev_${i}.txt >> output/controls/ALL/pos_files/all_GC_AT_rev_${i}.txt
+done
+
+for i in `seq 1 22`; do
+cat output/singletons/ALL/pos_files/GC_AT_${i}.txt >> output/singletons/ALL/pos_files/all_GC_AT_${i}.txt
+cat output/singletons/ALL/pos_files/cpg_GC_AT_${i}.txt >> output/singletons/ALL/pos_files/all_GC_AT_${i}.txt
+cat output/singletons/ALL/pos_files/GC_AT_rev_${i}.txt >> output/singletons/ALL/pos_files/all_GC_AT_rev_${i}.txt
+cat output/singletons/ALL/pos_files/cpg_GC_AT_rev_${i}.txt >> output/singletons/ALL/pos_files/all_GC_AT_rev_${i}.txt
 done
 ```
 

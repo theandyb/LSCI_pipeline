@@ -22,7 +22,7 @@ def main(ref_prefix = "chr"):
     if(subtype[0:3]=="cpg"):
         cpg_bool = True
     if(subtype[0:3]=="all"):
-        all_bool = False
+        all_bool = True
     current_chrom = 1
     output_list = []
     out_file = args.output

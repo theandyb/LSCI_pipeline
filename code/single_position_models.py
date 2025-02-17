@@ -23,14 +23,14 @@ def c_pos(subtype, chromosome, pop, base_dir, suffix):
   input_dir = "{}/controls/{}/pos_files/".format(base_dir, pop)
   f_name = input_dir + subtype + "_" + str(chromosome) + ".txt" + suffix
   pos_list = pd.read_csv(f_name, header=None, names = ['pos'], usecols=['pos']).squeeze("columns")
-  return pos_list
+  return pos_list.astype(int)
 
 def s_pos(subtype, chromosome, pop, base_dir):
   """Get the positions for singletons for a given subtype"""
   input_dir = "{}/singletons/{}/pos_files/".format(base_dir, pop)
   f_name = input_dir + subtype + "_" + str(chromosome) + ".txt"
   pos_list = pd.read_csv(f_name, header=None, names = ['pos'], usecols=['pos']).squeeze("columns")
-  return pos_list
+  return pos_list.astype(int)
 
 def complement(nucleotide):
   complements = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}

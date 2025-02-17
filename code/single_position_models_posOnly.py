@@ -9,11 +9,11 @@ from patsy import dmatrices
 import statsmodels.formula.api as smf
 import ray
 import argparse
-
+import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--population", help="1kGP Super Population", required=True, choices=["ALL","AFR","AMR","EAS","EUR","SAS"])
-parser.add_argument("-t", "--subtype", help="Mutation subtype", choices=["AT_CG", "AT_GC", "AT_TA", "GC_AT", "GC_TA", "GC_CG", "cpg_GC_AT", "cpg_GC_TA", "cpg_GC_CG"], required=True)
+parser.add_argument("-t", "--subtype", help="Mutation subtype", choices=["AT_CG", "AT_GC", "AT_TA", "GC_AT", "GC_TA", "GC_CG", "cpg_GC_AT", "cpg_GC_TA", "cpg_GC_CG", "all_GC_AT"], required=True)
 parser.add_argument("-o", "--output", help="Output base directory", required=True)
 parser.add_argument("-s", "--suffix", default = "")
 args = parser.parse_args()
@@ -29,14 +29,14 @@ def c_pos(subtype, chromosome, pop, base_dir, suffix):
   input_dir = "{}/controls/{}/pos_files/".format(base_dir, pop)
   f_name = input_dir + subtype + "_" + str(chromosome) + ".txt" + suffix
   pos_list = pd.read_csv(f_name, header=None, names = ['pos'], usecols=['pos']).squeeze("columns")
-  return pos_list
+  return pos_list.astype(int)
 
 def s_pos(subtype, chromosome, pop, base_dir):
   """Get the positions for singletons for a given subtype"""
   input_dir = "{}/singletons/{}/pos_files/".format(base_dir, pop)
   f_name = input_dir + subtype + "_" + str(chromosome) + ".txt"
   pos_list = pd.read_csv(f_name, header=None, names = ['pos'], usecols=['pos']).squeeze("columns")
-  return pos_list
+  return pos_list.astype(int)
 
 def complement(nucleotide):
   complements = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
@@ -119,7 +119,8 @@ def get_count_all(subtype, offset, pop, base_dir,  status = "singleton", suffix 
     futures = [get_count_table_singletons.remote(i, subtype, offset, pop, base_dir) for i in range(1,23)]
     results = pd.DataFrame.from_dict(ray.get(futures)).sum(axis=0)
   else:
-    futures = [get_count_table_control.remote(i, subtype, offset, pop, base_dir, suffix = suffix) for i in range(1,23)]
+    futures = [get_count_table_control.remote(i, subtype, offset, pop, base_dir, suffix) for i in range(1,23)]
+    # chromosome, subtype, offset, pop, base_dir, suffix
     results = pd.DataFrame.from_dict(ray.get(futures)).sum(axis=0)
   return(results)
 
@@ -138,17 +139,19 @@ def fit_model_all(subtype, offset, pop, base_dir, suffix = ""):
   df2['p'] = df2['singletons'] / df2['singletons'].sum()
   df2['q'] = df2['controls'] / df2['controls'].sum()
   df2['tv'] = abs(df2['p'] - df2['q'])
+  df2['reSimp'] = df2['p'] * np.log(df2['p'] / df2['q'])
   tot_var = df2['tv'].sum()
   max_d = round(df2['tv'].max(),5)
   mean_var = df2['tv'].mean()
-  return {"dev":mod.deviance, "singletons":n_s, "controls":n_c, "offset":offset, "tot_var":tot_var,"mean_var": mean_var ,"max_var": max_d}
+  simple_re = df2['reSimp'].sum()
+  return {"dev":mod.deviance, "singletons":n_s, "controls":n_c, "offset":offset, "tot_var":tot_var,"mean_var": mean_var ,"max_var": max_d, "simple_re":simple_re}
 
 ray.init(num_cpus=22)
 results = []
 
 print("Running models for subtype: {} in population: {}".format(subtype, pop))
 for offset in range(1, 1001):
-  print(offset)
+  print(offset, flush=True)
   results.append(fit_model_all(subtype, offset * -1, pop, base_dir, suffix = suffix))
   if subtype.startswith("cpg") and offset == 1:
     continue

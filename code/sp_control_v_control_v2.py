@@ -110,8 +110,8 @@ ray.init(num_cpus=22)
 results = []
 
 print("Running models for subtype: {} in population: {}".format(subtype, pop))
-for offset in range(1, 101):
-  print(offset)
+for offset in range(1, 1001):
+  print(offset, flush=True)
   results.append(fit_model_all(subtype, offset * -1, pop, base_dir))
   if subtype.startswith("cpg") and offset == 1:
     continue

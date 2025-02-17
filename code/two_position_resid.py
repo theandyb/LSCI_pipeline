@@ -27,14 +27,14 @@ def c_pos(subtype, chromosome, pop):
   input_dir = "output/controls/{}/pos_files/".format(pop)
   f_name = input_dir + subtype + "_" + str(chromosome) + ".txt"
   pos_list = pd.read_csv(f_name, header=0, names = ['pos'], usecols=['pos']).squeeze("columns")
-  return pos_list
+  return pos_list.astype(int)
   
 def s_pos(subtype, chromosome, pop = "ALL"):
   """Get the positions for singletons for a given subtype"""
   input_dir = "output/singletons/{}/pos_files/".format(pop)
   f_name = input_dir + subtype + "_" + str(chromosome) + ".txt"
   pos_list = pd.read_csv(f_name, header=None, names = ['pos'], usecols=['pos']).squeeze("columns")
-  return pos_list
+  return pos_list.astype(int)
 
 def complement(nucleotide):
   complements = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
@@ -148,7 +148,7 @@ ray.init(num_cpus=22)
 print("Running models for subtype: {} in population: {}".format(subtype, pop))
 
 for p1 in range(-20, 20):
-  print("p1: {}".format(p1))
+  print("p1: {}".format(p1), flush = True)
   if p1 == 0:
     continue
   if subtype.startswith("cpg") and p1 == 1:
@@ -158,7 +158,7 @@ for p1 in range(-20, 20):
       continue
     if subtype.startswith("cpg") and p2 == 1:
       continue
-    print("p2: {}".format(p2))
+    print("p2: {}".format(p2), flush = True)
     file_name = out_dir + subtype + "_p" + str(p1) + "_q" + str(p2) + ".csv"
     if path.exists(file_name) and path.getsize(file_name) > 0:
       continue

@@ -7,7 +7,7 @@
 #SBATCH --mem-per-cpu=2GB
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=22
-#SBATCH --time 01:00:00
+#SBATCH --time 06:00:00
 #SBATCH --job-name=control_v_control
 #SBATCH --requeue
 #SBATCH -p main
@@ -15,7 +15,7 @@
 #SBATCH -e output/slurm/cvc-%A_%a.err
 #SBATCH -o output/slurm/cvc-%A_%a.out
 
-VAR1_VALUES=("AFR" "AMR" "EAS" "EUR" "SAS", "ALL")
+VAR1_VALUES=("AFR" "AMR" "EAS" "EUR" "SAS" "ALL")
 VAR2_VALUES=("AT_CG" "AT_GC" "AT_TA" "GC_AT" "GC_TA" "GC_CG" "cpg_GC_AT" "cpg_GC_TA" "cpg_GC_CG")
 
 INDEX=$SLURM_ARRAY_TASK_ID

@@ -27,14 +27,14 @@ def c_pos(subtype, chromosome, pop):
   input_dir = "output/controls/{}/pos_files/".format(pop)
   f_name = input_dir + subtype + "_" + str(chromosome) + ".txt"
   pos_list = pd.read_csv(f_name, header=0, names = ['pos'], usecols=['pos']).squeeze("columns")
-  return pos_list
+  return pos_list.astype(int)
   
 def s_pos(subtype, chromosome, pop = "ALL"):
   """Get the positions for singletons for a given subtype"""
   input_dir = "output/singletons/{}/pos_files/".format(pop)
   f_name = input_dir + subtype + "_" + str(chromosome) + ".txt"
   pos_list = pd.read_csv(f_name, header=None, names = ['pos'], usecols=['pos']).squeeze("columns")
-  return pos_list
+  return pos_list.astype(int)
 
 def complement(nucleotide):
   complements = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
@@ -319,7 +319,7 @@ if start_p == 19 and start_q == 20:
 ray.init(num_cpus=22)
 
 for p1 in range(start_p, 20):
-  print("p1: {}".format(p1))
+  print("p1: {}".format(p1), flush=True)
   if p1 == 0:
     start_q += 1
     continue
@@ -331,7 +331,7 @@ for p1 in range(start_p, 20):
       continue
     if subtype.startswith("cpg") and p2 == 1:
       continue
-    print("p2: {}".format(p2))
+    print("p2: {}".format(p2), flush=True)
     results.append(fit_model_all(subtype, p1, p2, pop = pop))
     final = pd.DataFrame.from_dict(results)
     final.to_csv(file_name, index = False, mode = 'a', header=False)
