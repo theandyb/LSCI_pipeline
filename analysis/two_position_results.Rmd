@@ -87,7 +87,7 @@ main_analysis <- function(base_dir, pop, subtype, max_rp = 20){
 ## Results
 
 ```{r}
-max_rp <- 20
+max_rp <- 10
 ```
 
 
