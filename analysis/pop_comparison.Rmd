@@ -9,12 +9,18 @@ editor_options:
 
 ## Introduction
 
-In this document we are primariliy interested in assessing the consistency of results across the five 1kGP super-populations. Namely, for the single position models:
+In this document we are primarily interested in assessing the consistency of results across the five 1kGP super-populations. Namely, for the single position models:
 
 1. Are the patterns of influence seen across positions shared across populations?
 2. At individual positions, are the same nucleotides the most influential across populations?
 
 The questions we ask for the two position models are similar.
+
+Addendum:
+
+* What differences might be interesting to suss out?
+* What if we utilize our model framework to identify differences between the populations?
+* Are "windows of significance consistent across populations?
 
 ## Setup and Data Functions
 
@@ -26,6 +32,16 @@ library(ggpubfigs) # functions for color blind friendly palettes
 library(reactable) # table output for html
 library(knitr) # PDF table output
 library(corrr)
+
+subtype_print_names <- function(st){
+  if(str_starts(st, "AT")){
+    return(paste0("A → ", str_sub(st, 4, 4)))
+  } else if(str_starts(st, "GC")){
+    return(paste0("C → ", str_sub(st, 5, 5)))
+  } else{
+    return(paste0("CpG → ", str_sub(st, 9, 9), "pG"))
+  }
+}
 ```
 
 ### Single Position Functions
@@ -42,34 +58,99 @@ sp_deviance_df_load <- function(res_dir, pop, subtype){
   return(df)
 }
 
+sp_re_single_pop <- function(res_dir, subtype, pop){
+  df <- sp_deviance_df_load(res_dir, pop, subtype) %>%
+    mutate(pop=pop)
+}
+
 sp_re_all_pop <- function(res_dir, subtype){
-  df_ALL <- sp_deviance_df_load(res_dir, "ALL", subtype) %>%
-    select(offset, re, is_sig) %>%
-    mutate(pop="ALL")
+  df_ALL <- sp_re_single_pop(res_dir, subtype, "ALL")
   
-  df_AFR <- sp_deviance_df_load(res_dir, "AFR", subtype) %>%
-    select(offset, re, is_sig) %>%
-    mutate(pop="AFR")
+  df_AFR <- sp_re_single_pop(res_dir, subtype, "AFR")
   
-  df_AMR <- sp_deviance_df_load(res_dir, "AMR", subtype) %>%
-    select(offset, re, is_sig) %>%
-    mutate(pop="AMR")
+  df_AMR <- sp_re_single_pop(res_dir, subtype, "AMR")
   
-  df_EAS <- sp_deviance_df_load(res_dir, "EAS", subtype) %>%
-    select(offset, re, is_sig) %>%
-    mutate(pop="EAS")
+  df_EAS <- sp_re_single_pop(res_dir, subtype, "EAS")
   
-  df_EUR <- sp_deviance_df_load(res_dir, "EUR", subtype) %>%
-    select(offset, re, is_sig) %>%
-    mutate(pop="EUR")
+  df_EUR <- sp_re_single_pop(res_dir, subtype, "EUR")
   
-  df_SAS <- sp_deviance_df_load(res_dir, "SAS", subtype) %>%
-    select(offset, re, is_sig) %>%
-    mutate(pop="SAS")
+  df_SAS <- sp_re_single_pop(res_dir, subtype, "SAS")
   
   #return(bind_rows(df_ALL, df_AFR, df_AMR, df_EAS, df_EUR, df_SAS) %>%
   #  pivot_wider(id_cols = offset, names_from = pop, values_from = re))
   return(bind_rows(df_ALL, df_AFR, df_AMR, df_EAS, df_EUR, df_SAS))
+}
+
+get_pos_cc <- function(control_control, pop, subtype){
+  f_name <- paste0(control_control, "/", pop, "/", subtype, "_v2.csv")
+  df <- read_csv(f_name, show_col_types = FALSE) %>%
+           mutate(re = dev / (2 * (singletons + controls) ))
+  return(df)
+}
+
+get_pos_cc_pops <- function(control_control, subtype){
+  pops <- c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")
+  results <- vector("list", length(pops))
+  names(results) <- pops
+  for(p in pops){
+    results[[p]] <- get_pos_cc(control_control, p, subtype)
+    results[[p]]$pop <- p
+  }
+  return(bind_rows(results))
+}
+
+plot_re_cc_autosig <- function(df_res, df_cc, p, win_size = 10, sig_frac = 2/10){
+  df_cc_sub <- df_cc %>% filter(pop == p) %>%
+    mutate(is_sig = "Control")
+  df_res_sub <- df_res %>% filter(pop == p)
+  q_95_c <- quantile(df_cc_sub$re, 0.95)
+  
+  frac_sig_df <- data.frame(offset = min(df_res_sub$offset):(max(df_res_sub$offset) - win_size), frac_sig = 0)
+  frac_sig_df <- frac_sig_df %>%
+    filter(offset %in% df_res_sub$offset)
+  
+  for(i in 1:length(frac_sig_df$offset)){
+    win_low = frac_sig_df$offset[i]
+    win_high = win_low + win_size
+    tmp_vec <- df_res_sub %>%
+      filter(offset >= win_low, offset <= win_high) %>%
+      mutate(is_sig = re > q_95_c) %>%
+      pull(is_sig)
+    frac_sig_df$frac_sig[i] <- sum(tmp_vec) / length(tmp_vec)
+  }
+  # frac_sig_df %>%
+  #   ggplot(aes(x = offset, y = frac_sig)) +
+  #   geom_point()
+  left_boundary <- frac_sig_df %>%
+    filter(frac_sig >= sig_frac) %>%
+    pull(offset) %>%
+    min()
+  right_boundary <- frac_sig_df %>%
+    filter(frac_sig >= sig_frac) %>%
+    pull(offset) %>%
+    max()
+  p <- df_res_sub %>%
+    mutate(is_sig = as.character(is_sig)) %>%
+    bind_rows(df_cc_sub) %>%
+    ggplot(aes(x = offset, y = re, colour = is_sig, alpha = is_sig)) +
+    geom_point() +
+    scale_alpha_manual(values = c(0.2, 1, 1)) + guides(alpha="none") + 
+    scale_color_manual(values = friendly_pals$wong_eight[c(3,1:2)]) +
+    theme_classic() +
+    theme(text = element_text(family = "Arial"),
+        legend.position = "inside",
+        legend.position.inside = c(.85, .8)) +
+    labs(colour = "Significant") +
+    xlab("Relative Position") +
+    ylab("Relative Entropy (log10)") +
+    ggtitle(paste0("Population: ", p, "; Subtype: ", subtype)) +
+    scale_y_log10() +
+    geom_hline(yintercept = q_95_c, colour = friendly_pals$wong_eight[3], linetype = 2) +
+    geom_vline(xintercept = left_boundary, colour = friendly_pals$wong_eight[2]) +
+    geom_vline(xintercept = right_boundary, colour = friendly_pals$wong_eight[2]) +
+    annotate("text", x = left_boundary - 110, y = min(df_res_sub$re), label = left_boundary) + 
+    annotate("text", x = right_boundary + 100, y = min(df_res_sub$re), label = right_boundary) 
+  return(p)
 }
 ```
 
@@ -122,6 +203,41 @@ sp_resid_all_pop <- function(res_dir, subtype, rp = c(-500:-1, 1:500)){
 }
 ```
 
+Load population-population models:
+
+```{r}
+load_pop_pop_resid <- function(pop_pop_dir, pop1, pop2, subtype, rp){
+  f_name <- paste0(pop_pop_dir, "/", pop1, "_", pop2, "/", subtype, "_rp_", rp, ".csv")
+  df <- read_csv(f_name, show_col_types = FALSE)
+  return(df)
+}
+
+pop_pop_dev <- function(pop_pop_dir, pop1, pop2, subtype, rp){
+  df <- load_pop_pop_resid(pop_pop_dir, pop1, pop2, subtype, rp)
+  dev_stat <- sum((df$res)^2)
+  n_singletons <- df %>%
+    filter(status == "singletons") %>%
+    pull(n) %>%
+    sum()
+  n_controls <- df %>%
+    filter(status == "singletons") %>%
+    pull(n) %>%
+    sum()
+  re_val <- dev_stat / (2*(n_singletons + n_controls))
+  is_sig <- dev_stat > qchisq(0.95, 3)
+  return(data.frame(rp = rp, dev = dev_stat, re = re_val, singletons = n_singletons, controls = n_controls, is_sig = is_sig))
+}
+
+load_pop_pop_df <- function(pop_pop_dir, pop1, pop2, subtype, rps = c(-20:-1,1:20)){
+  results <- vector(mode = "list", length = length(rps))
+  for(i in 1:length(rps)){
+    results[[i]] <- pop_pop_dev(pop_pop_dir, pop1, pop2, subtype, rps[i])
+  }
+  return(bind_rows(results))
+}
+```
+
+
 ### Two position functions
 
 ```{r}
@@ -148,6 +264,8 @@ tp_resid_df_load <- function(base_dir, pop, subtype, p, q){
 base_dir = "output"
 single_pos_dir = paste0(base_dir, "/single_pos")
 two_pos_dir = paste0(base_dir, "/two_pos")
+control_control <- paste0(base_dir, "/single_pos_cc")
+pop_pop_dir <- paste0(base_dir, "/single_pos_pp")
 ```
 
 ## Single Position Results
@@ -160,6 +278,25 @@ subtype <- "AT_CG"
 single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10)){
   df_res <- sp_re_all_pop(single_pos_dir, subtype)
   df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = rp)
+  df_cc <- get_pos_cc_pops(control_control, subtype)
+  
+  p <- df_res %>%
+    filter(abs(offset) < 20) %>%
+    mutate(pop = factor(pop, levels = c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS"))) %>%
+    ggplot(aes(x = offset, y = dev, colour = pop)) +
+    geom_point() +
+    geom_line() +
+    scale_colour_manual(values = friendly_pal("vibrant_seven")) +
+    theme_classic() +
+    labs(colour = "Population") +
+    xlab("Relative Position") +
+    ylab("Deviance")
+  print(p)
+  
+  p <- p +
+    ylab("Deviance (log 10)") + 
+    scale_y_log10()
+  print(p)
   
   p <- df_res %>%
     filter(abs(offset) < 20) %>%
@@ -174,24 +311,62 @@ single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10)){
     ylab("Relative Entropy")
   print(p)
   
+  p <- p +
+    ylab("Relative Entropy (log10)") +
+    scale_y_log10()
+  print(p)
+  
   p <- df_res %>%
-    filter(abs(offset) < 20) %>%
     mutate(pop = factor(pop, levels = c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS"))) %>%
     ggplot(aes(x = offset, y = re, colour = pop)) +
-    geom_point() +
-    geom_line() +
+    geom_point(alpha = 0.5) +
     scale_colour_manual(values = friendly_pal("vibrant_seven")) +
     theme_classic() +
     labs(colour = "Population") +
     xlab("Relative Position") +
-    ylab("Relative Entropy") +
+    ylab("Relative Entropy")
+  print(p)
+  
+  p <- p +
+    ylab("Relative Entropy (log10)") +
     scale_y_log10()
   print(p)
   
+  cat("Correlation of RE statistics across all flanking positions +/- 1000 bp:\n")
   df_res %>%
     select(-is_sig) %>%
     pivot_wider(id_cols = offset, names_from = pop, values_from = re) %>%
     correlate(method = "pearson", diagonal = 1) %>%
+    focus(-offset, mirror = T) %>%
+    shave() %>%
+    fashion() %>%
+    print()
+  
+  df_res %>%
+    select(-is_sig) %>%
+    pivot_wider(id_cols = offset, names_from = pop, values_from = re) %>%
+    correlate(method = "spearman", diagonal = 1) %>%
+    focus(-offset, mirror = T) %>%
+    shave() %>%
+    fashion() %>%
+    print()
+  
+  cat("Correlation of RE statistics across all flanking positions +/- 20 bp:\n")
+  df_res %>%
+    filter(abs(offset) < 20) %>%
+    select(-is_sig) %>%
+    pivot_wider(id_cols = offset, names_from = pop, values_from = re) %>%
+    correlate(method = "pearson", diagonal = 1) %>%
+    focus(-offset, mirror = T) %>%
+    shave() %>%
+    fashion() %>%
+    print()
+  
+  df_res %>%
+    filter(abs(offset) < 20) %>%
+    select(-is_sig) %>%
+    pivot_wider(id_cols = offset, names_from = pop, values_from = re) %>%
+    correlate(method = "spearman", diagonal = 1) %>%
     focus(-offset, mirror = T) %>%
     shave() %>%
     fashion() %>%
@@ -225,18 +400,7 @@ single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10)){
   print(gridExtra::grid.arrange(grobs = plts))
   
   for(poppy in c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
-    p <- df_res %>%
-      filter(pop == poppy) %>%
-      ggplot(aes(x = offset, y = re, colour = is_sig)) +
-      geom_point() +
-      scale_colour_manual(values = friendly_pal("vibrant_seven")) +
-      theme_classic() +
-      labs(colour = "Significant") +
-      xlab("Relative Position") +
-      ylab("Relative Entropy") +
-      ggtitle(paste0("Population: ", poppy, "; Subtype: ", subtype)) +
-      scale_y_log10()
-    print(p)
+    print(plot_re_cc_autosig(df_res, df_cc, poppy, win_size = 10, sig_frac = 2 / 10))
   }
   
   df_resid %>%
@@ -258,6 +422,37 @@ single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10)){
 
 single_pos_analysis(subtype)
 ```
+
+```{r}
+df_res <- sp_re_all_pop(single_pos_dir, subtype)
+df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = c(-10:-1, 1:10))
+df_cc <- get_pos_cc_pops(control_control, subtype)
+
+
+# for(poppy in c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
+#   print(poppy)
+#   print(plot_re_cc_autosig(df_res, df_cc, poppy))
+# }
+
+df_res %>%
+  filter(abs(offset) <= 20) %>%
+  group_by(pop) %>%
+  mutate(rank_re = dense_rank(desc(re))) %>%
+  mutate(pop = factor(pop, levels = c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS"))) %>%
+  filter(pop != "ALL") %>%
+  ggplot(aes(x = rank_re, y = offset, colour = pop)) +
+  geom_point(alpha = 0.5) +
+  geom_line() +
+  scale_colour_manual(values = friendly_pal("vibrant_seven")) +
+  theme_classic() +
+  labs(colour = "Population") +
+  ylab("Relative Position") +
+  xlab("Rank")
+  
+```
+
+
+For the A > C subtype, we observe a high correlation of relative entropy statistics at the +/- 20
 
 ### A > G
 
@@ -314,3 +509,164 @@ single_pos_analysis(subtype, rp = c(-10:-1,2:10))
 subtype <- "cpg_GC_CG"
 single_pos_analysis(subtype, rp = c(-10:-1,2:10))
 ```
+
+## Single Position Pop-Pop Model
+
+In the following section, we utilize our log-linear model framework to assess consistency of single position model results by fitting models of the following form (in R's model notation):
+
+```
+glm(count ~ nuc*status + nuc*population + status*population, family = poisson())
+```
+
+Here, in contrast to our single population models, we allow for the distributions of nucleotides at flanking positions to differ between the singletons and the controls via the inclusion of a nucleotide-by-status interaction. The devinace statistic for this model evaluates the fit of this model to a fully-saturated model, in which in addition to the above terms is a three-way interaction between nucleotide, population, and status; under the null hypothesis that these parameters are 0, we assume that any nucleotide by status interaction is shared across the populations. Note that we fit these models for pairs of populations, so the degree of freedom for this test statistic is three (three two-way interactions between nucleotide and status, one population parameter to interact with).
+
+```{r}
+pop_combs <- combn(c("AFR", "AMR", "EAS", "EUR", "SAS"), 2) %>% t() 
+```
+
+
+### A > C
+
+```{r}
+subtype <- "AT_CG"
+
+pop_pop_analysis <- function(pop_pop_dir, pop1, pop2, subtype, rps = c(-20:-1, 1:20)){
+  df <- load_pop_pop_df(pop_pop_dir, pop1, pop2, subtype, rps)
+
+  p <- df %>%
+    ggplot(aes(x = rp, y = dev, colour = is_sig)) +
+    geom_point() +
+    scale_color_manual(values = friendly_pals$wong_eight[c(1:2)]) +
+    theme_classic() +
+    theme(text = element_text(family = "Arial"),
+          legend.position = "inside",
+          legend.position.inside = c(.85, .8)) +
+    labs(colour = "Significant") +
+    xlab("Relative Position") +
+    ylab("Deviance") + 
+    ggtitle(paste0(subtype_print_names(subtype), ": ", pop1, ", ", pop2))
+  return(p)
+}
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 <- pop_combs[i,1]
+  pop2 <- pop_combs[i,2]
+  p <- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 1:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = "red", linetype = 2) 
+  print(p)
+}
+```
+
+
+### A > G
+
+```{r}
+subtype <- "AT_GC"
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 <- pop_combs[i,1]
+  pop2 <- pop_combs[i,2]
+  p <- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 1:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = "red", linetype = 2) 
+  print(p)
+}
+```
+
+### A > T
+
+```{r}
+subtype <- "AT_TA"
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 <- pop_combs[i,1]
+  pop2 <- pop_combs[i,2]
+  p <- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 1:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = "red", linetype = 2) 
+  print(p)
+}
+```
+
+### C > T
+
+```{r}
+subtype <- "GC_AT"
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 <- pop_combs[i,1]
+  pop2 <- pop_combs[i,2]
+  p <- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 1:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = "red", linetype = 2) 
+  print(p)
+}
+```
+
+### C > A
+
+```{r}
+subtype <- "GC_TA"
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 <- pop_combs[i,1]
+  pop2 <- pop_combs[i,2]
+  p <- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 1:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = "red", linetype = 2) 
+  print(p)
+}
+```
+
+### C > G
+
+```{r}
+subtype <- "GC_CG"
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 <- pop_combs[i,1]
+  pop2 <- pop_combs[i,2]
+  p <- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 1:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = "red", linetype = 2) 
+  print(p)
+}
+```
+
+### CpG > TpG
+
+```{r}
+subtype <- "GC_AT"
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 <- pop_combs[i,1]
+  pop2 <- pop_combs[i,2]
+  p <- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 2:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = "red", linetype = 2) 
+  print(p)
+}
+```
+
+### CpG > ApG
+
+```{r}
+subtype <- "GC_TA"
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 <- pop_combs[i,1]
+  pop2 <- pop_combs[i,2]
+  p <- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 2:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = "red", linetype = 2) 
+  print(p)
+}
+```
+
+### CpG > GpG
+
+```{r}
+subtype <- "GC_CG"
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 <- pop_combs[i,1]
+  pop2 <- pop_combs[i,2]
+  p <- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 2:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = "red", linetype = 2) 
+  print(p)
+}
+```
+
