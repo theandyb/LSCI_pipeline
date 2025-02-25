@@ -275,6 +275,130 @@ pop_pop_dir <- paste0(base_dir, "/single_pos_pp")
 ```{r}
 subtype <- "AT_CG"
 
+residual_analysis <- function(df_resid, subtype){
+  grouped_resid_df <- df_resid %>%
+    filter(status == "singletons", pop != "ALL") %>%
+    group_by(rp, nuc) %>%
+    arrange(pop, rp, nuc)
+  
+  populations <- unique(grouped_resid_df$pop)
+  
+  corr_matrix <- expand.grid(pop1 = populations, pop2 = populations) %>%
+    filter(pop1 != pop2) %>% 
+    rowwise() %>%
+    mutate(cor_val = cor(
+      grouped_resid_df$res[grouped_resid_df$pop == pop1],
+      grouped_resid_df$res[grouped_resid_df$pop == pop2],
+      method = "pearson"
+    )) %>%
+    ungroup()
+  
+  p1 <- corr_matrix %>%
+    filter(pop1 != "AFR", pop2 != "SAS") %>%
+    rowwise() %>%
+    mutate(pop1 = as.character(pop1), pop2 = as.character(pop2)) %>%
+    mutate(cor_val = ifelse(pop2 > pop1, NA, cor_val)) %>%
+    ggplot(aes(x = pop1, y = pop2, fill = cor_val)) +
+    geom_tile() +
+    scale_fill_distiller(palette = "Reds", na.value = "white", direction = 1, limits = c(0,1)) +
+    theme_classic() +
+    xlab("") +
+    ylab("") +
+    ggtitle(paste0(subtype_print_names(subtype), "; Pearson Correlation"))
+  
+  corr_matrix <- expand.grid(pop1 = populations, pop2 = populations) %>%
+    filter(pop1 != pop2) %>% 
+    rowwise() %>%
+    mutate(cor_val = cor(
+      grouped_resid_df$res[grouped_resid_df$pop == pop1],
+      grouped_resid_df$res[grouped_resid_df$pop == pop2],
+      method = "spearman"
+    )) %>%
+    ungroup()
+  
+  p2 <- corr_matrix %>%
+    filter(pop1 != "AFR", pop2 != "SAS") %>%
+    rowwise() %>%
+    mutate(pop1 = as.character(pop1), pop2 = as.character(pop2)) %>%
+    mutate(cor_val = ifelse(pop2 > pop1, NA, cor_val)) %>%
+    ggplot(aes(x = pop1, y = pop2, fill = cor_val)) +
+    geom_tile() +
+    scale_fill_distiller(palette = "Reds", na.value = "white", direction = 1, limits = c(0,1)) +
+    theme_classic() +
+    xlab("") +
+    ylab("") +
+    ggtitle(paste0(subtype_print_names(subtype), "; Spearman Correlation"))
+  
+  corr_at_pos <- data.frame(rp = unique(grouped_resid_df$rp), 
+                            AFR_AMR = 0,
+                            AFR_EAS = 0,
+                            AFR_EUR = 0,
+                            AFR_SAS = 0,
+                            AMR_EAS = 0,
+                            AMR_EUR = 0,
+                            AMR_SAS = 0,
+                            EAS_EUR = 0,
+                            EAS_SAS = 0,
+                            EUR_SAS = 0)
+  for(i in 1:length(corr_at_pos$rp)){
+    df2 <- grouped_resid_df %>%
+      filter(rp == corr_at_pos$rp[i]) %>%
+      ungroup() %>%
+      select(nuc, pop, res) %>%
+      pivot_wider(names_from = pop, values_from = res)
+    
+    corr_at_pos$AFR_AMR[i] <- cor(df2$AFR, df2$AMR, method = "pearson")
+    corr_at_pos$AFR_EAS[i] <- cor(df2$AFR, df2$EAS, method = "pearson")
+    corr_at_pos$AFR_EUR[i] <- cor(df2$AFR, df2$EUR, method = "pearson")
+    corr_at_pos$AFR_SAS[i] <- cor(df2$AFR, df2$SAS, method = "pearson")
+    corr_at_pos$AMR_EAS[i] <- cor(df2$AMR, df2$EAS, method = "pearson")
+    corr_at_pos$AMR_EUR[i] <- cor(df2$AMR, df2$EUR, method = "pearson")
+    corr_at_pos$AMR_SAS[i] <- cor(df2$AMR, df2$SAS, method = "pearson")
+    corr_at_pos$EAS_EUR[i] <- cor(df2$EAS, df2$EUR, method = "pearson")
+    corr_at_pos$EAS_SAS[i] <- cor(df2$EAS, df2$SAS, method = "pearson")
+    corr_at_pos$EUR_SAS[i] <- cor(df2$EUR, df2$SAS, method = "pearson")
+  }
+  
+  p3 <- corr_at_pos %>% 
+    pivot_longer(-rp, names_to = "pops", values_to = "cor") %>%
+    separate(pops, into = c("pop1", "pop2"), sep = "_") %>%
+    ggplot(aes(x = rp, y = cor)) + 
+    geom_point() +
+    ylim(c(0,1)) + 
+    facet_grid(rows = vars(pop2), cols = vars(pop1)) +
+    ggtitle(paste0(subtype_print_names(subtype), "; Pearson Correlation"))
+  
+  for(i in 1:length(corr_at_pos$rp)){
+    df2 <- grouped_resid_df %>%
+      filter(rp == corr_at_pos$rp[i]) %>%
+      ungroup() %>%
+      select(nuc, pop, res) %>%
+      pivot_wider(names_from = pop, values_from = res)
+    
+    corr_at_pos$AFR_AMR[i] <- cor(df2$AFR, df2$AMR, method = "spearman")
+    corr_at_pos$AFR_EAS[i] <- cor(df2$AFR, df2$EAS, method = "spearman")
+    corr_at_pos$AFR_EUR[i] <- cor(df2$AFR, df2$EUR, method = "spearman")
+    corr_at_pos$AFR_SAS[i] <- cor(df2$AFR, df2$SAS, method = "spearman")
+    corr_at_pos$AMR_EAS[i] <- cor(df2$AMR, df2$EAS, method = "spearman")
+    corr_at_pos$AMR_EUR[i] <- cor(df2$AMR, df2$EUR, method = "spearman")
+    corr_at_pos$AMR_SAS[i] <- cor(df2$AMR, df2$SAS, method = "spearman")
+    corr_at_pos$EAS_EUR[i] <- cor(df2$EAS, df2$EUR, method = "spearman")
+    corr_at_pos$EAS_SAS[i] <- cor(df2$EAS, df2$SAS, method = "spearman")
+    corr_at_pos$EUR_SAS[i] <- cor(df2$EUR, df2$SAS, method = "spearman")
+  }
+  
+  p4 <- corr_at_pos %>% 
+    pivot_longer(-rp, names_to = "pops", values_to = "cor") %>%
+    separate(pops, into = c("pop1", "pop2"), sep = "_") %>%
+    ggplot(aes(x = rp, y = cor)) + 
+    geom_point() +
+    ylim(c(0,1)) + 
+    facet_grid(rows = vars(pop2), cols = vars(pop1)) +
+    ggtitle(paste0(subtype_print_names(subtype), "; Spearman Correlation"))
+  
+  return(list(p1 = p1, p2 = p2, p3 = p3, p4 = p4))
+}
+
 single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10)){
   df_res <- sp_re_all_pop(single_pos_dir, subtype)
   df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = rp)
@@ -418,6 +542,13 @@ single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10)){
     shave() %>%
     fashion(decimals = 3) %>%
     print()
+  
+  resid_plots <- residual_analysis(df_resid, subtype)
+
+  print(resid_plots$p1)
+  print(resid_plots$p2)
+  print(resid_plots$p3)
+  print(resid_plots$p4)
 }
 
 single_pos_analysis(subtype)
@@ -428,6 +559,13 @@ df_res <- sp_re_all_pop(single_pos_dir, subtype)
 df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = c(-10:-1, 1:10))
 df_cc <- get_pos_cc_pops(control_control, subtype)
 
+
+# resid_plots <- residual_analysis(df_resid, subtype)
+# 
+# print(resid_plots$p1)
+# print(resid_plots$p2)
+# print(resid_plots$p3)
+# print(resid_plots$p4)
 
 # for(poppy in c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
 #   print(poppy)
