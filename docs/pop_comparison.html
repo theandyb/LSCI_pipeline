@@ -382,7 +382,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-01-21
+<strong>Last updated:</strong> 2025-02-24
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -513,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree57ede4f04a652b27b1eae913cdcb562cecd7dc85targetblank57ede4fa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreef9cd459f53c6589ef1fdc6b3ce5c9c52e88090a9targetblankf9cd459a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/57ede4f04a652b27b1eae913cdcb562cecd7dc85" target="_blank">57ede4f</a>
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/f9cd459f53c6589ef1fdc6b3ce5c9c52e88090a9" target="_blank">f9cd459</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree57ede4f04a652b27b1eae913cdcb562cecd7dc85targetblank57ede4fa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreef9cd459f53c6589ef1fdc6b3ce5c9c52e88090a9targetblankf9cd459a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -531,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/57ede4f04a652b27b1eae913cdcb562cecd7dc85" target="_blank">57ede4f</a>.
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/f9cd459f53c6589ef1fdc6b3ce5c9c52e88090a9" target="_blank">f9cd459</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -554,10 +554,21 @@ Ignored files:
     Ignored:    output/controls/
     Ignored:    output/figs/
     Ignored:    output/single_pos/
+    Ignored:    output/single_pos_cc/
+    Ignored:    output/single_pos_pp/
     Ignored:    output/singletons/
     Ignored:    output/slurm/
+    Ignored:    output/three_pos/
     Ignored:    output/two_pos/
     Ignored:    scratch/
+
+Untracked files:
+    Untracked:  analysis/tvd_other_metrics.Rmd
+    Untracked:  code/single_pos_pop_pop.py
+
+Unstaged changes:
+    Modified:   analysis/single_position_results.Rmd
+    Modified:   analysis/two_position_results.Rmd
 
 </code></pre>
 <p>
@@ -603,6 +614,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/f9cd459f53c6589ef1fdc6b3ce5c9c52e88090a9/analysis/pop_comparison.Rmd" target="_blank">f9cd459</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-24
+</td>
+<td>
+wflow_publish("analysis/pop_comparison.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/theandyb/LSCI_pipeline/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/pop_comparison.html" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -697,7 +742,7 @@ wflow_publish(c("analysis/pop_comparison.Rmd", "analysis/index.Rmd"))
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>In this document we are primariliy interested in assessing the
+<p>In this document we are primarily interested in assessing the
 consistency of results across the five 1kGP super-populations. Namely,
 for the single position models:</p>
 <ol style="list-style-type: decimal">
@@ -707,6 +752,13 @@ populations?</li>
 influential across populations?</li>
 </ol>
 <p>The questions we ask for the two position models are similar.</p>
+<p>Addendum:</p>
+<ul>
+<li>What differences might be interesting to suss out?</li>
+<li>What if we utilize our model framework to identify differences
+between the populations?</li>
+<li>Are “windows of significance consistent across populations?</li>
+</ul>
 </div>
 <div id="setup-and-data-functions" class="section level2">
 <h2>Setup and Data Functions</h2>
@@ -732,7 +784,17 @@ The following object is masked from &#39;package:ggplot2&#39;:
     theme_grey</code></pre>
 <pre class="r"><code>library(reactable) # table output for html
 library(knitr) # PDF table output
-library(corrr)</code></pre>
+library(corrr)
+
+subtype_print_names &lt;- function(st){
+  if(str_starts(st, &quot;AT&quot;)){
+    return(paste0(&quot;A → &quot;, str_sub(st, 4, 4)))
+  } else if(str_starts(st, &quot;GC&quot;)){
+    return(paste0(&quot;C → &quot;, str_sub(st, 5, 5)))
+  } else{
+    return(paste0(&quot;CpG → &quot;, str_sub(st, 9, 9), &quot;pG&quot;))
+  }
+}</code></pre>
 </div>
 <div id="single-position-functions" class="section level3">
 <h3>Single Position Functions</h3>
@@ -746,34 +808,99 @@ library(corrr)</code></pre>
   return(df)
 }
 
+sp_re_single_pop &lt;- function(res_dir, subtype, pop){
+  df &lt;- sp_deviance_df_load(res_dir, pop, subtype) %&gt;%
+    mutate(pop=pop)
+}
+
 sp_re_all_pop &lt;- function(res_dir, subtype){
-  df_ALL &lt;- sp_deviance_df_load(res_dir, &quot;ALL&quot;, subtype) %&gt;%
-    select(offset, re, is_sig) %&gt;%
-    mutate(pop=&quot;ALL&quot;)
+  df_ALL &lt;- sp_re_single_pop(res_dir, subtype, &quot;ALL&quot;)
   
-  df_AFR &lt;- sp_deviance_df_load(res_dir, &quot;AFR&quot;, subtype) %&gt;%
-    select(offset, re, is_sig) %&gt;%
-    mutate(pop=&quot;AFR&quot;)
+  df_AFR &lt;- sp_re_single_pop(res_dir, subtype, &quot;AFR&quot;)
   
-  df_AMR &lt;- sp_deviance_df_load(res_dir, &quot;AMR&quot;, subtype) %&gt;%
-    select(offset, re, is_sig) %&gt;%
-    mutate(pop=&quot;AMR&quot;)
+  df_AMR &lt;- sp_re_single_pop(res_dir, subtype, &quot;AMR&quot;)
   
-  df_EAS &lt;- sp_deviance_df_load(res_dir, &quot;EAS&quot;, subtype) %&gt;%
-    select(offset, re, is_sig) %&gt;%
-    mutate(pop=&quot;EAS&quot;)
+  df_EAS &lt;- sp_re_single_pop(res_dir, subtype, &quot;EAS&quot;)
   
-  df_EUR &lt;- sp_deviance_df_load(res_dir, &quot;EUR&quot;, subtype) %&gt;%
-    select(offset, re, is_sig) %&gt;%
-    mutate(pop=&quot;EUR&quot;)
+  df_EUR &lt;- sp_re_single_pop(res_dir, subtype, &quot;EUR&quot;)
   
-  df_SAS &lt;- sp_deviance_df_load(res_dir, &quot;SAS&quot;, subtype) %&gt;%
-    select(offset, re, is_sig) %&gt;%
-    mutate(pop=&quot;SAS&quot;)
+  df_SAS &lt;- sp_re_single_pop(res_dir, subtype, &quot;SAS&quot;)
   
   #return(bind_rows(df_ALL, df_AFR, df_AMR, df_EAS, df_EUR, df_SAS) %&gt;%
   #  pivot_wider(id_cols = offset, names_from = pop, values_from = re))
   return(bind_rows(df_ALL, df_AFR, df_AMR, df_EAS, df_EUR, df_SAS))
+}
+
+get_pos_cc &lt;- function(control_control, pop, subtype){
+  f_name &lt;- paste0(control_control, &quot;/&quot;, pop, &quot;/&quot;, subtype, &quot;_v2.csv&quot;)
+  df &lt;- read_csv(f_name, show_col_types = FALSE) %&gt;%
+           mutate(re = dev / (2 * (singletons + controls) ))
+  return(df)
+}
+
+get_pos_cc_pops &lt;- function(control_control, subtype){
+  pops &lt;- c(&quot;ALL&quot;, &quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;)
+  results &lt;- vector(&quot;list&quot;, length(pops))
+  names(results) &lt;- pops
+  for(p in pops){
+    results[[p]] &lt;- get_pos_cc(control_control, p, subtype)
+    results[[p]]$pop &lt;- p
+  }
+  return(bind_rows(results))
+}
+
+plot_re_cc_autosig &lt;- function(df_res, df_cc, p, win_size = 10, sig_frac = 2/10){
+  df_cc_sub &lt;- df_cc %&gt;% filter(pop == p) %&gt;%
+    mutate(is_sig = &quot;Control&quot;)
+  df_res_sub &lt;- df_res %&gt;% filter(pop == p)
+  q_95_c &lt;- quantile(df_cc_sub$re, 0.95)
+  
+  frac_sig_df &lt;- data.frame(offset = min(df_res_sub$offset):(max(df_res_sub$offset) - win_size), frac_sig = 0)
+  frac_sig_df &lt;- frac_sig_df %&gt;%
+    filter(offset %in% df_res_sub$offset)
+  
+  for(i in 1:length(frac_sig_df$offset)){
+    win_low = frac_sig_df$offset[i]
+    win_high = win_low + win_size
+    tmp_vec &lt;- df_res_sub %&gt;%
+      filter(offset &gt;= win_low, offset &lt;= win_high) %&gt;%
+      mutate(is_sig = re &gt; q_95_c) %&gt;%
+      pull(is_sig)
+    frac_sig_df$frac_sig[i] &lt;- sum(tmp_vec) / length(tmp_vec)
+  }
+  # frac_sig_df %&gt;%
+  #   ggplot(aes(x = offset, y = frac_sig)) +
+  #   geom_point()
+  left_boundary &lt;- frac_sig_df %&gt;%
+    filter(frac_sig &gt;= sig_frac) %&gt;%
+    pull(offset) %&gt;%
+    min()
+  right_boundary &lt;- frac_sig_df %&gt;%
+    filter(frac_sig &gt;= sig_frac) %&gt;%
+    pull(offset) %&gt;%
+    max()
+  p &lt;- df_res_sub %&gt;%
+    mutate(is_sig = as.character(is_sig)) %&gt;%
+    bind_rows(df_cc_sub) %&gt;%
+    ggplot(aes(x = offset, y = re, colour = is_sig, alpha = is_sig)) +
+    geom_point() +
+    scale_alpha_manual(values = c(0.2, 1, 1)) + guides(alpha=&quot;none&quot;) + 
+    scale_color_manual(values = friendly_pals$wong_eight[c(3,1:2)]) +
+    theme_classic() +
+    theme(text = element_text(family = &quot;Arial&quot;),
+        legend.position = &quot;inside&quot;,
+        legend.position.inside = c(.85, .8)) +
+    labs(colour = &quot;Significant&quot;) +
+    xlab(&quot;Relative Position&quot;) +
+    ylab(&quot;Relative Entropy (log10)&quot;) +
+    ggtitle(paste0(&quot;Population: &quot;, p, &quot;; Subtype: &quot;, subtype)) +
+    scale_y_log10() +
+    geom_hline(yintercept = q_95_c, colour = friendly_pals$wong_eight[3], linetype = 2) +
+    geom_vline(xintercept = left_boundary, colour = friendly_pals$wong_eight[2]) +
+    geom_vline(xintercept = right_boundary, colour = friendly_pals$wong_eight[2]) +
+    annotate(&quot;text&quot;, x = left_boundary - 110, y = min(df_res_sub$re), label = left_boundary) + 
+    annotate(&quot;text&quot;, x = right_boundary + 100, y = min(df_res_sub$re), label = right_boundary) 
+  return(p)
 }</code></pre>
 <p>Load position-level residuals:</p>
 <pre class="r"><code>sp_resid_df_load &lt;- function(res_dir, pop, subtype, rp){
@@ -820,6 +947,36 @@ sp_resid_all_pop &lt;- function(res_dir, subtype, rp = c(-500:-1, 1:500)){
   
   return(bind_rows(df_ALL, df_AFR, df_AMR, df_EAS, df_EUR, df_SAS))
 }</code></pre>
+<p>Load population-population models:</p>
+<pre class="r"><code>load_pop_pop_resid &lt;- function(pop_pop_dir, pop1, pop2, subtype, rp){
+  f_name &lt;- paste0(pop_pop_dir, &quot;/&quot;, pop1, &quot;_&quot;, pop2, &quot;/&quot;, subtype, &quot;_rp_&quot;, rp, &quot;.csv&quot;)
+  df &lt;- read_csv(f_name, show_col_types = FALSE)
+  return(df)
+}
+
+pop_pop_dev &lt;- function(pop_pop_dir, pop1, pop2, subtype, rp){
+  df &lt;- load_pop_pop_resid(pop_pop_dir, pop1, pop2, subtype, rp)
+  dev_stat &lt;- sum((df$res)^2)
+  n_singletons &lt;- df %&gt;%
+    filter(status == &quot;singletons&quot;) %&gt;%
+    pull(n) %&gt;%
+    sum()
+  n_controls &lt;- df %&gt;%
+    filter(status == &quot;singletons&quot;) %&gt;%
+    pull(n) %&gt;%
+    sum()
+  re_val &lt;- dev_stat / (2*(n_singletons + n_controls))
+  is_sig &lt;- dev_stat &gt; qchisq(0.95, 3)
+  return(data.frame(rp = rp, dev = dev_stat, re = re_val, singletons = n_singletons, controls = n_controls, is_sig = is_sig))
+}
+
+load_pop_pop_df &lt;- function(pop_pop_dir, pop1, pop2, subtype, rps = c(-20:-1,1:20)){
+  results &lt;- vector(mode = &quot;list&quot;, length = length(rps))
+  for(i in 1:length(rps)){
+    results[[i]] &lt;- pop_pop_dev(pop_pop_dir, pop1, pop2, subtype, rps[i])
+  }
+  return(bind_rows(results))
+}</code></pre>
 </div>
 <div id="two-position-functions" class="section level3">
 <h3>Two position functions</h3>
@@ -843,7 +1000,9 @@ tp_resid_df_load &lt;- function(base_dir, pop, subtype, p, q){
 <h3>Paths</h3>
 <pre class="r"><code>base_dir = &quot;output&quot;
 single_pos_dir = paste0(base_dir, &quot;/single_pos&quot;)
-two_pos_dir = paste0(base_dir, &quot;/two_pos&quot;)</code></pre>
+two_pos_dir = paste0(base_dir, &quot;/two_pos&quot;)
+control_control &lt;- paste0(base_dir, &quot;/single_pos_cc&quot;)
+pop_pop_dir &lt;- paste0(base_dir, &quot;/single_pos_pp&quot;)</code></pre>
 </div>
 </div>
 <div id="single-position-results" class="section level2">
@@ -855,6 +1014,25 @@ two_pos_dir = paste0(base_dir, &quot;/two_pos&quot;)</code></pre>
 single_pos_analysis &lt;- function(subtype, rp = c(-10:-1, 1:10)){
   df_res &lt;- sp_re_all_pop(single_pos_dir, subtype)
   df_resid &lt;- sp_resid_all_pop(single_pos_dir, subtype, rp = rp)
+  df_cc &lt;- get_pos_cc_pops(control_control, subtype)
+  
+  p &lt;- df_res %&gt;%
+    filter(abs(offset) &lt; 20) %&gt;%
+    mutate(pop = factor(pop, levels = c(&quot;ALL&quot;, &quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;))) %&gt;%
+    ggplot(aes(x = offset, y = dev, colour = pop)) +
+    geom_point() +
+    geom_line() +
+    scale_colour_manual(values = friendly_pal(&quot;vibrant_seven&quot;)) +
+    theme_classic() +
+    labs(colour = &quot;Population&quot;) +
+    xlab(&quot;Relative Position&quot;) +
+    ylab(&quot;Deviance&quot;)
+  print(p)
+  
+  p &lt;- p +
+    ylab(&quot;Deviance (log 10)&quot;) + 
+    scale_y_log10()
+  print(p)
   
   p &lt;- df_res %&gt;%
     filter(abs(offset) &lt; 20) %&gt;%
@@ -869,24 +1047,62 @@ single_pos_analysis &lt;- function(subtype, rp = c(-10:-1, 1:10)){
     ylab(&quot;Relative Entropy&quot;)
   print(p)
   
+  p &lt;- p +
+    ylab(&quot;Relative Entropy (log10)&quot;) +
+    scale_y_log10()
+  print(p)
+  
   p &lt;- df_res %&gt;%
-    filter(abs(offset) &lt; 20) %&gt;%
     mutate(pop = factor(pop, levels = c(&quot;ALL&quot;, &quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;))) %&gt;%
     ggplot(aes(x = offset, y = re, colour = pop)) +
-    geom_point() +
-    geom_line() +
+    geom_point(alpha = 0.5) +
     scale_colour_manual(values = friendly_pal(&quot;vibrant_seven&quot;)) +
     theme_classic() +
     labs(colour = &quot;Population&quot;) +
     xlab(&quot;Relative Position&quot;) +
-    ylab(&quot;Relative Entropy&quot;) +
+    ylab(&quot;Relative Entropy&quot;)
+  print(p)
+  
+  p &lt;- p +
+    ylab(&quot;Relative Entropy (log10)&quot;) +
     scale_y_log10()
   print(p)
   
+  cat(&quot;Correlation of RE statistics across all flanking positions +/- 1000 bp:\n&quot;)
   df_res %&gt;%
     select(-is_sig) %&gt;%
     pivot_wider(id_cols = offset, names_from = pop, values_from = re) %&gt;%
     correlate(method = &quot;pearson&quot;, diagonal = 1) %&gt;%
+    focus(-offset, mirror = T) %&gt;%
+    shave() %&gt;%
+    fashion() %&gt;%
+    print()
+  
+  df_res %&gt;%
+    select(-is_sig) %&gt;%
+    pivot_wider(id_cols = offset, names_from = pop, values_from = re) %&gt;%
+    correlate(method = &quot;spearman&quot;, diagonal = 1) %&gt;%
+    focus(-offset, mirror = T) %&gt;%
+    shave() %&gt;%
+    fashion() %&gt;%
+    print()
+  
+  cat(&quot;Correlation of RE statistics across all flanking positions +/- 20 bp:\n&quot;)
+  df_res %&gt;%
+    filter(abs(offset) &lt; 20) %&gt;%
+    select(-is_sig) %&gt;%
+    pivot_wider(id_cols = offset, names_from = pop, values_from = re) %&gt;%
+    correlate(method = &quot;pearson&quot;, diagonal = 1) %&gt;%
+    focus(-offset, mirror = T) %&gt;%
+    shave() %&gt;%
+    fashion() %&gt;%
+    print()
+  
+  df_res %&gt;%
+    filter(abs(offset) &lt; 20) %&gt;%
+    select(-is_sig) %&gt;%
+    pivot_wider(id_cols = offset, names_from = pop, values_from = re) %&gt;%
+    correlate(method = &quot;spearman&quot;, diagonal = 1) %&gt;%
     focus(-offset, mirror = T) %&gt;%
     shave() %&gt;%
     fashion() %&gt;%
@@ -920,18 +1136,7 @@ single_pos_analysis &lt;- function(subtype, rp = c(-10:-1, 1:10)){
   print(gridExtra::grid.arrange(grobs = plts))
   
   for(poppy in c(&quot;ALL&quot;, &quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;)){
-    p &lt;- df_res %&gt;%
-      filter(pop == poppy) %&gt;%
-      ggplot(aes(x = offset, y = re, colour = is_sig)) +
-      geom_point() +
-      scale_colour_manual(values = friendly_pal(&quot;vibrant_seven&quot;)) +
-      theme_classic() +
-      labs(colour = &quot;Significant&quot;) +
-      xlab(&quot;Relative Position&quot;) +
-      ylab(&quot;Relative Entropy&quot;) +
-      ggtitle(paste0(&quot;Population: &quot;, poppy, &quot;; Subtype: &quot;, subtype)) +
-      scale_y_log10()
-    print(p)
+    print(plot_re_cc_autosig(df_res, df_cc, poppy, win_size = 10, sig_frac = 2 / 10))
   }
   
   df_resid %&gt;%
@@ -951,178 +1156,6 @@ single_pos_analysis &lt;- function(subtype, rp = c(-10:-1, 1:10)){
     print()
 }
 
-single_pos_analysis(subtype)</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
-Past versions of unnamed-chunk-6-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-6-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-6-1.png" target="_blank">76579d5</a>
-</td>
-<td>
-Andy Beck
-</td>
-<td>
-2025-01-21
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-2">
-Past versions of unnamed-chunk-6-2.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-6-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-6-2.png" target="_blank">76579d5</a>
-</td>
-<td>
-Andy Beck
-</td>
-<td>
-2025-01-21
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>Correlation computed with
-• Method: &#39;pearson&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR 1.00 1.00                    
-3  AMR 1.00 1.00 1.00               
-4  EAS 1.00  .99  .99 1.00          
-5  EUR 1.00 1.00 1.00  .99 1.00     
-6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
-<pre><code>Correlation computed with
-• Method: &#39;spearman&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR  .72 1.00                    
-3  AMR  .60  .50 1.00               
-4  EAS  .68  .54  .49 1.00          
-5  EUR  .66  .54  .49  .55 1.00     
-6  SAS  .68  .55  .51  .54  .53 1.00</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-3">
-Past versions of unnamed-chunk-6-3.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-6-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-6-3.png" target="_blank">76579d5</a>
-</td>
-<td>
-Andy Beck
-</td>
-<td>
-2025-01-21
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
-    z     cells    name           grob
-1   1 (1-1,1-1) arrange gtable[layout]
-2   2 (1-1,2-2) arrange gtable[layout]
-3   3 (1-1,3-3) arrange gtable[layout]
-4   4 (2-2,1-1) arrange gtable[layout]
-5   5 (2-2,2-2) arrange gtable[layout]
-6   6 (2-2,3-3) arrange gtable[layout]
-7   7 (3-3,1-1) arrange gtable[layout]
-8   8 (3-3,2-2) arrange gtable[layout]
-9   9 (3-3,3-3) arrange gtable[layout]
-10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-6-9.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code>Correlation computed with
-• Method: &#39;pearson&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
-1  ALL 1.000                              
-2  AFR  .951 1.000                        
-3  AMR  .951  .995 1.000                  
-4  EAS  .940  .975  .985 1.000            
-5  EUR  .948  .988  .996  .989 1.000      
-6  SAS  .939  .988  .976  .949  .968 1.000</code></pre>
-<pre><code>Correlation computed with
-• Method: &#39;spearman&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
-1  ALL 1.000                              
-2  AFR  .984 1.000                        
-3  AMR  .983  .995 1.000                  
-4  EAS  .976  .983  .980 1.000            
-5  EUR  .982  .988  .991  .985 1.000      
-6  SAS  .982  .990  .983  .972  .981 1.000</code></pre>
-</div>
-<div id="a-g" class="section level3">
-<h3>A &gt; G</h3>
-<pre class="r"><code>subtype &lt;- &quot;AT_GC&quot;
 single_pos_analysis(subtype)</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1200,26 +1233,6 @@ Andy Beck
 </table>
 </div>
 </div>
-<pre><code>Correlation computed with
-• Method: &#39;pearson&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR 1.00 1.00                    
-3  AMR 1.00 1.00 1.00               
-4  EAS 1.00 1.00 1.00 1.00          
-5  EUR 1.00 1.00 1.00 1.00 1.00     
-6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
-<pre><code>Correlation computed with
-• Method: &#39;spearman&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR  .78 1.00                    
-3  AMR  .70  .63 1.00               
-4  EAS  .75  .62  .60 1.00          
-5  EUR  .73  .63  .60  .62 1.00     
-6  SAS  .75  .63  .63  .64  .62 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-3">
@@ -1258,6 +1271,210 @@ Andy Beck
 </table>
 </div>
 </div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-4">
+Past versions of unnamed-chunk-7-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-7-4.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-5">
+Past versions of unnamed-chunk-7-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-7-5.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-6">
+Past versions of unnamed-chunk-7-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-7-6.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>Correlation of RE statistics across all flanking positions +/- 1000 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00  .99  .99 1.00          
+5  EUR 1.00 1.00 1.00  .99 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .72 1.00                    
+3  AMR  .60  .50 1.00               
+4  EAS  .68  .54  .49 1.00          
+5  EUR  .66  .54  .49  .55 1.00     
+6  SAS  .68  .55  .51  .54  .53 1.00
+Correlation of RE statistics across all flanking positions +/- 20 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00  .99  .99 1.00          
+5  EUR 1.00 1.00 1.00  .99 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .99 1.00                    
+3  AMR  .99  .99 1.00               
+4  EAS  .98  .97  .98 1.00          
+5  EUR  .97  .97  .96  .95 1.00     
+6  SAS  .97  .96  .95  .94  .94 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .72 1.00                    
+3  AMR  .60  .50 1.00               
+4  EAS  .68  .54  .49 1.00          
+5  EUR  .66  .54  .49  .55 1.00     
+6  SAS  .68  .55  .51  .54  .53 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-7">
+Past versions of unnamed-chunk-7-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-7-7.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -1270,32 +1487,127 @@ Andy Beck
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-8">
+Past versions of unnamed-chunk-7-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-7-8.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-9">
+Past versions of unnamed-chunk-7-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-7-9.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-10.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-12.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-13.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
 <pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
 1  ALL 1.000                              
-2  AFR  .952 1.000                        
-3  AMR  .952  .999 1.000                  
-4  EAS  .952  .999 1.000 1.000            
-5  EUR  .952  .999  .999  .999 1.000      
-6  SAS  .952  .999 1.000  .999  .999 1.000</code></pre>
+2  AFR  .998 1.000                        
+3  AMR  .997  .995 1.000                  
+4  EAS  .986  .975  .985 1.000            
+5  EUR  .995  .988  .996  .989 1.000      
+6  SAS  .985  .988  .976  .949  .968 1.000</code></pre>
 <pre><code>Correlation computed with
 • Method: &#39;spearman&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
 <pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
 1  ALL 1.000                              
-2  AFR  .988 1.000                        
-3  AMR  .985  .990 1.000                  
-4  EAS  .989  .995  .996 1.000            
-5  EUR  .988  .997  .988  .994 1.000      
-6  SAS  .990  .996  .994  .997  .997 1.000</code></pre>
-</div>
-<div id="a-t" class="section level3">
-<h3>A &gt; T</h3>
-<pre class="r"><code>subtype &lt;- &quot;AT_TA&quot;
-single_pos_analysis(subtype)</code></pre>
+2  AFR  .997 1.000                        
+3  AMR  .995  .995 1.000                  
+4  EAS  .990  .983  .980 1.000            
+5  EUR  .994  .988  .991  .985 1.000      
+6  SAS  .991  .990  .983  .972  .981 1.000</code></pre>
+<pre class="r"><code>df_res &lt;- sp_re_all_pop(single_pos_dir, subtype)
+df_resid &lt;- sp_resid_all_pop(single_pos_dir, subtype, rp = c(-10:-1, 1:10))
+df_cc &lt;- get_pos_cc_pops(control_control, subtype)
+
+
+# for(poppy in c(&quot;ALL&quot;, &quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;)){
+#   print(poppy)
+#   print(plot_re_cc_autosig(df_res, df_cc, poppy))
+# }
+
+df_res %&gt;%
+  filter(abs(offset) &lt;= 20) %&gt;%
+  group_by(pop) %&gt;%
+  mutate(rank_re = dense_rank(desc(re))) %&gt;%
+  mutate(pop = factor(pop, levels = c(&quot;ALL&quot;, &quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;))) %&gt;%
+  filter(pop != &quot;ALL&quot;) %&gt;%
+  ggplot(aes(x = rank_re, y = offset, colour = pop)) +
+  geom_point(alpha = 0.5) +
+  geom_line() +
+  scale_colour_manual(values = friendly_pal(&quot;vibrant_seven&quot;)) +
+  theme_classic() +
+  labs(colour = &quot;Population&quot;) +
+  ylab(&quot;Relative Position&quot;) +
+  xlab(&quot;Rank&quot;)</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
@@ -1334,139 +1646,12 @@ Andy Beck
 </table>
 </div>
 </div>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-2">
-Past versions of unnamed-chunk-8-2.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-8-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-8-2.png" target="_blank">76579d5</a>
-</td>
-<td>
-Andy Beck
-</td>
-<td>
-2025-01-21
-</td>
-</tr>
-</tbody>
-</table>
+<p>For the A &gt; C subtype, we observe a high correlation of relative
+entropy statistics at the +/- 20</p>
 </div>
-</div>
-<pre><code>Correlation computed with
-• Method: &#39;pearson&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR 1.00 1.00                    
-3  AMR 1.00 1.00 1.00               
-4  EAS 1.00 1.00 1.00 1.00          
-5  EUR 1.00 1.00 1.00 1.00 1.00     
-6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
-<pre><code>Correlation computed with
-• Method: &#39;spearman&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR  .73 1.00                    
-3  AMR  .60  .54 1.00               
-4  EAS  .68  .54  .49 1.00          
-5  EUR  .67  .53  .52  .53 1.00     
-6  SAS  .66  .54  .49  .51  .52 1.00</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-3">
-Past versions of unnamed-chunk-8-3.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-8-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/theandyb/LSCI_pipeline/blob/76579d5e6e199049974b0d639aba207b6e8c4072/docs/figure/pop_comparison.Rmd/unnamed-chunk-8-3.png" target="_blank">76579d5</a>
-</td>
-<td>
-Andy Beck
-</td>
-<td>
-2025-01-21
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
-    z     cells    name           grob
-1   1 (1-1,1-1) arrange gtable[layout]
-2   2 (1-1,2-2) arrange gtable[layout]
-3   3 (1-1,3-3) arrange gtable[layout]
-4   4 (2-2,1-1) arrange gtable[layout]
-5   5 (2-2,2-2) arrange gtable[layout]
-6   6 (2-2,3-3) arrange gtable[layout]
-7   7 (3-3,1-1) arrange gtable[layout]
-8   8 (3-3,2-2) arrange gtable[layout]
-9   9 (3-3,3-3) arrange gtable[layout]
-10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-8-9.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code>Correlation computed with
-• Method: &#39;pearson&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
-1  ALL 1.000                              
-2  AFR  .949 1.000                        
-3  AMR  .950  .993 1.000                  
-4  EAS  .949  .989  .993 1.000            
-5  EUR  .951  .994  .997  .994 1.000      
-6  SAS  .951  .993  .998  .996  .997 1.000</code></pre>
-<pre><code>Correlation computed with
-• Method: &#39;spearman&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
-1  ALL 1.000                              
-2  AFR  .980 1.000                        
-3  AMR  .983  .991 1.000                  
-4  EAS  .979  .982  .991 1.000            
-5  EUR  .984  .988  .994  .993 1.000      
-6  SAS  .983  .989  .997  .995  .995 1.000</code></pre>
-</div>
-<div id="c-t" class="section level3">
-<h3>C &gt; T</h3>
-<pre class="r"><code>subtype &lt;- &quot;GC_AT&quot;
+<div id="a-g" class="section level3">
+<h3>A &gt; G</h3>
+<pre class="r"><code>subtype &lt;- &quot;AT_GC&quot;
 single_pos_analysis(subtype)</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1544,26 +1729,6 @@ Andy Beck
 </table>
 </div>
 </div>
-<pre><code>Correlation computed with
-• Method: &#39;pearson&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR 1.00 1.00                    
-3  AMR 1.00  .99 1.00               
-4  EAS 1.00 1.00 1.00 1.00          
-5  EUR 1.00  .99 1.00  .99 1.00     
-6  SAS  .99  .98 1.00  .99 1.00 1.00</code></pre>
-<pre><code>Correlation computed with
-• Method: &#39;spearman&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR  .76 1.00                    
-3  AMR  .68  .60 1.00               
-4  EAS  .73  .62  .59 1.00          
-5  EUR  .69  .62  .61  .60 1.00     
-6  SAS  .73  .61  .60  .63  .62 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-3">
@@ -1602,6 +1767,210 @@ Andy Beck
 </table>
 </div>
 </div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-4">
+Past versions of unnamed-chunk-9-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-9-4.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-5">
+Past versions of unnamed-chunk-9-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-9-5.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-6">
+Past versions of unnamed-chunk-9-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-9-6.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>Correlation of RE statistics across all flanking positions +/- 1000 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00 1.00 1.00 1.00          
+5  EUR 1.00 1.00 1.00 1.00 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .78 1.00                    
+3  AMR  .70  .63 1.00               
+4  EAS  .75  .62  .60 1.00          
+5  EUR  .73  .63  .60  .62 1.00     
+6  SAS  .75  .63  .63  .64  .62 1.00
+Correlation of RE statistics across all flanking positions +/- 20 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00 1.00 1.00 1.00          
+5  EUR 1.00 1.00 1.00 1.00 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .99 1.00                    
+3  AMR  .99  .99 1.00               
+4  EAS 1.00  .99  .99 1.00          
+5  EUR 1.00  .99  .99  .99 1.00     
+6  SAS 1.00  .99  .99  .99  .99 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .78 1.00                    
+3  AMR  .70  .63 1.00               
+4  EAS  .75  .62  .60 1.00          
+5  EUR  .73  .63  .60  .62 1.00     
+6  SAS  .75  .63  .63  .64  .62 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-7">
+Past versions of unnamed-chunk-9-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-9-7.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -1614,31 +1983,107 @@ Andy Beck
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-8">
+Past versions of unnamed-chunk-9-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-9-8.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-9">
+Past versions of unnamed-chunk-9-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-9-9.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-10.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-12.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-13.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
 <pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
 1  ALL 1.000                              
-2  AFR  .950 1.000                        
-3  AMR  .952  .996 1.000                  
-4  EAS  .950  .994  .995 1.000            
-5  EUR  .951  .994  .997  .994 1.000      
-6  SAS  .950  .992  .997  .992  .999 1.000</code></pre>
+2  AFR 1.000 1.000                        
+3  AMR 1.000  .999 1.000                  
+4  EAS 1.000  .999 1.000 1.000            
+5  EUR 1.000  .999  .999  .999 1.000      
+6  SAS 1.000  .999 1.000  .999  .999 1.000</code></pre>
 <pre><code>Correlation computed with
 • Method: &#39;spearman&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
 <pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
 1  ALL 1.000                              
-2  AFR  .987 1.000                        
-3  AMR  .987  .994 1.000                  
-4  EAS  .986  .991  .992 1.000            
-5  EUR  .988  .996  .994  .994 1.000      
-6  SAS  .987  .993  .992  .993  .997 1.000</code></pre>
+2  AFR  .998 1.000                        
+3  AMR  .995  .990 1.000                  
+4  EAS  .998  .995  .996 1.000            
+5  EUR  .998  .997  .988  .994 1.000      
+6  SAS  .999  .996  .994  .997  .997 1.000</code></pre>
 </div>
-<div id="c-a" class="section level3">
-<h3>C &gt; A</h3>
-<pre class="r"><code>subtype &lt;- &quot;GC_TA&quot;
+<div id="a-t" class="section level3">
+<h3>A &gt; T</h3>
+<pre class="r"><code>subtype &lt;- &quot;AT_TA&quot;
 single_pos_analysis(subtype)</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1716,26 +2161,6 @@ Andy Beck
 </table>
 </div>
 </div>
-<pre><code>Correlation computed with
-• Method: &#39;pearson&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR 1.00 1.00                    
-3  AMR 1.00 1.00 1.00               
-4  EAS 1.00  .99 1.00 1.00          
-5  EUR 1.00 1.00 1.00  .99 1.00     
-6  SAS 1.00  .99 1.00 1.00  .99 1.00</code></pre>
-<pre><code>Correlation computed with
-• Method: &#39;spearman&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR  .76 1.00                    
-3  AMR  .64  .55 1.00               
-4  EAS  .71  .61  .56 1.00          
-5  EUR  .68  .60  .55  .56 1.00     
-6  SAS  .69  .57  .56  .58  .58 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-3">
@@ -1774,6 +2199,210 @@ Andy Beck
 </table>
 </div>
 </div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-4">
+Past versions of unnamed-chunk-10-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-10-4.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-5">
+Past versions of unnamed-chunk-10-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-10-5.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-6">
+Past versions of unnamed-chunk-10-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-10-6.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>Correlation of RE statistics across all flanking positions +/- 1000 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00 1.00 1.00 1.00          
+5  EUR 1.00 1.00 1.00 1.00 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .73 1.00                    
+3  AMR  .60  .54 1.00               
+4  EAS  .68  .54  .49 1.00          
+5  EUR  .67  .53  .52  .53 1.00     
+6  SAS  .66  .54  .49  .51  .52 1.00
+Correlation of RE statistics across all flanking positions +/- 20 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00 1.00 1.00 1.00          
+5  EUR 1.00 1.00 1.00 1.00 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR  .98  .98 1.00               
+4  EAS 1.00  .99  .98 1.00          
+5  EUR  .99  .99  .98  .99 1.00     
+6  SAS 1.00  .99  .98  .99  .99 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .73 1.00                    
+3  AMR  .60  .54 1.00               
+4  EAS  .68  .54  .49 1.00          
+5  EUR  .67  .53  .52  .53 1.00     
+6  SAS  .66  .54  .49  .51  .52 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-7">
+Past versions of unnamed-chunk-10-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-10-7.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -1786,31 +2415,107 @@ Andy Beck
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-8">
+Past versions of unnamed-chunk-10-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-10-8.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-9">
+Past versions of unnamed-chunk-10-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-10-9.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-10.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-12.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-13.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
 <pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
 1  ALL 1.000                              
-2  AFR  .952 1.000                        
-3  AMR  .952  .998 1.000                  
-4  EAS  .951  .996  .999 1.000            
-5  EUR  .951  .999  .998  .995 1.000      
-6  SAS  .952  .997  .999  .999  .996 1.000</code></pre>
+2  AFR  .997 1.000                        
+3  AMR  .998  .993 1.000                  
+4  EAS  .997  .989  .993 1.000            
+5  EUR  .998  .994  .997  .994 1.000      
+6  SAS  .999  .993  .998  .996  .997 1.000</code></pre>
 <pre><code>Correlation computed with
 • Method: &#39;spearman&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
 <pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
 1  ALL 1.000                              
-2  AFR  .990 1.000                        
-3  AMR  .989  .996 1.000                  
-4  EAS  .987  .996  .997 1.000            
-5  EUR  .986  .995  .991  .992 1.000      
-6  SAS  .987  .996  .996  .999  .992 1.000</code></pre>
+2  AFR  .995 1.000                        
+3  AMR  .997  .991 1.000                  
+4  EAS  .994  .982  .991 1.000            
+5  EUR  .996  .988  .994  .993 1.000      
+6  SAS  .998  .989  .997  .995  .995 1.000</code></pre>
 </div>
-<div id="c-g" class="section level3">
-<h3>C &gt; G</h3>
-<pre class="r"><code>subtype &lt;- &quot;GC_CG&quot;
+<div id="c-t" class="section level3">
+<h3>C &gt; T</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_AT&quot;
 single_pos_analysis(subtype)</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1888,26 +2593,6 @@ Andy Beck
 </table>
 </div>
 </div>
-<pre><code>Correlation computed with
-• Method: &#39;pearson&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR 1.00 1.00                    
-3  AMR 1.00 1.00 1.00               
-4  EAS 1.00  .99 1.00 1.00          
-5  EUR 1.00  .99 1.00 1.00 1.00     
-6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
-<pre><code>Correlation computed with
-• Method: &#39;spearman&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR  .73 1.00                    
-3  AMR  .59  .53 1.00               
-4  EAS  .68  .56  .50 1.00          
-5  EUR  .65  .57  .50  .56 1.00     
-6  SAS  .68  .59  .49  .56  .53 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-3">
@@ -1946,6 +2631,210 @@ Andy Beck
 </table>
 </div>
 </div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-4">
+Past versions of unnamed-chunk-11-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-11-4.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-5">
+Past versions of unnamed-chunk-11-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-11-5.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-6">
+Past versions of unnamed-chunk-11-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-11-6.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>Correlation of RE statistics across all flanking positions +/- 1000 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00  .99 1.00               
+4  EAS 1.00 1.00 1.00 1.00          
+5  EUR 1.00  .99 1.00  .99 1.00     
+6  SAS  .99  .98 1.00  .99 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .76 1.00                    
+3  AMR  .68  .60 1.00               
+4  EAS  .73  .62  .59 1.00          
+5  EUR  .69  .62  .61  .60 1.00     
+6  SAS  .73  .61  .60  .63  .62 1.00
+Correlation of RE statistics across all flanking positions +/- 20 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00  .99 1.00               
+4  EAS 1.00 1.00  .99 1.00          
+5  EUR 1.00  .99 1.00  .99 1.00     
+6  SAS  .99  .98 1.00  .99 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .99 1.00                    
+3  AMR  .99  .99 1.00               
+4  EAS  .99  .98  .98 1.00          
+5  EUR  .99  .98  .98  .99 1.00     
+6  SAS  .99  .98  .98  .99  .99 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .76 1.00                    
+3  AMR  .68  .60 1.00               
+4  EAS  .73  .62  .59 1.00          
+5  EUR  .69  .62  .61  .60 1.00     
+6  SAS  .73  .61  .60  .63  .62 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-7">
+Past versions of unnamed-chunk-11-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-11-7.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -1958,32 +2847,108 @@ Andy Beck
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-8">
+Past versions of unnamed-chunk-11-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-11-8.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-9">
+Past versions of unnamed-chunk-11-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-11-9.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-10.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-12.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-13.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
 <pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
 1  ALL 1.000                              
-2  AFR  .951 1.000                        
-3  AMR  .952  .996 1.000                  
-4  EAS  .951  .993  .998 1.000            
-5  EUR  .952  .996  .998  .997 1.000      
-6  SAS  .952  .996  .999  .998  .999 1.000</code></pre>
+2  AFR  .998 1.000                        
+3  AMR  .999  .996 1.000                  
+4  EAS  .997  .994  .995 1.000            
+5  EUR  .998  .994  .997  .994 1.000      
+6  SAS  .997  .992  .997  .992  .999 1.000</code></pre>
 <pre><code>Correlation computed with
 • Method: &#39;spearman&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
 <pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
 1  ALL 1.000                              
-2  AFR  .989 1.000                        
-3  AMR  .989  .991 1.000                  
-4  EAS  .985  .982  .994 1.000            
-5  EUR  .989  .993  .994  .987 1.000      
-6  SAS  .990  .993  .992  .989  .992 1.000</code></pre>
+2  AFR  .997 1.000                        
+3  AMR  .996  .994 1.000                  
+4  EAS  .997  .991  .992 1.000            
+5  EUR  .999  .996  .994  .994 1.000      
+6  SAS  .997  .993  .992  .993  .997 1.000</code></pre>
 </div>
-<div id="cpg-tpg" class="section level3">
-<h3>CpG &gt; TpG</h3>
-<pre class="r"><code>subtype &lt;- &quot;cpg_GC_AT&quot;
-single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
+<div id="c-a" class="section level3">
+<h3>C &gt; A</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_TA&quot;
+single_pos_analysis(subtype)</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
@@ -2060,26 +3025,6 @@ Andy Beck
 </table>
 </div>
 </div>
-<pre><code>Correlation computed with
-• Method: &#39;pearson&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR 1.00 1.00                    
-3  AMR 1.00 1.00 1.00               
-4  EAS 1.00 1.00 1.00 1.00          
-5  EUR 1.00 1.00 1.00 1.00 1.00     
-6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
-<pre><code>Correlation computed with
-• Method: &#39;spearman&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR  .94 1.00                    
-3  AMR  .88  .83 1.00               
-4  EAS  .92  .85  .81 1.00          
-5  EUR  .90  .84  .80  .82 1.00     
-6  SAS  .92  .85  .82  .85  .83 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-3">
@@ -2118,6 +3063,210 @@ Andy Beck
 </table>
 </div>
 </div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-4">
+Past versions of unnamed-chunk-12-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-12-4.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-5">
+Past versions of unnamed-chunk-12-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-12-5.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-6">
+Past versions of unnamed-chunk-12-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-12-6.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>Correlation of RE statistics across all flanking positions +/- 1000 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00  .99 1.00 1.00          
+5  EUR 1.00 1.00 1.00  .99 1.00     
+6  SAS 1.00  .99 1.00 1.00  .99 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .76 1.00                    
+3  AMR  .64  .55 1.00               
+4  EAS  .71  .61  .56 1.00          
+5  EUR  .68  .60  .55  .56 1.00     
+6  SAS  .69  .57  .56  .58  .58 1.00
+Correlation of RE statistics across all flanking positions +/- 20 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00  .99 1.00 1.00          
+5  EUR 1.00 1.00 1.00  .99 1.00     
+6  SAS 1.00  .99 1.00 1.00  .99 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR  .99  .99 1.00               
+4  EAS  .99  .98  .98 1.00          
+5  EUR  .99  .99  .98  .98 1.00     
+6  SAS 1.00  .99  .99  .99  .98 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .76 1.00                    
+3  AMR  .64  .55 1.00               
+4  EAS  .71  .61  .56 1.00          
+5  EUR  .68  .60  .55  .56 1.00     
+6  SAS  .69  .57  .56  .58  .58 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-7">
+Past versions of unnamed-chunk-12-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-12-7.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -2130,32 +3279,108 @@ Andy Beck
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-8">
+Past versions of unnamed-chunk-12-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-12-8.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-9">
+Past versions of unnamed-chunk-12-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-12-9.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-10.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-12.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-13.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
 <pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
 1  ALL 1.000                              
-2  AFR  .952 1.000                        
-3  AMR  .952  .998 1.000                  
-4  EAS  .952  .998  .998 1.000            
-5  EUR  .952  .998  .998  .998 1.000      
-6  SAS  .952  .999  .998  .998  .999 1.000</code></pre>
+2  AFR  .999 1.000                        
+3  AMR 1.000  .998 1.000                  
+4  EAS  .999  .996  .999 1.000            
+5  EUR  .998  .999  .998  .995 1.000      
+6  SAS  .999  .997  .999  .999  .996 1.000</code></pre>
 <pre><code>Correlation computed with
 • Method: &#39;spearman&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
 <pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
 1  ALL 1.000                              
-2  AFR  .981 1.000                        
-3  AMR  .980  .997 1.000                  
-4  EAS  .980  .997  .996 1.000            
-5  EUR  .979  .997  .997  .995 1.000      
-6  SAS  .980  .998  .997  .996  .998 1.000</code></pre>
+2  AFR  .999 1.000                        
+3  AMR  .998  .996 1.000                  
+4  EAS  .999  .996  .997 1.000            
+5  EUR  .995  .995  .991  .992 1.000      
+6  SAS  .999  .996  .996  .999  .992 1.000</code></pre>
 </div>
-<div id="cpg-apg" class="section level3">
-<h3>CpG &gt; ApG</h3>
-<pre class="r"><code>subtype &lt;- &quot;cpg_GC_TA&quot;
-single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
+<div id="c-g" class="section level3">
+<h3>C &gt; G</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_CG&quot;
+single_pos_analysis(subtype)</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
@@ -2232,26 +3457,6 @@ Andy Beck
 </table>
 </div>
 </div>
-<pre><code>Correlation computed with
-• Method: &#39;pearson&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR 1.00 1.00                    
-3  AMR 1.00 1.00 1.00               
-4  EAS 1.00 1.00 1.00 1.00          
-5  EUR 1.00 1.00  .99 1.00 1.00     
-6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
-<pre><code>Correlation computed with
-• Method: &#39;spearman&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR  .80 1.00                    
-3  AMR  .60  .47 1.00               
-4  EAS  .72  .53  .44 1.00          
-5  EUR  .66  .52  .41  .46 1.00     
-6  SAS  .70  .50  .42  .48  .44 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-3">
@@ -2290,6 +3495,210 @@ Andy Beck
 </table>
 </div>
 </div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-4">
+Past versions of unnamed-chunk-13-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-13-4.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-5">
+Past versions of unnamed-chunk-13-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-13-5.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-6">
+Past versions of unnamed-chunk-13-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-13-6.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>Correlation of RE statistics across all flanking positions +/- 1000 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00  .99 1.00 1.00          
+5  EUR 1.00  .99 1.00 1.00 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .73 1.00                    
+3  AMR  .59  .53 1.00               
+4  EAS  .68  .56  .50 1.00          
+5  EUR  .65  .57  .50  .56 1.00     
+6  SAS  .68  .59  .49  .56  .53 1.00
+Correlation of RE statistics across all flanking positions +/- 20 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00  .99 1.00               
+4  EAS 1.00  .99 1.00 1.00          
+5  EUR 1.00  .99 1.00 1.00 1.00     
+6  SAS 1.00  .99 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .99 1.00                    
+3  AMR  .99  .97 1.00               
+4  EAS  .99  .98  .98 1.00          
+5  EUR  .99  .99  .98  .98 1.00     
+6  SAS  .99  .98  .97  .98  .98 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .73 1.00                    
+3  AMR  .59  .53 1.00               
+4  EAS  .68  .56  .50 1.00          
+5  EUR  .65  .57  .50  .56 1.00     
+6  SAS  .68  .59  .49  .56  .53 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-7">
+Past versions of unnamed-chunk-13-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-13-7.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -2302,31 +3711,107 @@ Andy Beck
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-8">
+Past versions of unnamed-chunk-13-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-13-8.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-9">
+Past versions of unnamed-chunk-13-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-13-9.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-10.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-12.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-13.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
 <pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
 1  ALL 1.000                              
-2  AFR  .951 1.000                        
-3  AMR  .950  .996 1.000                  
-4  EAS  .951  .996  .996 1.000            
-5  EUR  .949  .994  .994  .994 1.000      
-6  SAS  .951  .996  .995  .996  .993 1.000</code></pre>
+2  AFR  .998 1.000                        
+3  AMR  .999  .996 1.000                  
+4  EAS  .998  .993  .998 1.000            
+5  EUR  .999  .996  .998  .997 1.000      
+6  SAS  .999  .996  .999  .998  .999 1.000</code></pre>
 <pre><code>Correlation computed with
 • Method: &#39;spearman&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
 <pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
 1  ALL 1.000                              
-2  AFR  .983 1.000                        
-3  AMR  .980  .989 1.000                  
-4  EAS  .982  .992  .987 1.000            
-5  EUR  .980  .992  .989  .986 1.000      
-6  SAS  .981  .988  .987  .990  .986 1.000</code></pre>
+2  AFR  .997 1.000                        
+3  AMR  .997  .991 1.000                  
+4  EAS  .992  .982  .994 1.000            
+5  EUR  .996  .993  .994  .987 1.000      
+6  SAS  .997  .993  .992  .989  .992 1.000</code></pre>
 </div>
-<div id="cpg-gpg" class="section level3">
-<h3>CpG &gt; GpG</h3>
-<pre class="r"><code>subtype &lt;- &quot;cpg_GC_CG&quot;
+<div id="cpg-tpg" class="section level3">
+<h3>CpG &gt; TpG</h3>
+<pre class="r"><code>subtype &lt;- &quot;cpg_GC_AT&quot;
 single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -2404,26 +3889,6 @@ Andy Beck
 </table>
 </div>
 </div>
-<pre><code>Correlation computed with
-• Method: &#39;pearson&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR  .99 1.00                    
-3  AMR  .99  .98 1.00               
-4  EAS  .99  .97  .99 1.00          
-5  EUR  .99  .96  .98  .99 1.00     
-6  SAS 1.00  .98  .99  .99  .99 1.00</code></pre>
-<pre><code>Correlation computed with
-• Method: &#39;spearman&#39;
-• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
-1  ALL 1.00                         
-2  AFR  .69 1.00                    
-3  AMR  .52  .38 1.00               
-4  EAS  .64  .45  .38 1.00          
-5  EUR  .57  .45  .37  .41 1.00     
-6  SAS  .62  .44  .38  .45  .39 1.00</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-3">
@@ -2462,6 +3927,210 @@ Andy Beck
 </table>
 </div>
 </div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-4">
+Past versions of unnamed-chunk-14-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-14-4.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-5">
+Past versions of unnamed-chunk-14-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-14-5.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-6">
+Past versions of unnamed-chunk-14-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-14-6.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>Correlation of RE statistics across all flanking positions +/- 1000 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00 1.00 1.00 1.00          
+5  EUR 1.00 1.00 1.00 1.00 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .94 1.00                    
+3  AMR  .88  .83 1.00               
+4  EAS  .92  .85  .81 1.00          
+5  EUR  .90  .84  .80  .82 1.00     
+6  SAS  .92  .85  .82  .85  .83 1.00
+Correlation of RE statistics across all flanking positions +/- 20 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00 1.00 1.00 1.00          
+5  EUR 1.00 1.00 1.00 1.00 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .99 1.00                    
+3  AMR  .98  .97 1.00               
+4  EAS  .99  .99  .97 1.00          
+5  EUR  .99  .98  .97  .98 1.00     
+6  SAS  .99  .98  .97  .99  .97 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .94 1.00                    
+3  AMR  .88  .83 1.00               
+4  EAS  .92  .85  .81 1.00          
+5  EUR  .90  .84  .80  .82 1.00     
+6  SAS  .92  .85  .82  .85  .83 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-7">
+Past versions of unnamed-chunk-14-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-14-7.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
     z     cells    name           grob
 1   1 (1-1,1-1) arrange gtable[layout]
@@ -2474,27 +4143,442 @@ Andy Beck
 8   8 (3-3,2-2) arrange gtable[layout]
 9   9 (3-3,3-3) arrange gtable[layout]
 10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-8">
+Past versions of unnamed-chunk-14-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-14-8.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-9">
+Past versions of unnamed-chunk-14-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/56d5585e6b4dfa895d6650e2f633adfdfc7b06e5/docs/figure/pop_comparison.Rmd/unnamed-chunk-14-9.png" target="_blank">56d5585</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-01-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-10.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-12.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-13.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>Correlation computed with
 • Method: &#39;pearson&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
 <pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
 1  ALL 1.000                              
-2  AFR  .945 1.000                        
-3  AMR  .949  .986 1.000                  
-4  EAS  .949  .981  .991 1.000            
-5  EUR  .946  .974  .987  .990 1.000      
-6  SAS  .949  .984  .990  .991  .990 1.000</code></pre>
+2  AFR 1.000 1.000                        
+3  AMR  .999  .998 1.000                  
+4  EAS  .999  .998  .998 1.000            
+5  EUR  .999  .998  .998  .998 1.000      
+6  SAS  .999  .999  .998  .998  .999 1.000</code></pre>
 <pre><code>Correlation computed with
 • Method: &#39;spearman&#39;
 • Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
 <pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
 1  ALL 1.000                              
-2  AFR  .977 1.000                        
-3  AMR  .979  .980 1.000                  
-4  EAS  .979  .975  .987 1.000            
-5  EUR  .977  .973  .981  .978 1.000      
-6  SAS  .981  .985  .983  .983  .983 1.000</code></pre>
+2  AFR  .999 1.000                        
+3  AMR  .998  .997 1.000                  
+4  EAS  .998  .997  .996 1.000            
+5  EUR  .998  .997  .997  .995 1.000      
+6  SAS  .999  .998  .997  .996  .998 1.000</code></pre>
+</div>
+<div id="cpg-apg" class="section level3">
+<h3>CpG &gt; ApG</h3>
+<pre class="r"><code>subtype &lt;- &quot;cpg_GC_TA&quot;
+single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Correlation of RE statistics across all flanking positions +/- 1000 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00 1.00 1.00 1.00          
+5  EUR 1.00 1.00  .99 1.00 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .80 1.00                    
+3  AMR  .60  .47 1.00               
+4  EAS  .72  .53  .44 1.00          
+5  EUR  .66  .52  .41  .46 1.00     
+6  SAS  .70  .50  .42  .48  .44 1.00
+Correlation of RE statistics across all flanking positions +/- 20 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR 1.00 1.00                    
+3  AMR 1.00 1.00 1.00               
+4  EAS 1.00 1.00 1.00 1.00          
+5  EUR 1.00 1.00 1.00 1.00 1.00     
+6  SAS 1.00 1.00 1.00 1.00 1.00 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .98 1.00                    
+3  AMR  .98  .96 1.00               
+4  EAS  .99  .97  .96 1.00          
+5  EUR  .98  .93  .95  .97 1.00     
+6  SAS  .98  .96  .96  .96  .95 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .80 1.00                    
+3  AMR  .60  .47 1.00               
+4  EAS  .72  .53  .44 1.00          
+5  EUR  .66  .52  .41  .46 1.00     
+6  SAS  .70  .50  .42  .48  .44 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
+    z     cells    name           grob
+1   1 (1-1,1-1) arrange gtable[layout]
+2   2 (1-1,2-2) arrange gtable[layout]
+3   3 (1-1,3-3) arrange gtable[layout]
+4   4 (2-2,1-1) arrange gtable[layout]
+5   5 (2-2,2-2) arrange gtable[layout]
+6   6 (2-2,3-3) arrange gtable[layout]
+7   7 (3-3,1-1) arrange gtable[layout]
+8   8 (3-3,2-2) arrange gtable[layout]
+9   9 (3-3,3-3) arrange gtable[layout]
+10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-10.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-12.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .999 1.000                        
+3  AMR  .998  .996 1.000                  
+4  EAS  .998  .996  .996 1.000            
+5  EUR  .997  .994  .994  .994 1.000      
+6  SAS  .998  .996  .995  .996  .993 1.000</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .997 1.000                        
+3  AMR  .994  .989 1.000                  
+4  EAS  .996  .992  .987 1.000            
+5  EUR  .995  .992  .989  .986 1.000      
+6  SAS  .994  .988  .987  .990  .986 1.000</code></pre>
+</div>
+<div id="cpg-gpg" class="section level3">
+<h3>CpG &gt; GpG</h3>
+<pre class="r"><code>subtype &lt;- &quot;cpg_GC_CG&quot;
+single_pos_analysis(subtype, rp = c(-10:-1,2:10))</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Correlation of RE statistics across all flanking positions +/- 1000 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .99 1.00                    
+3  AMR  .99  .98 1.00               
+4  EAS  .99  .97  .99 1.00          
+5  EUR  .99  .96  .98  .99 1.00     
+6  SAS 1.00  .98  .99  .99  .99 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .69 1.00                    
+3  AMR  .52  .38 1.00               
+4  EAS  .64  .45  .38 1.00          
+5  EUR  .57  .45  .37  .41 1.00     
+6  SAS  .62  .44  .38  .45  .39 1.00
+Correlation of RE statistics across all flanking positions +/- 20 bp:</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .99 1.00                    
+3  AMR 1.00  .98 1.00               
+4  EAS 1.00  .97  .99 1.00          
+5  EUR  .99  .96  .99  .99 1.00     
+6  SAS 1.00  .98 1.00  .99  .99 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .99 1.00                    
+3  AMR  .98  .98 1.00               
+4  EAS  .98  .96  .96 1.00          
+5  EUR  .91  .91  .88  .89 1.00     
+6  SAS  .98  .97  .95  .97  .89 1.00</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term  ALL  AFR  AMR  EAS  EUR  SAS
+1  ALL 1.00                         
+2  AFR  .69 1.00                    
+3  AMR  .52  .38 1.00               
+4  EAS  .64  .45  .38 1.00          
+5  EUR  .57  .45  .37  .41 1.00     
+6  SAS  .62  .44  .38  .45  .39 1.00</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>TableGrob (4 x 3) &quot;arrange&quot;: 10 grobs
+    z     cells    name           grob
+1   1 (1-1,1-1) arrange gtable[layout]
+2   2 (1-1,2-2) arrange gtable[layout]
+3   3 (1-1,3-3) arrange gtable[layout]
+4   4 (2-2,1-1) arrange gtable[layout]
+5   5 (2-2,2-2) arrange gtable[layout]
+6   6 (2-2,3-3) arrange gtable[layout]
+7   7 (3-3,1-1) arrange gtable[layout]
+8   8 (3-3,2-2) arrange gtable[layout]
+9   9 (3-3,3-3) arrange gtable[layout]
+10 10 (4-4,1-1) arrange gtable[layout]</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-10.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-12.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Correlation computed with
+• Method: &#39;pearson&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .992 1.000                        
+3  AMR  .996  .986 1.000                  
+4  EAS  .996  .981  .991 1.000            
+5  EUR  .992  .974  .987  .990 1.000      
+6  SAS  .996  .984  .990  .991  .990 1.000</code></pre>
+<pre><code>Correlation computed with
+• Method: &#39;spearman&#39;
+• Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
+<pre><code>  term   ALL   AFR   AMR   EAS   EUR   SAS
+1  ALL 1.000                              
+2  AFR  .992 1.000                        
+3  AMR  .991  .980 1.000                  
+4  EAS  .991  .975  .987 1.000            
+5  EUR  .988  .973  .981  .978 1.000      
+6  SAS  .995  .985  .983  .983  .983 1.000</code></pre>
+</div>
+</div>
+<div id="single-position-pop-pop-model" class="section level2">
+<h2>Single Position Pop-Pop Model</h2>
+<p>In the following section, we utilize our log-linear model framework
+to assess consistency of single position model results by fitting models
+of the following form (in R’s model notation):</p>
+<pre><code>glm(count ~ nuc*status + nuc*population + status*population, family = poisson())</code></pre>
+<p>Here, in contrast to our single population models, we allow for the
+distributions of nucleotides at flanking positions to differ between the
+singletons and the controls via the inclusion of a nucleotide-by-status
+interaction. The devinace statistic for this model evaluates the fit of
+this model to a fully-saturated model, in which in addition to the above
+terms is a three-way interaction between nucleotide, population, and
+status; under the null hypothesis that these parameters are 0, we assume
+that any nucleotide by status interaction is shared across the
+populations. Note that we fit these models for pairs of populations, so
+the degree of freedom for this test statistic is three (three two-way
+interactions between nucleotide and status, one population parameter to
+interact with).</p>
+<pre class="r"><code>pop_combs &lt;- combn(c(&quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;), 2) %&gt;% t() </code></pre>
+<div id="a-c-1" class="section level3">
+<h3>A &gt; C</h3>
+<pre class="r"><code>subtype &lt;- &quot;AT_CG&quot;
+
+pop_pop_analysis &lt;- function(pop_pop_dir, pop1, pop2, subtype, rps = c(-20:-1, 1:20)){
+  df &lt;- load_pop_pop_df(pop_pop_dir, pop1, pop2, subtype, rps)
+
+  p &lt;- df %&gt;%
+    ggplot(aes(x = rp, y = dev, colour = is_sig)) +
+    geom_point() +
+    scale_color_manual(values = friendly_pals$wong_eight[c(1:2)]) +
+    theme_classic() +
+    theme(text = element_text(family = &quot;Arial&quot;),
+          legend.position = &quot;inside&quot;,
+          legend.position.inside = c(.85, .8)) +
+    labs(colour = &quot;Significant&quot;) +
+    xlab(&quot;Relative Position&quot;) +
+    ylab(&quot;Deviance&quot;) + 
+    ggtitle(paste0(subtype_print_names(subtype), &quot;: &quot;, pop1, &quot;, &quot;, pop2))
+  return(p)
+}
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 &lt;- pop_combs[i,1]
+  pop2 &lt;- pop_combs[i,2]
+  p &lt;- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 1:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = &quot;red&quot;, linetype = 2) 
+  print(p)
+}</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-18-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-18-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-18-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-18-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-18-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-18-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-18-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-18-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-18-10.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="a-g-1" class="section level3">
+<h3>A &gt; G</h3>
+<pre class="r"><code>subtype &lt;- &quot;AT_GC&quot;
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 &lt;- pop_combs[i,1]
+  pop2 &lt;- pop_combs[i,2]
+  p &lt;- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 1:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = &quot;red&quot;, linetype = 2) 
+  print(p)
+}</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-19-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-19-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-19-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-19-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-19-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-19-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-19-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-19-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-19-10.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="a-t-1" class="section level3">
+<h3>A &gt; T</h3>
+<pre class="r"><code>subtype &lt;- &quot;AT_TA&quot;
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 &lt;- pop_combs[i,1]
+  pop2 &lt;- pop_combs[i,2]
+  p &lt;- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 1:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = &quot;red&quot;, linetype = 2) 
+  print(p)
+}</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-20-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-20-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-20-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-20-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-20-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-20-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-20-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-20-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-20-10.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="c-t-1" class="section level3">
+<h3>C &gt; T</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_AT&quot;
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 &lt;- pop_combs[i,1]
+  pop2 &lt;- pop_combs[i,2]
+  p &lt;- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 1:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = &quot;red&quot;, linetype = 2) 
+  print(p)
+}</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-21-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-21-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-21-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-21-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-21-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-21-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-21-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-21-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-21-10.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="c-a-1" class="section level3">
+<h3>C &gt; A</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_TA&quot;
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 &lt;- pop_combs[i,1]
+  pop2 &lt;- pop_combs[i,2]
+  p &lt;- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 1:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = &quot;red&quot;, linetype = 2) 
+  print(p)
+}</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-22-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-22-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-22-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-22-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-22-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-22-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-22-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-22-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-22-10.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="c-g-1" class="section level3">
+<h3>C &gt; G</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_CG&quot;
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 &lt;- pop_combs[i,1]
+  pop2 &lt;- pop_combs[i,2]
+  p &lt;- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 1:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = &quot;red&quot;, linetype = 2) 
+  print(p)
+}</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-23-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-23-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-23-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-23-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-23-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-23-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-23-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-23-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-23-10.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cpg-tpg-1" class="section level3">
+<h3>CpG &gt; TpG</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_AT&quot;
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 &lt;- pop_combs[i,1]
+  pop2 &lt;- pop_combs[i,2]
+  p &lt;- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 2:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = &quot;red&quot;, linetype = 2) 
+  print(p)
+}</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-24-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-24-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-24-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-24-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-24-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-24-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-24-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-24-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-24-10.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cpg-apg-1" class="section level3">
+<h3>CpG &gt; ApG</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_TA&quot;
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 &lt;- pop_combs[i,1]
+  pop2 &lt;- pop_combs[i,2]
+  p &lt;- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 2:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = &quot;red&quot;, linetype = 2) 
+  print(p)
+}</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-25-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-25-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-25-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-25-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-25-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-25-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-25-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-25-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-25-10.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cpg-gpg-1" class="section level3">
+<h3>CpG &gt; GpG</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_CG&quot;
+
+for(i in 1:dim(pop_combs)[1]){
+  pop1 &lt;- pop_combs[i,1]
+  pop2 &lt;- pop_combs[i,2]
+  p &lt;- pop_pop_analysis(pop_pop_dir, pop1, pop2, subtype, rps = c(-10:-1, 2:10)) +
+    geom_hline(yintercept = qchisq(0.95, 3), color = &quot;red&quot;, linetype = 2) 
+  print(p)
+}</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-26-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-26-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-26-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-26-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-26-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-26-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-26-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-26-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-26-10.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -2544,7 +4628,7 @@ loaded via a namespace (and not attached):
 [33] stringi_1.8.4     labeling_0.4.3    rprojroot_2.0.4   fastmap_1.2.0    
 [37] grid_4.4.2        archive_1.1.8     colorspace_2.1-1  cli_3.6.3        
 [41] magrittr_2.0.3    utf8_1.2.4        withr_3.0.2       scales_1.3.0     
-[45] promises_1.3.0    bit64_4.0.5       timechange_0.3.0  rmarkdown_2.29   
+[45] promises_1.3.0    bit64_4.6.0-1     timechange_0.3.0  rmarkdown_2.29   
 [49] httr_1.4.7        bit_4.5.0.1       gridExtra_2.3     hms_1.1.3        
 [53] evaluate_1.0.1    rlang_1.1.4       Rcpp_1.0.13-1     glue_1.8.0       
 [57] rstudioapi_0.17.1 vroom_1.6.5       jsonlite_1.8.9    R6_2.5.1         
