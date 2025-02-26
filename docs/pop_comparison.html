@@ -513,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree58c40606a0892d47789c6017e24fa09aade21711targetblank58c4060a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree68919498ed22442e52295a486a1993e1155104b2targetblank6891949a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/58c40606a0892d47789c6017e24fa09aade21711" target="_blank">58c4060</a>
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/68919498ed22442e52295a486a1993e1155104b2" target="_blank">6891949</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree58c40606a0892d47789c6017e24fa09aade21711targetblank58c4060a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree68919498ed22442e52295a486a1993e1155104b2targetblank6891949a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -531,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/58c40606a0892d47789c6017e24fa09aade21711" target="_blank">58c4060</a>.
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/68919498ed22442e52295a486a1993e1155104b2" target="_blank">6891949</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -614,6 +614,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/68919498ed22442e52295a486a1993e1155104b2/analysis/pop_comparison.Rmd" target="_blank">6891949</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+<td>
+wflow_publish("analysis/pop_comparison.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/theandyb/LSCI_pipeline/0dda72633764f78dda3bc3eab640cf37a6585684/docs/pop_comparison.html" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -883,11 +917,12 @@ get_pos_cc_pops &lt;- function(control_control, subtype){
   return(bind_rows(results))
 }
 
-plot_re_cc_autosig &lt;- function(df_res, df_cc, p, win_size = 10, sig_frac = 2/10){
-  df_cc_sub &lt;- df_cc %&gt;% filter(pop == p) %&gt;%
+plot_re_cc_autosig &lt;- function(df_res, df_cc, population, win_size = 10, sig_frac = 5/10){
+  df_cc_sub &lt;- df_cc %&gt;% filter(pop == population) %&gt;%
     mutate(is_sig = &quot;Control&quot;)
-  df_res_sub &lt;- df_res %&gt;% filter(pop == p)
+  df_res_sub &lt;- df_res %&gt;% filter(pop == population)
   q_95_c &lt;- quantile(df_cc_sub$re, 0.95)
+  q_95_c &lt;- qchisq(0.95, 3)
   
   frac_sig_df &lt;- data.frame(offset = min(df_res_sub$offset):(max(df_res_sub$offset) - win_size), frac_sig = 0)
   frac_sig_df &lt;- frac_sig_df %&gt;%
@@ -898,21 +933,27 @@ plot_re_cc_autosig &lt;- function(df_res, df_cc, p, win_size = 10, sig_frac = 2/
     win_high = win_low + win_size
     tmp_vec &lt;- df_res_sub %&gt;%
       filter(offset &gt;= win_low, offset &lt;= win_high) %&gt;%
-      mutate(is_sig = re &gt; q_95_c) %&gt;%
+      mutate(is_sig = dev &gt; q_95_c) %&gt;%
       pull(is_sig)
     frac_sig_df$frac_sig[i] &lt;- sum(tmp_vec) / length(tmp_vec)
   }
   # frac_sig_df %&gt;%
   #   ggplot(aes(x = offset, y = frac_sig)) +
   #   geom_point()
+  
+  frac_sig_df &lt;- frac_sig_df %&gt;%
+    mutate(frac_sig_lead = lead(frac_sig),
+           frac_sig_lag = lag(frac_sig))
+  
   left_boundary &lt;- frac_sig_df %&gt;%
-    filter(frac_sig &gt;= sig_frac) %&gt;%
+    filter(frac_sig &gt;= sig_frac, frac_sig_lead &gt;= sig_frac, frac_sig_lag &gt;= sig_frac) %&gt;%
     pull(offset) %&gt;%
     min()
   right_boundary &lt;- frac_sig_df %&gt;%
-    filter(frac_sig &gt;= sig_frac) %&gt;%
+    filter(frac_sig &gt;= sig_frac, frac_sig_lead &gt;= sig_frac, frac_sig_lag &gt;= sig_frac) %&gt;%
     pull(offset) %&gt;%
     max()
+  
   p &lt;- df_res_sub %&gt;%
     mutate(is_sig = as.character(is_sig)) %&gt;%
     bind_rows(df_cc_sub) %&gt;%
@@ -927,13 +968,12 @@ plot_re_cc_autosig &lt;- function(df_res, df_cc, p, win_size = 10, sig_frac = 2/
     labs(colour = &quot;Significant&quot;) +
     xlab(&quot;Relative Position&quot;) +
     ylab(&quot;Relative Entropy (log10)&quot;) +
-    ggtitle(paste0(&quot;Population: &quot;, p, &quot;; Subtype: &quot;, subtype)) +
     scale_y_log10() +
-    geom_hline(yintercept = q_95_c, colour = friendly_pals$wong_eight[3], linetype = 2) +
     geom_vline(xintercept = left_boundary, colour = friendly_pals$wong_eight[2]) +
     geom_vline(xintercept = right_boundary, colour = friendly_pals$wong_eight[2]) +
     annotate(&quot;text&quot;, x = left_boundary - 110, y = min(df_res_sub$re), label = left_boundary) + 
-    annotate(&quot;text&quot;, x = right_boundary + 100, y = min(df_res_sub$re), label = right_boundary) 
+    annotate(&quot;text&quot;, x = right_boundary + 100, y = min(df_res_sub$re), label = right_boundary) +
+    ggtitle(paste0(&quot;Population: &quot;, population, &quot;; Subtype: &quot;, subtype_print_names(subtype)))
   return(p)
 }</code></pre>
 <p>Load position-level residuals:</p>
@@ -1169,7 +1209,7 @@ residual_analysis &lt;- function(df_resid, subtype){
   return(list(p1 = p1, p2 = p2, p3 = p3, p4 = p4))
 }
 
-single_pos_analysis &lt;- function(subtype, rp = c(-10:-1, 1:10)){
+single_pos_analysis &lt;- function(subtype, rp = c(-10:-1, 1:10), sig_frac = 5/10){
   df_res &lt;- sp_re_all_pop(single_pos_dir, subtype)
   df_resid &lt;- sp_resid_all_pop(single_pos_dir, subtype, rp = rp)
   df_cc &lt;- get_pos_cc_pops(control_control, subtype)
@@ -1294,7 +1334,7 @@ single_pos_analysis &lt;- function(subtype, rp = c(-10:-1, 1:10)){
   print(gridExtra::grid.arrange(grobs = plts))
   
   for(poppy in c(&quot;ALL&quot;, &quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;)){
-    print(plot_re_cc_autosig(df_res, df_cc, poppy, win_size = 10, sig_frac = 2 / 10))
+    print(plot_re_cc_autosig(df_res, df_cc, poppy, win_size = 10, sig_frac = 5 / 10))
   }
   
   df_resid %&gt;%
@@ -1321,7 +1361,7 @@ single_pos_analysis &lt;- function(subtype, rp = c(-10:-1, 1:10)){
   print(resid_plots$p4)
 }
 
-single_pos_analysis(subtype)</code></pre>
+single_pos_analysis(subtype, sig_frac = 5/10)</code></pre>
 <p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
@@ -1999,7 +2039,158 @@ Andy Beck
 4  EAS  .990  .983  .980 1.000            
 5  EUR  .994  .988  .991  .985 1.000      
 6  SAS  .991  .990  .983  .972  .981 1.000</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-14.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-16.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-14">
+Past versions of unnamed-chunk-7-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-7-14.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-15">
+Past versions of unnamed-chunk-7-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-7-15.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-16">
+Past versions of unnamed-chunk-7-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-7-16.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-7-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-17">
+Past versions of unnamed-chunk-7-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-7-17.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>df_res &lt;- sp_re_all_pop(single_pos_dir, subtype)
 df_resid &lt;- sp_resid_all_pop(single_pos_dir, subtype, rp = c(-10:-1, 1:10))
 df_cc &lt;- get_pos_cc_pops(control_control, subtype)
@@ -2764,7 +2955,158 @@ Andy Beck
 4  EAS  .998  .995  .996 1.000            
 5  EUR  .998  .997  .988  .994 1.000      
 6  SAS  .999  .996  .994  .997  .997 1.000</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-14.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-16.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-14">
+Past versions of unnamed-chunk-9-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-9-14.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-15">
+Past versions of unnamed-chunk-9-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-9-15.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-16">
+Past versions of unnamed-chunk-9-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-9-16.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-9-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-17">
+Past versions of unnamed-chunk-9-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-9-17.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="a-t" class="section level3">
 <h3>A &gt; T</h3>
@@ -3447,7 +3789,158 @@ Andy Beck
 4  EAS  .994  .982  .991 1.000            
 5  EUR  .996  .988  .994  .993 1.000      
 6  SAS  .998  .989  .997  .995  .995 1.000</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-14.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-16.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-14">
+Past versions of unnamed-chunk-10-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-10-14.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-15">
+Past versions of unnamed-chunk-10-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-10-15.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-16">
+Past versions of unnamed-chunk-10-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-10-16.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-10-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-17">
+Past versions of unnamed-chunk-10-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-10-17.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="c-t" class="section level3">
 <h3>C &gt; T</h3>
@@ -4130,7 +4623,158 @@ Andy Beck
 4  EAS  .997  .991  .992 1.000            
 5  EUR  .999  .996  .994  .994 1.000      
 6  SAS  .997  .993  .992  .993  .997 1.000</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-14.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-16.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-14">
+Past versions of unnamed-chunk-11-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-11-14.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-15">
+Past versions of unnamed-chunk-11-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-11-15.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-16">
+Past versions of unnamed-chunk-11-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-11-16.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-11-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-17">
+Past versions of unnamed-chunk-11-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-11-17.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="c-a" class="section level3">
 <h3>C &gt; A</h3>
@@ -4813,7 +5457,158 @@ Andy Beck
 4  EAS  .999  .996  .997 1.000            
 5  EUR  .995  .995  .991  .992 1.000      
 6  SAS  .999  .996  .996  .999  .992 1.000</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-14.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-16.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-14">
+Past versions of unnamed-chunk-12-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-12-14.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-15">
+Past versions of unnamed-chunk-12-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-12-15.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-16">
+Past versions of unnamed-chunk-12-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-12-16.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-12-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-17">
+Past versions of unnamed-chunk-12-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-12-17.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="c-g" class="section level3">
 <h3>C &gt; G</h3>
@@ -5496,7 +6291,158 @@ Andy Beck
 4  EAS  .992  .982  .994 1.000            
 5  EUR  .996  .993  .994  .987 1.000      
 6  SAS  .997  .993  .992  .989  .992 1.000</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-14.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-16.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-14">
+Past versions of unnamed-chunk-13-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-13-14.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-15">
+Past versions of unnamed-chunk-13-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-13-15.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-16">
+Past versions of unnamed-chunk-13-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-13-16.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-13-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-17">
+Past versions of unnamed-chunk-13-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-13-17.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="cpg-tpg" class="section level3">
 <h3>CpG &gt; TpG</h3>
@@ -6179,7 +7125,158 @@ Andy Beck
 4  EAS  .998  .997  .996 1.000            
 5  EUR  .998  .997  .997  .995 1.000      
 6  SAS  .999  .998  .997  .996  .998 1.000</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-14.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-16.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-14">
+Past versions of unnamed-chunk-14-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-14-14.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-15">
+Past versions of unnamed-chunk-14-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-14-15.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-16">
+Past versions of unnamed-chunk-14-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-14-16.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-14-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-17">
+Past versions of unnamed-chunk-14-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-14-17.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="cpg-apg" class="section level3">
 <h3>CpG &gt; ApG</h3>
@@ -6763,7 +7860,158 @@ Andy Beck
 4  EAS  .996  .992  .987 1.000            
 5  EUR  .995  .992  .989  .986 1.000      
 6  SAS  .994  .988  .987  .990  .986 1.000</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-14.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-16.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-14">
+Past versions of unnamed-chunk-15-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-15-14.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-15">
+Past versions of unnamed-chunk-15-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-15-15.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-16">
+Past versions of unnamed-chunk-15-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-15-16.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-15-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-17">
+Past versions of unnamed-chunk-15-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-15-17.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="cpg-gpg" class="section level3">
 <h3>CpG &gt; GpG</h3>
@@ -7347,7 +8595,158 @@ Andy Beck
 4  EAS  .991  .975  .987 1.000            
 5  EUR  .988  .973  .981  .978 1.000      
 6  SAS  .995  .985  .983  .983  .983 1.000</code></pre>
-<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-14.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-16.png" width="672" style="display: block; margin: auto;" /><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-14">
+Past versions of unnamed-chunk-16-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-16-14.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-15">
+Past versions of unnamed-chunk-16-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-16-15.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-16">
+Past versions of unnamed-chunk-16-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-16-16.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-16-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-17">
+Past versions of unnamed-chunk-16-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/0dda72633764f78dda3bc3eab640cf37a6585684/docs/figure/pop_comparison.Rmd/unnamed-chunk-16-17.png" target="_blank">0dda726</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="single-position-pop-pop-model" class="section level2">
@@ -10914,6 +12313,142 @@ Andy Beck
 </table>
 </div>
 </div>
+</div>
+</div>
+<div id="two-position-models" class="section level2">
+<h2>Two Position Models</h2>
+<div id="a-c-2" class="section level3">
+<h3>A &gt; C</h3>
+<pre class="r"><code>tp_all_dev &lt;- function(two_pos_dir, subtype){
+  pops &lt;- c(&quot;ALL&quot;, &quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;)
+  results &lt;- tp_deviance_df_load(two_pos_dir, pops[1], subtype) %&gt;%
+    select(rp1, rp2, dev, re) %&gt;%
+    mutate(pop = pops[1])
+  for(i in 2:length(pops)){
+    results &lt;- results %&gt;%
+      bind_rows({
+        tp_deviance_df_load(two_pos_dir, pops[i], subtype) %&gt;%
+          select(rp1, rp2, dev, re) %&gt;%
+          mutate(pop = pops[i])
+      })
+  }
+  results &lt;- results %&gt;% distinct(rp1, rp2, pop, .keep_all = TRUE) %&gt;%
+    mutate(pop = factor(pop, levels = c(&quot;ALL&quot;, &quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;)))
+  return(results)
+}
+
+tp_re_cor_plot &lt;- function(df_tp, subtype, method=&quot;pearson&quot;){
+  cor_obj &lt;- df_tp %&gt;%
+    select(-dev) %&gt;%
+    pivot_wider(names_from = pop, values_from = re, id_cols = c(rp1, rp2)) %&gt;%
+    select(ALL:SAS) %&gt;%
+    corrr::correlate(method = method) %&gt;%
+    corrr::shave()
+  
+  p &lt;- cor_obj %&gt;% reshape2::melt() %&gt;%
+    mutate(term = factor(term, levels = c(&quot;ALL&quot;, &quot;AFR&quot;, &quot;AMR&quot;, &quot;EAS&quot;, &quot;EUR&quot;, &quot;SAS&quot;))) %&gt;%
+    filter(variable != term) %&gt;%
+    filter(term != &quot;ALL&quot;, variable != &quot;SAS&quot;) %&gt;%
+    mutate(round_val = round(value, 2)) %&gt;%
+    ggplot(aes(x=term, y=variable, fill = value)) +
+    geom_tile() +
+    scale_fill_distiller(palette = &quot;Reds&quot;, na.value = &quot;white&quot;, direction = 1, limits = c(0,1)) +
+    theme_classic() +
+    xlab(&quot;&quot;) +
+    ylab(&quot;&quot;) +
+    geom_text(aes(label=round_val)) +
+    ggtitle(subtype_print_names(subtype))
+
+  return(p)
+}
+
+subtype &lt;- &quot;AT_CG&quot;
+
+df_tp &lt;- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>tp_re_cor_plot(df_tp, subtype, &quot;spearman&quot;)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-27-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="a-g-2" class="section level3">
+<h3>A &gt; G</h3>
+<pre class="r"><code>subtype &lt;- &quot;AT_GC&quot;
+
+df_tp &lt;- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>tp_re_cor_plot(df_tp, subtype, &quot;spearman&quot;)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-28-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="a-t-2" class="section level3">
+<h3>A &gt; T</h3>
+<pre class="r"><code>subtype &lt;- &quot;AT_TA&quot;
+
+df_tp &lt;- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>tp_re_cor_plot(df_tp, subtype, &quot;spearman&quot;)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-29-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="c-t-2" class="section level3">
+<h3>C &gt; T</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_AT&quot;
+
+df_tp &lt;- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>tp_re_cor_plot(df_tp, subtype, &quot;spearman&quot;)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-30-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="c-a-2" class="section level3">
+<h3>C &gt; A</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_TA&quot;
+
+df_tp &lt;- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-31-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>tp_re_cor_plot(df_tp, subtype, &quot;spearman&quot;)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-31-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="c-g-2" class="section level3">
+<h3>C &gt; G</h3>
+<pre class="r"><code>subtype &lt;- &quot;GC_CG&quot;
+
+df_tp &lt;- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>tp_re_cor_plot(df_tp, subtype, &quot;spearman&quot;)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-32-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cpg-tpg-2" class="section level3">
+<h3>CpG &gt; TpG</h3>
+<pre class="r"><code>subtype &lt;- &quot;cpg_GC_AT&quot;
+
+df_tp &lt;- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-33-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>tp_re_cor_plot(df_tp, subtype, &quot;spearman&quot;)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-33-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cpg-apg-2" class="section level3">
+<h3>CpG &gt; ApG</h3>
+<pre class="r"><code>subtype &lt;- &quot;cpg_GC_TA&quot;
+
+df_tp &lt;- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-34-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>tp_re_cor_plot(df_tp, subtype, &quot;spearman&quot;)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-34-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cpg-gpg-2" class="section level3">
+<h3>CpG &gt; GpG</h3>
+<pre class="r"><code>subtype &lt;- &quot;cpg_GC_CG&quot;
+
+df_tp &lt;- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-35-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>tp_re_cor_plot(df_tp, subtype, &quot;spearman&quot;)</code></pre>
+<p><img src="figure/pop_comparison.Rmd/unnamed-chunk-35-2.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -10960,14 +12495,14 @@ loaded via a namespace (and not attached):
 [21] getPass_0.2-4      httpuv_1.6.15      htmltools_0.5.8.1  sass_0.4.9        
 [25] yaml_2.3.10        later_1.3.2        pillar_1.9.0       crayon_1.5.3      
 [29] jquerylib_0.1.4    whisker_0.4.1      cachem_1.1.0       tidyselect_1.2.1  
-[33] digest_0.6.37      stringi_1.8.4      labeling_0.4.3     rprojroot_2.0.4   
-[37] fastmap_1.2.0      grid_4.4.2         archive_1.1.8      colorspace_2.1-1  
-[41] cli_3.6.3          magrittr_2.0.3     utf8_1.2.4         withr_3.0.2       
-[45] scales_1.3.0       promises_1.3.0     bit64_4.6.0-1      timechange_0.3.0  
-[49] rmarkdown_2.29     httr_1.4.7         bit_4.5.0.1        gridExtra_2.3     
-[53] hms_1.1.3          evaluate_1.0.1     rlang_1.1.4        Rcpp_1.0.13-1     
-[57] glue_1.8.0         rstudioapi_0.17.1  vroom_1.6.5        jsonlite_1.8.9    
-[61] R6_2.5.1           fs_1.6.5          </code></pre>
+[33] digest_0.6.37      stringi_1.8.4      reshape2_1.4.4     labeling_0.4.3    
+[37] rprojroot_2.0.4    fastmap_1.2.0      grid_4.4.2         archive_1.1.8     
+[41] colorspace_2.1-1   cli_3.6.3          magrittr_2.0.3     utf8_1.2.4        
+[45] withr_3.0.2        scales_1.3.0       promises_1.3.0     bit64_4.6.0-1     
+[49] timechange_0.3.0   rmarkdown_2.29     httr_1.4.7         bit_4.5.0.1       
+[53] gridExtra_2.3      hms_1.1.3          evaluate_1.0.1     rlang_1.1.4       
+[57] Rcpp_1.0.13-1      glue_1.8.0         rstudioapi_0.17.1  vroom_1.6.5       
+[61] jsonlite_1.8.9     plyr_1.8.9         R6_2.5.1           fs_1.6.5          </code></pre>
 </div>
 </div>
 </div>
