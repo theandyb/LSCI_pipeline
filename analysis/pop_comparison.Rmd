@@ -99,11 +99,12 @@ get_pos_cc_pops <- function(control_control, subtype){
   return(bind_rows(results))
 }
 
-plot_re_cc_autosig <- function(df_res, df_cc, p, win_size = 10, sig_frac = 2/10){
-  df_cc_sub <- df_cc %>% filter(pop == p) %>%
+plot_re_cc_autosig <- function(df_res, df_cc, population, win_size = 10, sig_frac = 5/10){
+  df_cc_sub <- df_cc %>% filter(pop == population) %>%
     mutate(is_sig = "Control")
-  df_res_sub <- df_res %>% filter(pop == p)
+  df_res_sub <- df_res %>% filter(pop == population)
   q_95_c <- quantile(df_cc_sub$re, 0.95)
+  q_95_c <- qchisq(0.95, 3)
   
   frac_sig_df <- data.frame(offset = min(df_res_sub$offset):(max(df_res_sub$offset) - win_size), frac_sig = 0)
   frac_sig_df <- frac_sig_df %>%
@@ -114,21 +115,27 @@ plot_re_cc_autosig <- function(df_res, df_cc, p, win_size = 10, sig_frac = 2/10)
     win_high = win_low + win_size
     tmp_vec <- df_res_sub %>%
       filter(offset >= win_low, offset <= win_high) %>%
-      mutate(is_sig = re > q_95_c) %>%
+      mutate(is_sig = dev > q_95_c) %>%
       pull(is_sig)
     frac_sig_df$frac_sig[i] <- sum(tmp_vec) / length(tmp_vec)
   }
   # frac_sig_df %>%
   #   ggplot(aes(x = offset, y = frac_sig)) +
   #   geom_point()
+  
+  frac_sig_df <- frac_sig_df %>%
+    mutate(frac_sig_lead = lead(frac_sig),
+           frac_sig_lag = lag(frac_sig))
+  
   left_boundary <- frac_sig_df %>%
-    filter(frac_sig >= sig_frac) %>%
+    filter(frac_sig >= sig_frac, frac_sig_lead >= sig_frac, frac_sig_lag >= sig_frac) %>%
     pull(offset) %>%
     min()
   right_boundary <- frac_sig_df %>%
-    filter(frac_sig >= sig_frac) %>%
+    filter(frac_sig >= sig_frac, frac_sig_lead >= sig_frac, frac_sig_lag >= sig_frac) %>%
     pull(offset) %>%
     max()
+  
   p <- df_res_sub %>%
     mutate(is_sig = as.character(is_sig)) %>%
     bind_rows(df_cc_sub) %>%
@@ -143,13 +150,12 @@ plot_re_cc_autosig <- function(df_res, df_cc, p, win_size = 10, sig_frac = 2/10)
     labs(colour = "Significant") +
     xlab("Relative Position") +
     ylab("Relative Entropy (log10)") +
-    ggtitle(paste0("Population: ", p, "; Subtype: ", subtype)) +
     scale_y_log10() +
-    geom_hline(yintercept = q_95_c, colour = friendly_pals$wong_eight[3], linetype = 2) +
     geom_vline(xintercept = left_boundary, colour = friendly_pals$wong_eight[2]) +
     geom_vline(xintercept = right_boundary, colour = friendly_pals$wong_eight[2]) +
     annotate("text", x = left_boundary - 110, y = min(df_res_sub$re), label = left_boundary) + 
-    annotate("text", x = right_boundary + 100, y = min(df_res_sub$re), label = right_boundary) 
+    annotate("text", x = right_boundary + 100, y = min(df_res_sub$re), label = right_boundary) +
+    ggtitle(paste0("Population: ", population, "; Subtype: ", subtype_print_names(subtype)))
   return(p)
 }
 ```
@@ -399,7 +405,7 @@ residual_analysis <- function(df_resid, subtype){
   return(list(p1 = p1, p2 = p2, p3 = p3, p4 = p4))
 }
 
-single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10)){
+single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10), sig_frac = 5/10){
   df_res <- sp_re_all_pop(single_pos_dir, subtype)
   df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = rp)
   df_cc <- get_pos_cc_pops(control_control, subtype)
@@ -524,7 +530,7 @@ single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10)){
   print(gridExtra::grid.arrange(grobs = plts))
   
   for(poppy in c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
-    print(plot_re_cc_autosig(df_res, df_cc, poppy, win_size = 10, sig_frac = 2 / 10))
+    print(plot_re_cc_autosig(df_res, df_cc, poppy, win_size = 10, sig_frac = 5 / 10))
   }
   
   df_resid %>%
@@ -551,7 +557,7 @@ single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10)){
   print(resid_plots$p4)
 }
 
-single_pos_analysis(subtype)
+single_pos_analysis(subtype, sig_frac = 5/10)
 ```
 
 ```{r}
@@ -808,3 +814,138 @@ for(i in 1:dim(pop_combs)[1]){
 }
 ```
 
+## Two Position Models
+
+### A > C
+
+```{r, warning=FALSE, message=FALSE}
+
+tp_all_dev <- function(two_pos_dir, subtype){
+  pops <- c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")
+  results <- tp_deviance_df_load(two_pos_dir, pops[1], subtype) %>%
+    select(rp1, rp2, dev, re) %>%
+    mutate(pop = pops[1])
+  for(i in 2:length(pops)){
+    results <- results %>%
+      bind_rows({
+        tp_deviance_df_load(two_pos_dir, pops[i], subtype) %>%
+          select(rp1, rp2, dev, re) %>%
+          mutate(pop = pops[i])
+      })
+  }
+  results <- results %>% distinct(rp1, rp2, pop, .keep_all = TRUE) %>%
+    mutate(pop = factor(pop, levels = c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")))
+  return(results)
+}
+
+tp_re_cor_plot <- function(df_tp, subtype, method="pearson"){
+  cor_obj <- df_tp %>%
+    select(-dev) %>%
+    pivot_wider(names_from = pop, values_from = re, id_cols = c(rp1, rp2)) %>%
+    select(ALL:SAS) %>%
+    corrr::correlate(method = method) %>%
+    corrr::shave()
+  
+  p <- cor_obj %>% reshape2::melt() %>%
+    mutate(term = factor(term, levels = c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS"))) %>%
+    filter(variable != term) %>%
+    filter(term != "ALL", variable != "SAS") %>%
+    mutate(round_val = round(value, 2)) %>%
+    ggplot(aes(x=term, y=variable, fill = value)) +
+    geom_tile() +
+    scale_fill_distiller(palette = "Reds", na.value = "white", direction = 1, limits = c(0,1)) +
+    theme_classic() +
+    xlab("") +
+    ylab("") +
+    geom_text(aes(label=round_val)) +
+    ggtitle(subtype_print_names(subtype))
+
+  return(p)
+}
+
+subtype <- "AT_CG"
+
+df_tp <- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)
+tp_re_cor_plot(df_tp, subtype, "spearman")
+```
+
+### A > G
+
+```{r, warning=FALSE, message=FALSE}
+subtype <- "AT_GC"
+
+df_tp <- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)
+tp_re_cor_plot(df_tp, subtype, "spearman")
+```
+
+### A > T
+
+```{r, warning=FALSE, message=FALSE}
+subtype <- "AT_TA"
+
+df_tp <- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)
+tp_re_cor_plot(df_tp, subtype, "spearman")
+```
+
+### C > T
+
+```{r, warning=FALSE, message=FALSE}
+subtype <- "GC_AT"
+
+df_tp <- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)
+tp_re_cor_plot(df_tp, subtype, "spearman")
+```
+
+### C > A
+
+```{r, warning=FALSE, message=FALSE}
+subtype <- "GC_TA"
+
+df_tp <- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)
+tp_re_cor_plot(df_tp, subtype, "spearman")
+```
+
+### C > G
+
+```{r, warning=FALSE, message=FALSE}
+subtype <- "GC_CG"
+
+df_tp <- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)
+tp_re_cor_plot(df_tp, subtype, "spearman")
+```
+
+### CpG > TpG
+
+```{r, warning=FALSE, message=FALSE}
+subtype <- "cpg_GC_AT"
+
+df_tp <- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)
+tp_re_cor_plot(df_tp, subtype, "spearman")
+```
+
+### CpG > ApG
+
+```{r, warning=FALSE, message=FALSE}
+subtype <- "cpg_GC_TA"
+
+df_tp <- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)
+tp_re_cor_plot(df_tp, subtype, "spearman")
+```
+
+### CpG > GpG
+
+```{r, warning=FALSE, message=FALSE}
+subtype <- "cpg_GC_CG"
+
+df_tp <- tp_all_dev(two_pos_dir, subtype)
+tp_re_cor_plot(df_tp, subtype)
+tp_re_cor_plot(df_tp, subtype, "spearman")
+```
