@@ -302,7 +302,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-02-05
+<strong>Last updated:</strong> 2025-03-03
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -349,15 +349,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreef5ea9fe700e0743f6f524fb26762009249ae8190targetblankf5ea9fea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree8e31fe1e2bcb6c6c0c608f66d3a220e4730e1052targetblank8e31fe1a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/f5ea9fe700e0743f6f524fb26762009249ae8190" target="_blank">f5ea9fe</a>
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/8e31fe1e2bcb6c6c0c608f66d3a220e4730e1052" target="_blank">8e31fe1</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreef5ea9fe700e0743f6f524fb26762009249ae8190targetblankf5ea9fea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetree8e31fe1e2bcb6c6c0c608f66d3a220e4730e1052targetblank8e31fe1a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -367,7 +367,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/theandyb/LSCI_pipeline/tree/f5ea9fe700e0743f6f524fb26762009249ae8190" target="_blank">f5ea9fe</a>.
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/8e31fe1e2bcb6c6c0c608f66d3a220e4730e1052" target="_blank">8e31fe1</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -387,10 +387,12 @@ Ignored files:
     Ignored:    data/1kgp/
     Ignored:    data/hgdp/
     Ignored:    data/reference/
+    Ignored:    output/3mer_counts/
     Ignored:    output/controls/
     Ignored:    output/figs/
     Ignored:    output/single_pos/
     Ignored:    output/single_pos_cc/
+    Ignored:    output/single_pos_pp/
     Ignored:    output/singletons/
     Ignored:    output/slurm/
     Ignored:    output/three_pos/
@@ -398,22 +400,14 @@ Ignored files:
     Ignored:    scratch/
 
 Untracked files:
+    Untracked:  analysis/3mer_motifs.Rmd
     Untracked:  analysis/tvd_other_metrics.Rmd
-    Untracked:  code/batch_c_v_c.sh
-    Untracked:  code/batch_three_pos.sh
-    Untracked:  code/sp_control_v_control.py
-    Untracked:  code/sp_control_v_control_v2.py
-    Untracked:  code/three_pos_stat.py
+    Untracked:  code/single_pos_pop_pop.py
 
 Unstaged changes:
-    Modified:   README.md
-    Modified:   analysis/statistic_calibration.Rmd
-    Modified:   code/batch_single_pos.sh
-    Modified:   code/batch_single_pos_stat.sh
-    Modified:   code/single_position_models.py
-    Modified:   code/single_position_models_posOnly.py
-    Modified:   code/two_position_model.py
-    Modified:   code/two_position_resid.py
+    Modified:   analysis/pop_comparison.Rmd
+    Modified:   analysis/single_position_results.Rmd
+    Modified:   analysis/two_position_results.Rmd
 
 </code></pre>
 <p>
@@ -458,6 +452,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/8e31fe1e2bcb6c6c0c608f66d3a220e4730e1052/analysis/index.Rmd" target="_blank">8e31fe1</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-03-03
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/theandyb/LSCI_pipeline/f9d4d9c6d29a682efb29f363e42d19a3154a9df7/docs/index.html" target="_blank">f9d4d9c</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-02-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -769,6 +797,8 @@ Single Chromosome Comparisons</a></li>
 <li><a href="control_control.html">Control - Control
 Comparisons</a></li>
 </ul>
+<p>An analysis of 3mer motifs: <a href="3mer_motifs.html">click this if
+interested!</a></p>
 
 
 <!-- Adjust MathJax settings so that all math formulae are shown using
