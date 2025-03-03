@@ -17,3 +17,6 @@ Welcome to my research website.
 * [Statistic Calibration](statistic_calibration.html)
 * [Population Comparisons](pop_comparison.html)
 * [Control - Control Comparisons](control_control.html)
+
+
+An analysis of 3mer motifs: [click this if interested!](3mer_motifs.html)
