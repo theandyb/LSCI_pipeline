@@ -14,6 +14,7 @@ library(tidyverse)
 library(ggpubfigs) # functions for color blind friendly palettes
 library(reactable) # table output for html
 library(knitr) # PDF table output
+library(gridExtra)
 ```
 
 ### Paths
@@ -45,14 +46,14 @@ resid_df_load <- function(base_dir, pop, subtype, p, q){
 ### Plot data
 
 ```{r}
-deviance_heatmap_1 <- function(df, max_rp = 20){
+deviance_heatmap_1 <- function(df, max_rp = 20, palette = "Purples"){
   p <- df %>%
     filter(abs(rp1) <= max_rp, abs(rp2) <= max_rp) %>%
     ggplot(aes(x = rp2, y = rp1, fill = re)) +
     geom_tile() +
     xlab("Relative Position 2") +
     ylab("Relative Position 1") +
-    scale_fill_distiller(palette = "Purples", direction = 1) +
+    scale_fill_distiller(palette = palette, direction = 1) +
     theme_classic() +
     labs(fill = "Relative Entropy") +
     theme(legend.position = "inside", legend.position.inside = c(0.3, 0.8),
@@ -60,14 +61,14 @@ deviance_heatmap_1 <- function(df, max_rp = 20){
   return(p)
 }
 
-deviance_heatmap_2 <- function(df, max_rp = 20){
+deviance_heatmap_2 <- function(df, max_rp = 20, palette = "Purples"){
   p <- df %>%
     filter(abs(rp1) <= max_rp, abs(rp2) <= max_rp) %>%
     ggplot(aes(x = rp2, y = rp1, fill = re)) +
     geom_tile() +
     xlab("Relative Position 2") +
     ylab("Relative Position 1") +
-    scale_fill_distiller(palette = "Purples", direction = 1) +
+    scale_fill_distiller(palette = palette, direction = 1) +
     theme_classic() +
     labs(fill = "Rel. Ent.")
   return(p)
@@ -83,6 +84,145 @@ main_analysis <- function(base_dir, pop, subtype, max_rp = 20){
   reactable(df)
 }
 ```
+
+### RE plot style figure
+
+```{r}
+data <- deviance_df_load(base_dir, "ALL", "AT_GC")
+
+# Function to extract legend
+g_legend <- function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  if (length(leg) >= 1) {
+    return(tmp$grobs[[leg]])
+  } else {
+    return(NULL) # No legend
+  }
+}
+
+get_sp_fig <- function(pop, subtype, rp_lim=10){
+  base_dir = "output"
+  single_pos_dir = paste0(base_dir, "/single_pos")
+  control_control <- paste0(base_dir, "/single_pos_cc")
+  
+  f_name <- paste0(single_pos_dir, "/", pop, "/", subtype, ".csv")
+  res_df <- read_csv(f_name, show_col_types = FALSE) %>%
+    rowwise() %>%
+    mutate(re = dev / (2 * (singletons+controls)))
+  
+  p <- res_df %>%
+    filter(abs(offset) <= rp_lim) %>%
+    ggplot(aes(x = offset, y = re)) +
+    geom_point() +
+    geom_line() +
+    theme_classic() +
+    theme(text = element_text(family = "Arial"),
+          legend.position = "inside",
+          legend.position.inside = c(.85, .8)) +
+    xlab("") +
+    ylab("")
+  return(p)
+}
+
+re_ld_plot <- function(data, max_rp = 10, palette = "Purples"){
+  data <- data %>%
+    filter(abs(rp1) <= max_rp, abs(rp2) <= max_rp) %>%
+    select(rp1, rp2, re) %>%
+    as.data.frame()
+  # add "0" values
+  data <- data %>% 
+    bind_rows(data.frame(rp1 = -(max_rp):-1, rp2 = 0, re = 0),
+              data.frame(rp1 = 0, rp2 = 1:max_rp, re=0))
+  # add "diagonal" values
+  pos_names <- unique(c(data$rp1, data$rp2))
+  data <- data %>%
+    bind_rows(data.frame(rp1 = pos_names, rp2 = pos_names, re = 0)) %>%
+    arrange(rp1, rp2)
+  upper <- data %>%
+    select(rp1, rp2, re) %>%
+    pivot_wider(names_from = rp2, values_from = re)
+  
+  upper <- upper %>%
+    select(-rp1) %>%
+    as.matrix()
+  
+  rownames(upper) <- 1:dim(upper)[1]
+  colnames(upper) <- 1:dim(upper)[2]
+  
+  lower <- t(upper)
+  lower[is.na(lower)] <- 0
+  upper[is.na(upper)] <- 0
+  full <- upper + lower
+  
+  data <- tidyr::as_tibble(full)
+  colnames(data) <- c(1:ncol(data))
+  n <- length(data)
+  
+  # Tidy data, only taking unique pairs of data
+  values <- data %>%
+    dplyr::mutate(idx1 = c(1:nrow(data))) %>%
+    tidyr::pivot_longer(!idx1, names_to = "idx2", values_to = "re") %>%
+    dplyr::mutate(dplyr::across(idx2, as.double)) %>%
+    dplyr::filter(!duplicated(paste(pmax(idx1, idx2), pmin(idx1, idx2), sep = "_"))) %>%
+    tidyr::unite("id", idx1:idx2, remove = FALSE) %>%
+    dplyr::mutate(diff = abs(idx2 - idx1))
+  
+  # Calculate coordinates for geom_polygon
+  positions <- dplyr::bind_rows(values, values, values, values) %>%
+    dplyr::group_by(diff, idx1) %>%
+    dplyr::mutate(add_index1 = c(0, 1, 0, 1),
+                  add_index2 = c(0, -1, 0, 1),
+                  minus1_index = c(1, 1, 0, 1)) %>%
+    dplyr::mutate(x = diff * 5 / n + 10 / n * (idx1 - minus1_index) + 5 / n * add_index1,
+                  y = 5 - diff * 5 / n + 5 / n * add_index2) %>%
+    dplyr::ungroup()
+  
+  positions$re[positions$re == 0] <- NA
+  
+  n <- dim(data)[1]
+  
+  # ggplot2
+  p1 <- positions %>%
+    ggplot2::ggplot(ggplot2::aes(x = x, y = y)) +
+    ggplot2::geom_polygon(ggplot2::aes(fill = re, group = id)) +
+    ggplot2::theme_void() +
+    ggplot2::scale_fill_distiller(type = "seq", palette = palette, direction = 1, na.value = "grey90") +
+    theme( 
+        legend.position="bottom",
+        legend.title = element_blank(),
+        legend.direction = "horizontal",
+        legend.key.size = unit(1, "cm"),  # Adjust key size (width)
+        legend.spacing.x = unit(0.5, "cm")
+    ) 
+  legend_obj <- g_legend(p1)
+  p2 <- p1 +
+    theme(legend.position = "none") + 
+    theme(aspect.ratio = (1 / n  + (n - 1) / (2 * n)))
+  # grid.arrange(p2, legend_obj, ncol=1)
+  # 
+  # cowplot::plot_grid(
+  #   p2,
+  #   legend_obj,
+  #   ncol = 1, rel_heights = c(6, 1)
+  # )
+  return(p2)
+}
+
+p1 <- re_ld_plot(data, max_rp = 10, palette = "Reds")
+p2 <- get_sp_fig("ALL", "AT_GC") +
+  theme(axis.line.y = element_blank(),     # Remove the y-axis line
+        axis.text.y = element_blank(),     # Remove y-axis text labels
+        axis.ticks.y = element_blank())
+
+cowplot::plot_grid(
+  p2,
+  p1,
+  ncol=1,
+  align="v"
+)
+```
+
 
 ## Results
 
