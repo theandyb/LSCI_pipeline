@@ -28,7 +28,7 @@ def c_pos(subtype, chromosome, pop):
   f_name = input_dir + subtype + "_" + str(chromosome) + ".txt"
   pos_list = pd.read_csv(f_name, header=0, names = ['pos'], usecols=['pos']).squeeze("columns")
   return pos_list.astype(int)
-  
+
 def s_pos(subtype, chromosome, pop = "ALL"):
   """Get the positions for singletons for a given subtype"""
   input_dir = "output/singletons/{}/pos_files/".format(pop)
@@ -36,11 +36,29 @@ def s_pos(subtype, chromosome, pop = "ALL"):
   pos_list = pd.read_csv(f_name, header=None, names = ['pos'], usecols=['pos']).squeeze("columns")
   return pos_list.astype(int)
 
-def complement(nucleotide):
-  complements = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
-  if not nucleotide in complements.keys():
-    return nucleotide
-  return complements[nucleotide]
+def reverse_complement(dna_sequence):
+  complement = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C', 'N':'N', 'a':'t', 't':'a', 'c':'g', 'g':'c', 'n':'n'} #added lowercase and N support.
+  reverse_seq = dna_sequence[::-1]  # Reverse the sequence
+  reverse_complement_seq = "".join(complement.get(base, base) for base in reverse_seq) #get complement, or return original base if not found.
+  return reverse_complement_seq
+
+def complement(dna_sequence):
+  complement = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C', 'N':'N', 'a':'t', 't':'a', 'c':'g', 'g':'c', 'n':'n'} #added lowercase and N support.
+  complement_seq = "".join(complement.get(base, base) for base in dna_sequence) #get complement, or return original base if not found.
+  return complement_seq
+
+def generate_nucleotide_motifs(n):
+  if n <= 0:
+    return []
+  nucleotides = ['A', 'C', 'G', 'T']
+  motifs = ['']
+  for _ in range(n):
+    new_motifs = []
+    for motif in motifs:
+      for nucleotide in nucleotides:
+        new_motifs.append(motif + nucleotide)
+    motifs = new_motifs
+  return {item: 0 for item in motifs}
 
 def get_seq_db(chromosome, db_file="data/reference/ref_db.db"):
   db_file_ro = "file:{}?mode=ro".format(db_file)
@@ -52,230 +70,64 @@ def get_seq_db(chromosome, db_file="data/reference/ref_db.db"):
   conn.close()
   return(result[0])
 
-@ray.remote 
-def get_count_table_control(chromosome, subtype, p, q, pop):
-  """
-  Get the count table for nucleotides flanking control locations at two neighboring positions
-  """
+@ray.remote
+def get_3mer_control(chromosome, pop, subtype, rel_vals=[-1,0,1]):
+  motif_size = len(rel_vals)
   control_pos = c_pos(subtype, chromosome, pop)
   rev_control_pos = c_pos(subtype + "_rev", chromosome, pop)
-  seqstr = get_seq_db(chromosome)
-  # ref_file = "data/reference/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
-  # fasta_obj = Fasta(ref_file)
-  # seq = fasta_obj["{}{}".format("chr", chromosome)]
-  # seqstr = seq[0:len(seq)].seq
-  results = {"AA":0, "AC":0, "AG":0, "AT":0, 
-    "CA":0, "CC":0, "CG":0, "CT":0,
-    "GA":0, "GC":0, "GG":0, "GT":0,
-    "TA":0, "TC":0, "TG":0, "TT":0}
+  seq = get_seq_db(chromosome)
+  results = generate_nucleotide_motifs(motif_size)
   for index, value in control_pos.items():
-    ix1 = value - 1 + p
-    ix2 = value - 1 + q
-    nuc = "{}{}".format(seqstr[ix1],seqstr[ix2])
+    ix_vals = [(value - 1) + item for item in rel_vals]
+    nuc = "".join([seq[item] for item in ix_vals])
     if nuc in results.keys():
       results[nuc] += 1
   for index, value in rev_control_pos.items():
-    ix1 = value - 1 + (p * -1)
-    ix2 = value - 1 + (q * -1)
-    nuc = "{}{}".format(complement(seqstr[ix1]),complement(seqstr[ix2]))
+    ix_vals = [(value - 1) + (item*-1)  for item in rel_vals]
+    ix_vals.sort()
+    nuc = "".join([seq[item] for item in ix_vals])
+    nuc = reverse_complement(nuc)
     if nuc in results.keys():
       results[nuc] += 1
-  return(results)
+  return {key: value for key, value in results.items() if value != 0}
 
 @ray.remote
-def get_count_table_control_new(chromosome, subtype, p, q, pop):
-  control_pos = c_pos(subtype, chromosome, pop)
-  rev_control_pos = c_pos(subtype + "_rev", chromosome, pop)
-  seqstr = get_seq_db(chromosome)
-  # ref_file = "data/reference/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
-  # fasta_obj = Fasta(ref_file)
-  # seq = fasta_obj["{}{}".format("chr", chromosome)]
-  # seqstr = seq[0:len(seq)].seq
-  nucleotides_p = [seqstr[pos-1] for pos in (control_pos + p)]
-  nucleotides_p_rev = [seqstr[pos-1] for pos in (rev_control_pos + (-1*p))]
-  nucleotides_q = [seqstr[pos-1] for pos in (control_pos + q)]
-  nucleotides_q_rev = [seqstr[pos-1] for pos in (rev_control_pos + (-1*q))]
-  f_all = [a + b for a, b in zip(nucleotides_p, nucleotides_q)]
-  rev_all = [a + b for a, b in zip(nucleotides_p_rev, nucleotides_q_rev)]
-  frequency_table = {}
-  for item in f_all:
-    if item in frequency_table:
-      frequency_table[item] += 1
-    else:
-      frequency_table[item] = 1
-  for item in rev_all:
-    if item in frequency_table:
-      frequency_table[item] += 1
-    else:
-      frequency_table[item] = 1
-  return(frequency_table)
-
-@ray.remote
-def get_count_table_singletons_new(chromosome, subtype, p, q, pop):
+def get_3mer_singletons(chromosome, pop, subtype, rel_vals=[-1,0,1]):
+  motif_size = len(rel_vals)
   singleton_pos = s_pos(subtype, chromosome, pop)
   rev_singleton_pos = s_pos(subtype + "_rev", chromosome, pop)
-  seqstr = get_seq_db(chromosome)
-  # ref_file = "data/reference/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
-  # fasta_obj = Fasta(ref_file)
-  # seq = fasta_obj["{}{}".format("chr", chromosome)]
-  # seqstr = seq[0:len(seq)].seq
-  nucleotides_p = [seqstr[pos-1] for pos in (singleton_pos + p)]
-  nucleotides_p_rev = [seqstr[pos-1] for pos in (rev_singleton_pos + (-1*p))]
-  nucleotides_q = [seqstr[pos-1] for pos in (singleton_pos + q)]
-  nucleotides_q_rev = [seqstr[pos-1] for pos in (rev_singleton_pos + (-1*q))]
-  f_all = [a + b for a, b in zip(nucleotides_p, nucleotides_q)]
-  rev_all = [a + b for a, b in zip(nucleotides_p_rev, nucleotides_q_rev)]
-  frequency_table = {}
-  for item in f_all:
-    if item in frequency_table:
-      frequency_table[item] += 1
-    else:
-      frequency_table[item] = 1
-  for item in rev_all:
-    if item in frequency_table:
-      frequency_table[item] += 1
-    else:
-      frequency_table[item] = 1
-  return(frequency_table)
-
-@ray.remote
-def get_count_table_singletons(chromosome, subtype, p, q, pop):
-  """
-  Get the count table for singletons at a given relative position for a subtype.
-  """
-  singleton_pos = s_pos(subtype, chromosome, pop)
-  rev_singleton_pos = s_pos(subtype + "_rev", chromosome, pop)
-  seqstr = get_seq_db(chromosome)
-  # ref_file = "data/reference/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
-  # fasta_obj = Fasta(ref_file)
-  # seq = fasta_obj["{}{}".format("chr", chromosome)]
-  # seqstr = seq[0:len(seq)].seq
-  results = {"AA":0, "AC":0, "AG":0, "AT":0, 
-    "CA":0, "CC":0, "CG":0, "CT":0,
-    "GA":0, "GC":0, "GG":0, "GT":0,
-    "TA":0, "TC":0, "TG":0, "TT":0}
+  seq = get_seq_db(chromosome)
+  results = generate_nucleotide_motifs(motif_size)
   for index, value in singleton_pos.items():
-    ix1 = value - 1 + p
-    ix2 = value - 1 + q
-    nuc = "{}{}".format(seqstr[ix1],seqstr[ix2])
+    ix_vals = [(value - 1) + item for item in rel_vals]
+    nuc = "".join([seq[item] for item in ix_vals])
     if nuc in results.keys():
       results[nuc] += 1
   for index, value in rev_singleton_pos.items():
-    ix1 = value - 1 + (p * -1)
-    ix2 = value - 1 + (q * -1)
-    nuc = "{}{}".format(complement(seqstr[ix1]),complement(seqstr[ix2]))
+    ix_vals = [(value - 1) + (item*-1)  for item in rel_vals]
+    ix_vals.sort()
+    nuc = "".join([seq[item] for item in ix_vals])
+    nuc = reverse_complement(nuc)
     if nuc in results.keys():
       results[nuc] += 1
-  return(results)
+  return {key: value for key, value in results.items() if value != 0}
 
-# @ray.remote
-# def get_count_table_singletons_old(chromosome, subtype, p, q, pop = "ALL"):
-#   """
-#   Get the count table for singletons at a given relative position for a subtype.
-#   Note: this version has been made so as to be called in parallel via ray, but
-#   that it sucks in that each worker has to load the reference genome. Need to
-#   check if there's a python library that has the reference genome as on object
-#   that can maybe be passed around?
-#   """
-#   singleton_pos = s_pos(subtype, chromosome, pop)
-#   rev_singleton_pos = s_pos(subtype + "_rev", chromosome, pop)
-#   ref_file = "data/reference/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
-#   fasta_obj = Fasta(ref_file)
-#   seq = fasta_obj["{}{}".format("chr", chromosome)]
-#   seqstr = seq[0:len(seq)].seq
-#   results = {"AA":0, "AC":0, "AG":0, "AT":0,
-#     "CA":0, "CC":0, "CG":0, "CT":0,
-#     "GA":0, "GC":0, "GG":0, "GT":0,
-#     "TA":0, "TC":0, "TG":0, "TT":0}
-#   for index, value in singleton_pos.items():
-#     ix1 = value - 1 + p
-#     ix2 = value - 1 + q
-#     nuc = "{}{}".format(seqstr[ix1],seqstr[ix2])
-#     if nuc in results.keys():
-#       results[nuc] += 1
-#   for index, value in rev_singleton_pos.items():
-#     ix1 = value - 1 + (p * -1)
-#     ix2 = value - 1 + (q * -1)
-#     nuc = "{}{}".format(complement(seqstr[ix1]),complement(seqstr[ix2]))
-#     if nuc in results.keys():
-#       results[nuc] += 1
-#   return(results)
-
-# @ray.remote
-# def get_count_table_control_old(chromosome, subtype, p, q, pop = "ALL"):
-#   """
-#   Get the count table for controls at a pair of given relative positions for a subtype.
-#   Note: this version has been made so as to be called in parallel via ray, but
-#   that it sucks in that each worker has to load the reference genome. Need to
-#   check if there's a python library that has the reference genome as on object
-#   that can maybe be passed around?
-#   """
-#   ref_file = "data/reference/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
-#   fasta_obj = Fasta(ref_file)
-#   control_pos = c_pos(subtype, chromosome, pop)
-#   rev_control_pos = c_pos(subtype + "_rev", chromosome, pop)
-#   seq = fasta_obj["{}{}".format("chr", chromosome)]
-#   seqstr = seq[0:len(seq)].seq
-#   results = {"AA":0, "AC":0, "AG":0, "AT":0, 
-#     "CA":0, "CC":0, "CG":0, "CT":0,
-#     "GA":0, "GC":0, "GG":0, "GT":0,
-#     "TA":0, "TC":0, "TG":0, "TT":0}
-#   for index, value in control_pos.items():
-#     ix1 = value - 1 + p
-#     ix2 = value - 1 + q
-#     nuc = "{}{}".format(seqstr[ix1],seqstr[ix2])
-#     if nuc in results.keys():
-#       results[nuc] += 1
-#   for index, value in rev_control_pos.items():
-#     ix1 = value - 1 + (p * -1)
-#     ix2 = value - 1 + (q * -1)
-#     nuc = "{}{}".format(complement(seqstr[ix1]),complement(seqstr[ix2]))
-#     if nuc in results.keys():
-#       results[nuc] += 1
-#   return(results)
-
-def get_count_all(subtype, p, q, status = "singleton", pop = "ALL"):
+def get_count_all(subtype, status = "singleton", pop = "ALL", rel_vals=[-1,1]):
   """
   Get the singleton and control counts for a given relative position
   across all 22 autosomes. This version is parallelized via ray
   """
   if status == "singleton":
-    futures = [get_count_table_singletons.remote(i, subtype, p, q, pop) for i in range(1,23)]
+    futures = [get_3mer_singletons.remote(i, pop, subtype, rel_vals=rel_vals) for i in range(1,23)]
     results = pd.DataFrame.from_dict(ray.get(futures)).sum(axis=0)
   else:
-    futures = [get_count_table_control.remote(i, subtype, p, q, pop) for i in range(1,23)]
+    futures = [get_3mer_control.remote(i, pop, subtype, rel_vals = rel_vals) for i in range(1,23)]
     results = pd.DataFrame.from_dict(ray.get(futures)).sum(axis=0)
   return(results)
-
-def get_count_all_new(subtype, p, q, status = "singleton", pop = "ALL"):
-  """
-  Get the singleton and control counts for a given relative position
-  across all 22 autosomes. This version is parallelized via ray
-  """
-  if status == "singleton":
-    futures = [get_count_table_singletons_new.remote(i, subtype, p, q, pop) for i in range(1,23)]
-    results = pd.DataFrame.from_dict(ray.get(futures)).sum(axis=0)
-  else:
-    futures = [get_count_table_control_new.remote(i, subtype, p, q, pop) for i in range(1,23)]
-    results = pd.DataFrame.from_dict(ray.get(futures)).sum(axis=0)
-  return(results)
-
-# def get_count_all_old(subtype, p, q, status = "singleton", pop = "ALL"):
-#   """
-#   Get the singleton and control counts for a given relative position
-#   across all 22 autosomes. This version is parallelized via ray
-#   """
-#   if status == "singleton":
-#     futures = [get_count_table_singletons_old.remote(i, subtype, p, q, pop) for i in range(1,23)]
-#     results = pd.DataFrame.from_dict(ray.get(futures)).sum(axis=0)
-#   else:
-#     futures = [get_count_table_control_old.remote(i, subtype, p, q, pop) for i in range(1,23)]
-#     results = pd.DataFrame.from_dict(ray.get(futures)).sum(axis=0)
-#   return(results)
 
 def fit_model_all(subtype, p, q, pop = "ALL"):
-  df_s = get_count_all_new(subtype, p, q, pop = pop)
-  df_c = get_count_all_new(subtype, p, q, status = "control", pop = pop)
+  df_s = get_count_all(subtype, pop = pop, rel_vals=[p, q])
+  df_c = get_count_all(subtype, status = "control", pop = pop, rel_vals=[p, q])
   df_s = df_s.rename_axis("motif").reset_index()
   df_c = df_c.rename_axis("motif").reset_index()
   df_s.columns = ["motif", "singletons"]

@@ -15,7 +15,7 @@
 #SBATCH -e output/slurm/singlePos-%A_%a.err
 #SBATCH -o output/slurm/singlePos-%A_%a.out
 
-VAR1_VALUES=("AFR" "AMR" "EAS" "EUR" "SAS", "ALL")
+VAR1_VALUES=("AFR" "AMR" "EAS" "EUR" "SAS" "ALL")
 VAR2_VALUES=("AT_CG" "AT_GC" "AT_TA" "GC_AT" "GC_TA" "GC_CG" "cpg_GC_AT" "cpg_GC_TA" "cpg_GC_CG")
 
 INDEX=$SLURM_ARRAY_TASK_ID
