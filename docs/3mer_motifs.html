@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Andy Beck" />
+
+<meta name="date" content="2025-03-03" />
+
+<title>3mer_motifs</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/core-js-2.5.3/shim.min.js"></script>
+<script src="site_libs/react-18.2.0/react.min.js"></script>
+<script src="site_libs/react-18.2.0/react-dom.min.js"></script>
+<script src="site_libs/reactwidget-2.0.0/react-tools.js"></script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="site_libs/reactable-0.4.4/reactable.css" rel="stylesheet" />
+<script src="site_libs/reactable-binding-0.4.4/reactable.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LSCI_pipeline</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">3mer_motifs</h1>
+<h4 class="author">Andy Beck</h4>
+<h4 class="date">2025-03-03</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-03-04
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>LSCI_pipeline/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240916code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240916)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240916code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240916)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreee174afef7e7a0f2364531e9c243942244f1954catargetblanke174afea">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/e174afef7e7a0f2364531e9c243942244f1954ca" target="_blank">e174afe</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomtheandybLSCIpipelinetreee174afef7e7a0f2364531e9c243942244f1954catargetblanke174afea"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/theandyb/LSCI_pipeline/tree/e174afef7e7a0f2364531e9c243942244f1954ca" target="_blank">e174afe</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    data/1kgp/
+    Ignored:    data/hgdp/
+    Ignored:    data/reference/
+    Ignored:    output/3mer_counts/
+    Ignored:    output/controls/
+    Ignored:    output/figs/
+    Ignored:    output/single_pos/
+    Ignored:    output/single_pos_cc/
+    Ignored:    output/single_pos_pp/
+    Ignored:    output/singletons/
+    Ignored:    output/slurm/
+    Ignored:    output/three_pos/
+    Ignored:    output/two_pos/
+    Ignored:    scratch/
+
+Untracked files:
+    Untracked:  analysis/tvd_other_metrics.Rmd
+
+Unstaged changes:
+    Modified:   analysis/pop_comparison.Rmd
+    Modified:   analysis/single_position_results.Rmd
+    Modified:   code/three_pos_stat.py
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/3mer_motifs.Rmd</code>) and HTML
+(<code>docs/3mer_motifs.html</code>) files. If you’ve configured a
+remote Git repository (see <code>?wflow_git_remote</code>), click on the
+hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/theandyb/LSCI_pipeline/blob/e174afef7e7a0f2364531e9c243942244f1954ca/analysis/3mer_motifs.Rmd" target="_blank">e174afe</a>
+</td>
+<td>
+Andy Beck
+</td>
+<td>
+2025-03-04
+</td>
+<td>
+wflow_publish("analysis/3mer_motifs.Rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="libraries-and-data" class="section level2">
+<h2>Libraries and Data</h2>
+<pre class="r"><code>library(tidyverse)
+library(ggpubfigs)
+library(reactable)</code></pre>
+<div id="directories" class="section level3">
+<h3>Directories</h3>
+<pre class="r"><code>base_dir &lt;- &quot;output&quot;
+motif_dir &lt;- paste0(base_dir, &quot;/3mer_counts&quot;)</code></pre>
+</div>
+<div id="load-results" class="section level3">
+<h3>Load Results</h3>
+<pre class="r"><code>load_motif &lt;- function(motif_dir, pop, subtype){
+  f_name &lt;- paste0(motif_dir, &quot;/&quot;, pop, &quot;_&quot;, subtype, &quot;.csv&quot;)
+  df &lt;- read_csv(f_name, show_col_types = FALSE) %&gt;%
+    mutate(p_s = singletons / sum(singletons),
+           p_c = controls / sum(controls))
+  return(df)
+}</code></pre>
+</div>
+<div id="functions-for-motif-counting" class="section level3">
+<h3>Functions for motif counting</h3>
+<p>Here we’ll generate functions for getting motifs for singletons and
+their matched controls on the fly. For most of the document we will rely
+on pre-generated results.</p>
+<pre class="r"><code>library(reticulate)
+#conda_python(&quot;base&quot;, conda = &quot;/net/snowwhite/home/beckandy/mambaforge/bin/mamba&quot;)
+#conda_create(&quot;my_project_env&quot;, conda = &quot;/net/snowwhite/home/beckandy/mambaforge/bin/mamba&quot;, python_version = 3.12)
+#py_install(packages = c(&quot;pandas&quot;,&quot;ray&quot;))
+conda_python(&quot;my_project_env&quot;, conda = &quot;/net/snowwhite/home/beckandy/mambaforge/bin/mamba&quot;)</code></pre>
+<pre><code>[1] &quot;/net/snowwhite/home/beckandy/mambaforge/envs/my_project_env/bin/python&quot;</code></pre>
+<pre class="r"><code>source_python(&quot;scratch/3mer_enrichment_R.py&quot;)
+
+#get_motif_table(&quot;AT_CG&quot;, &quot;ALL&quot;, &quot;output&quot;, as.integer(-2:2))
+
+motif_df &lt;- function(subtype, population, rel_vals = c(-1:1)){
+  rel_vals &lt;- sort(rel_vals)
+  df &lt;- try(get_motif_table(subtype, population, &quot;output&quot;, rel_vals = as.integer(rel_vals)))
+  if (inherits(df, &#39;try-error&#39;)){
+    py_eval(&#39;ray.shutdown()&#39;)
+  }
+  return(df)
+}
+
+ray_start &lt;- function(){
+  py_eval(&#39;ray.init(num_cpus=22)&#39;)
+}
+
+ray_shutdown &lt;- function(){
+  py_eval(&#39;ray.shutdown()&#39;)
+}
+
+ray_start()</code></pre>
+<pre><code>RayContext(dashboard_url=&#39;&#39;, python_version=&#39;3.10.15&#39;, ray_version=&#39;2.43.0&#39;, ray_commit=&#39;ecdcdc6a6e63dc4bcd6ea16aae256ce4d32a7e2c&#39;)</code></pre>
+<pre class="r"><code>#motif_df(&quot;AT_CG&quot;, &quot;ALL&quot;, -1:1)
+
+#motif_df(&quot;AT_CG&quot;, &quot;AMR&quot;, rel_vals = c(-1,0,1))</code></pre>
+</div>
+</div>
+<div id="analyses" class="section level2">
+<h2>Analyses</h2>
+<div id="all-populations" class="section level3">
+<h3>ALL Populations</h3>
+<pre class="r"><code>population &lt;- &quot;ALL&quot;</code></pre>
+<div id="a-c" class="section level4">
+<h4>A &gt; C</h4>
+<pre class="r"><code>subtype &lt;- &quot;AT_CG&quot;
+
+df &lt;- load_motif(motif_dir, population, subtype)
+
+df %&gt;%
+  reactable(pagination = F)</code></pre>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-af24baeea30b9bdf5856" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-af24baeea30b9bdf5856">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"motif":["AAA","AAC","AAG","AAT","CAA","CAC","CAG","CAT","GAA","GAC","GAG","GAT","TAA","TAC","TAG","TAT"],"singletons":[648088,224913,380602,310007,338922,255995,325761,339989,223731,95181,207562,137537,310048,116678,161538,256112],"controls":[2808131,1069435,1451980,1823719,1393206,1096606,1477096,1322589,1468384,690076,1249881,989538,1524121,833154,954323,1511076],"p_s":[0.149581873877134,0.0519110182557429,0.0878447994120938,0.0715511288205132,0.0782248519617492,0.0590848955746395,0.075187228919667,0.0784711207700389,0.0516382068861098,0.0219682394019015,0.0479063227612388,0.0317442109519686,0.0715605918206443,0.0269298519340526,0.0372837589067604,0.0591118997457453],"p_c":[0.129626098314132,0.0493661750290756,0.0670248297640504,0.0841846688745467,0.0643117639197879,0.0506204152042289,0.0681842091111171,0.061052013507628,0.0677820545932144,0.0318545891983752,0.057695740471853,0.0456780506584519,0.0703549295202512,0.038459210882545,0.0440524915046474,0.0697527594460959]},"columns":[{"id":"motif","name":"motif","type":"character"},{"id":"singletons","name":"singletons","type":"numeric"},{"id":"controls","name":"controls","type":"numeric"},{"id":"p_s","name":"p_s","type":"numeric"},{"id":"p_c","name":"p_c","type":"numeric"}],"pagination":false,"dataKey":"aebd88ddc528d86946e94956ccd75580"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<p>Let’s assess how similar/dissimilar these distributions are between
+the singletons and their matched controls:</p>
+<p>First: do the rankings of motifs match?</p>
+<pre class="r"><code>motif_rank_singletons &lt;- df %&gt;%
+  arrange(desc(p_s)) %&gt;% 
+  pull(motif)
+
+motif_rank_controls &lt;- df %&gt;%
+  arrange(desc(p_c)) %&gt;% 
+  pull(motif)
+
+motif_rank_singletons</code></pre>
+<pre><code> [1] &quot;AAA&quot; &quot;AAG&quot; &quot;CAT&quot; &quot;CAA&quot; &quot;CAG&quot; &quot;TAA&quot; &quot;AAT&quot; &quot;TAT&quot; &quot;CAC&quot; &quot;AAC&quot; &quot;GAA&quot; &quot;GAG&quot;
+[13] &quot;TAG&quot; &quot;GAT&quot; &quot;TAC&quot; &quot;GAC&quot;</code></pre>
+<pre class="r"><code>motif_rank_controls</code></pre>
+<pre><code> [1] &quot;AAA&quot; &quot;AAT&quot; &quot;TAA&quot; &quot;TAT&quot; &quot;CAG&quot; &quot;GAA&quot; &quot;AAG&quot; &quot;CAA&quot; &quot;CAT&quot; &quot;GAG&quot; &quot;CAC&quot; &quot;AAC&quot;
+[13] &quot;GAT&quot; &quot;TAG&quot; &quot;TAC&quot; &quot;GAC&quot;</code></pre>
+<pre class="r"><code>motif_rank_singletons == motif_rank_controls</code></pre>
+<pre><code> [1]  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[13] FALSE FALSE  TRUE  TRUE</code></pre>
+<p>The answer is: no! Let’s visualize this in a scatterplot:</p>
+<pre class="r"><code>df %&gt;%
+  ggplot(aes(x = p_s, y = p_c)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = 2)</code></pre>
+<p><img src="figure/3mer_motifs.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>df %&gt;%
+  select(motif, p_s, p_c) %&gt;%
+  rename(Singletons = p_s, Controls = p_c) %&gt;%
+  pivot_longer(-motif, names_to = &quot;category&quot;, values_to = &quot;proportion&quot;) %&gt;%
+  ggplot(aes(x = proportion, y = motif, shape = category, color = category)) +
+  geom_point(size=3) +
+  xlab(&quot;Class Proportion&quot;) +
+  ylab(&quot;Motif&quot;) +
+  theme_minimal() +
+  scale_color_manual(values = ggpubfigs::friendly_pals$wong_eight) +
+  labs(color = &quot;Category&quot;, shape = &quot;Category&quot;) + 
+  theme(legend.position = &quot;inside&quot;, legend.position.inside = c(0.85,0.85),
+        legend.background = element_rect(color = &quot;white&quot;, fill = &quot;white&quot;),
+        legend.box.background = element_rect(fill = alpha(&#39;#e5e5e5&#39;, .6), linewidth = 1, linetype = &quot;solid&quot;, color = &quot;#333333&quot;))</code></pre>
+<p><img src="figure/3mer_motifs.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Next, let’s look at a few metrics of density
+similarity/dissimilarity:</p>
+<pre class="r"><code># compute relative entropy
+re_val &lt;- sum(df$p_s * log(df$p_s / df$p_c))
+
+print(re_val)</code></pre>
+<pre><code>[1] 0.02060453</code></pre>
+<p>Relative to the values we observe for, say, our single position
+models, the relative entropy we observe here is quite high; however, I’m
+still unsure how to really say anything about the strength of this
+difference between the distributions. One thought is how about we draw
+random re-samples of the singletons using their observed proportion and
+then get a “null distribution” of relative entropy values from these
+re-samples?</p>
+<pre class="r"><code>n_singletons &lt;- df$singletons %&gt;% sum()
+
+s_1 &lt;- rmultinom(1, n_singletons, df$p_s)
+s_1 &lt;- s_1 / sum(s_1)
+
+sum(df$p_s * log(df$p_s / s_1))</code></pre>
+<pre><code>[1] 1.239007e-06</code></pre>
+<p>Maybe this isn’t quite what I’m looking for; maybe we want to draw
+the same number of singletons, but from the proportions from the control
+distribution?</p>
+<pre class="r"><code>re_vals &lt;- c()
+
+for(i in 1:1000){
+  s_1 &lt;- rmultinom(1, n_singletons, df$p_c)
+  s_1 &lt;- s_1 / sum(s_1)
+
+  re_vals &lt;- c(re_vals, sum(s_1 * log(s_1 / df$p_c)))
+}
+
+data.frame(re = re_vals) %&gt;%
+  ggplot(aes(x = re)) +
+  geom_density() +
+  xlab(&quot;Relative Entropy&quot;) +
+  theme_classic()</code></pre>
+<p><img src="figure/3mer_motifs.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Ok, so empirically, our relative entropy value of 0.0206045 is far
+larger than what we’d expect if our singletons were a random draw from a
+distribution with the same proportions as observed in our control
+sample. Great!</p>
+<p>What might be more interesting to look at is the relative entropy
+statistics that we might have observed for motifs other than the central
+3-mer. For example, what if we defined the motif by the nucleotides at
+the -2 and -1 positions? Do we see a larger relative entropy value for
+such a motif?</p>
+<pre class="r"><code>df2 &lt;- motif_df(&quot;AT_CG&quot;, &quot;ALL&quot;, -2:0) 
+
+df2 &lt;- df2 %&gt;%
+  mutate(p_s = singletons / sum(singletons),
+         p_c = controls / sum(controls))
+
+sum(df2$p_s * log(df2$p_s / df2$p_c))</code></pre>
+<pre><code>[1] 0.01918039</code></pre>
+<p>Here we observe a large re value relative to our “null” draws from
+above, and it’s close to what we observed for the -1,1 motif</p>
+<ul>
+<li>The top single position effects were at: -1, -3, 2, +1</li>
+<li>The top two-way interaction was at (1,2)
+<ul>
+<li>(-1, 1) was the second highest 2-position relative entropy</li>
+</ul></li>
+</ul>
+<p>Based on the above, we might instead ask what our results look like
+if we define motifs based on the nucleotides at the 1 and 2 relative
+positions:</p>
+<pre class="r"><code>df2 &lt;- motif_df(&quot;AT_CG&quot;, &quot;ALL&quot;, 0:2) %&gt;%
+  mutate(p_s = singletons / sum(singletons),
+         p_c = controls / sum(controls))
+
+sum(df2$p_s * log(df2$p_s / df2$p_c))</code></pre>
+<pre><code>[1] 0.01318622</code></pre>
+<p>Still weaker than the (-1, 1) relative entropy, but still in the same
+ballpark. But what if we instead went by chosing the two positions with
+the highest individual position effects (-1, -3):</p>
+<pre class="r"><code>df2 &lt;- motif_df(&quot;AT_CG&quot;, &quot;ALL&quot;, c(-3,-1,0)) %&gt;%
+  mutate(p_s = singletons / sum(singletons),
+         p_c = controls / sum(controls))
+
+sum(df2$p_s * log(df2$p_s / df2$p_c))</code></pre>
+<pre><code>[1] 0.02318465</code></pre>
+<p>Well ok, here we’ve found a higher relative entropy value than what
+we observed at (-1, 1)! Now, I suspect that we’ll also see an increased
+relative entropy as we include more positions in the motifs; let’s look
+now at the central +/-2 bp window and the non-central window
+(-3,-2,-1,1):</p>
+<pre class="r"><code>df2 &lt;- motif_df(&quot;AT_CG&quot;, &quot;ALL&quot;, -2:2) %&gt;%
+  mutate(p_s = singletons / sum(singletons),
+         p_c = controls / sum(controls))
+
+df3 &lt;- motif_df(&quot;AT_CG&quot;, &quot;ALL&quot;, -3:1) %&gt;%
+  mutate(p_s = singletons / sum(singletons),
+         p_c = controls / sum(controls))
+
+sum(df2$p_s * log(df2$p_s / df2$p_c))</code></pre>
+<pre><code>[1] 0.04875853</code></pre>
+<pre class="r"><code>sum(df3$p_s * log(df3$p_s / df3$p_c))</code></pre>
+<pre><code>[1] 0.04789032</code></pre>
+<p>As we expected, we see higher relative entropy statistics as we
+increase the motif size. Here we observe a slightly higher value for the
+central (-2 to 2) motif; this motif overlaps with the strongest single
+position effect (-1), the third strongest single position effect (+2),
+and the strongest two-way effect (+1, +2). The non-central motif is
+missing the (+1, +2) and +2 positions, but adds in the second strongest
+single position effect (-3).</p>
+</div>
+</div>
+</div>
+<div id="cleanup" class="section level2">
+<h2>Cleanup</h2>
+<pre class="r"><code>ray_shutdown()</code></pre>
+<pre><code>NULL</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.3 (2025-02-28)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 20.04.6 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3;  LAPACK version 3.9.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: America/New_York
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] reticulate_1.41.0 reactable_0.4.4   ggpubfigs_0.0.1   lubridate_1.9.3  
+ [5] forcats_1.0.0     stringr_1.5.1     dplyr_1.1.4       purrr_1.0.2      
+ [9] readr_2.1.5       tidyr_1.3.1       tibble_3.2.1      ggplot2_3.5.1    
+[13] tidyverse_2.0.0   workflowr_1.7.1  
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.6      xfun_0.49         bslib_0.8.0       htmlwidgets_1.6.4
+ [5] processx_3.8.4    lattice_0.22-6    callr_3.7.6       tzdb_0.4.0       
+ [9] crosstalk_1.2.1   vctrs_0.6.5       tools_4.4.3       ps_1.8.1         
+[13] generics_0.1.3    parallel_4.4.3    fansi_1.0.6       pkgconfig_2.0.3  
+[17] Matrix_1.7-1      lifecycle_1.0.4   farver_2.1.2      compiler_4.4.3   
+[21] git2r_0.33.0      munsell_0.5.1     getPass_0.2-4     httpuv_1.6.15    
+[25] htmltools_0.5.8.1 sass_0.4.9        yaml_2.3.10       crayon_1.5.3     
+[29] later_1.3.2       pillar_1.9.0      jquerylib_0.1.4   whisker_0.4.1    
+[33] cachem_1.1.0      tidyselect_1.2.1  digest_0.6.37     stringi_1.8.4    
+[37] labeling_0.4.3    rprojroot_2.0.4   fastmap_1.2.0     grid_4.4.3       
+[41] archive_1.1.8     colorspace_2.1-1  cli_3.6.3         magrittr_2.0.3   
+[45] utf8_1.2.4        reactR_0.6.1      withr_3.0.2       scales_1.3.0     
+[49] promises_1.3.0    bit64_4.6.0-1     timechange_0.3.0  rmarkdown_2.29   
+[53] httr_1.4.7        bit_4.5.0.1       png_0.1-8         hms_1.1.3        
+[57] evaluate_1.0.1    knitr_1.49        rlang_1.1.4       Rcpp_1.0.13-1    
+[61] glue_1.8.0        rstudioapi_0.17.1 vroom_1.6.5       jsonlite_1.8.9   
+[65] R6_2.5.1          fs_1.6.5         </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
