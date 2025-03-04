@@ -1,0 +1,240 @@
+---
+title: "3mer_motifs"
+author: "Andy Beck"
+date: "2025-03-03"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Libraries and Data
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(ggpubfigs)
+library(reactable)
+```
+
+### Directories
+
+```{r}
+base_dir <- "output"
+motif_dir <- paste0(base_dir, "/3mer_counts")
+```
+
+### Load Results
+
+```{r}
+load_motif <- function(motif_dir, pop, subtype){
+  f_name <- paste0(motif_dir, "/", pop, "_", subtype, ".csv")
+  df <- read_csv(f_name, show_col_types = FALSE) %>%
+    mutate(p_s = singletons / sum(singletons),
+           p_c = controls / sum(controls))
+  return(df)
+}
+```
+
+### Functions for motif counting
+
+Here we'll generate functions for getting motifs for singletons and their matched controls on the fly. For most of the document we will rely on pre-generated results.
+
+```{r}
+library(reticulate)
+#conda_python("base", conda = "/net/snowwhite/home/beckandy/mambaforge/bin/mamba")
+#conda_create("my_project_env", conda = "/net/snowwhite/home/beckandy/mambaforge/bin/mamba", python_version = 3.12)
+#py_install(packages = c("pandas","ray"))
+conda_python("my_project_env", conda = "/net/snowwhite/home/beckandy/mambaforge/bin/mamba")
+source_python("scratch/3mer_enrichment_R.py")
+
+#get_motif_table("AT_CG", "ALL", "output", as.integer(-2:2))
+
+motif_df <- function(subtype, population, rel_vals = c(-1:1)){
+  rel_vals <- sort(rel_vals)
+  df <- try(get_motif_table(subtype, population, "output", rel_vals = as.integer(rel_vals)))
+  if (inherits(df, 'try-error')){
+    py_eval('ray.shutdown()')
+  }
+  return(df)
+}
+
+ray_start <- function(){
+  py_eval('ray.init(num_cpus=22)')
+}
+
+ray_shutdown <- function(){
+  py_eval('ray.shutdown()')
+}
+
+ray_start()
+
+#motif_df("AT_CG", "ALL", -1:1)
+
+#motif_df("AT_CG", "AMR", rel_vals = c(-1,0,1))
+```
+
+
+## Analyses
+
+### ALL Populations
+
+```{r}
+population <- "ALL"
+```
+
+
+#### A > C
+
+```{r}
+subtype <- "AT_CG"
+
+df <- load_motif(motif_dir, population, subtype)
+
+df %>%
+  reactable(pagination = F)
+```
+
+Let's assess how similar/dissimilar these distributions are between the singletons and their matched controls:
+
+First: do the rankings of motifs match?
+
+```{r}
+motif_rank_singletons <- df %>%
+  arrange(desc(p_s)) %>% 
+  pull(motif)
+
+motif_rank_controls <- df %>%
+  arrange(desc(p_c)) %>% 
+  pull(motif)
+
+motif_rank_singletons
+motif_rank_controls
+motif_rank_singletons == motif_rank_controls
+```
+
+The answer is: no! Let's visualize this in a scatterplot:
+
+```{r}
+df %>%
+  ggplot(aes(x = p_s, y = p_c)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = 2)
+
+df %>%
+  select(motif, p_s, p_c) %>%
+  rename(Singletons = p_s, Controls = p_c) %>%
+  pivot_longer(-motif, names_to = "category", values_to = "proportion") %>%
+  ggplot(aes(x = proportion, y = motif, shape = category, color = category)) +
+  geom_point(size=3) +
+  xlab("Class Proportion") +
+  ylab("Motif") +
+  theme_minimal() +
+  scale_color_manual(values = ggpubfigs::friendly_pals$wong_eight) +
+  labs(color = "Category", shape = "Category") + 
+  theme(legend.position = "inside", legend.position.inside = c(0.85,0.85),
+        legend.background = element_rect(color = "white", fill = "white"),
+        legend.box.background = element_rect(fill = alpha('#e5e5e5', .6), linewidth = 1, linetype = "solid", color = "#333333"))
+```
+
+
+Next, let's look at a few metrics of density similarity/dissimilarity:
+
+```{r}
+# compute relative entropy
+re_val <- sum(df$p_s * log(df$p_s / df$p_c))
+
+print(re_val)
+```
+
+Relative to the values we observe for, say, our single position models, the relative entropy we observe here is quite high; however, I'm still unsure how to really say anything about the strength of this difference between the distributions. One thought is how about we draw random re-samples of the singletons using their observed proportion and then get a "null distribution" of relative entropy values from these re-samples?
+
+```{r}
+n_singletons <- df$singletons %>% sum()
+
+s_1 <- rmultinom(1, n_singletons, df$p_s)
+s_1 <- s_1 / sum(s_1)
+
+sum(df$p_s * log(df$p_s / s_1))
+```
+
+Maybe this isn't quite what I'm looking for; maybe we want to draw the same number of singletons, but from the proportions from the control distribution?
+
+```{r}
+re_vals <- c()
+
+for(i in 1:1000){
+  s_1 <- rmultinom(1, n_singletons, df$p_c)
+  s_1 <- s_1 / sum(s_1)
+
+  re_vals <- c(re_vals, sum(s_1 * log(s_1 / df$p_c)))
+}
+
+data.frame(re = re_vals) %>%
+  ggplot(aes(x = re)) +
+  geom_density() +
+  xlab("Relative Entropy") +
+  theme_classic()
+```
+
+Ok, so empirically, our relative entropy value of `r re_val` is far larger than what we'd expect if our singletons were a random draw from a distribution with the same proportions as observed in our control sample. Great! 
+
+What might be more interesting to look at is the relative entropy statistics that we might have observed for motifs other than the central 3-mer. For example, what if we defined the motif by the nucleotides at the -2 and -1 positions? Do we see a larger relative entropy value for such a motif?
+
+```{r}
+df2 <- motif_df("AT_CG", "ALL", -2:0) 
+
+df2 <- df2 %>%
+  mutate(p_s = singletons / sum(singletons),
+         p_c = controls / sum(controls))
+
+sum(df2$p_s * log(df2$p_s / df2$p_c))
+```
+
+Here we observe a large re value relative to our "null" draws from above, and it's close to what we observed for the -1,1 motif
+
+* The top single position effects were at: -1, -3, 2, +1
+* The top two-way interaction was at (1,2)
+    * (-1, 1) was the second highest 2-position relative entropy
+
+Based on the above, we might instead ask what our results look like if we define motifs based on the nucleotides at the 1 and 2 relative positions:
+
+```{r}
+df2 <- motif_df("AT_CG", "ALL", 0:2) %>%
+  mutate(p_s = singletons / sum(singletons),
+         p_c = controls / sum(controls))
+
+sum(df2$p_s * log(df2$p_s / df2$p_c))
+```
+
+Still weaker than the (-1, 1) relative entropy, but still in the same ballpark. But what if we instead went by chosing the two positions with the highest individual position effects (-1, -3):
+
+```{r}
+df2 <- motif_df("AT_CG", "ALL", c(-3,-1,0)) %>%
+  mutate(p_s = singletons / sum(singletons),
+         p_c = controls / sum(controls))
+
+sum(df2$p_s * log(df2$p_s / df2$p_c))
+```
+
+Well ok, here we've found a higher relative entropy value than what we observed at (-1, 1)! Now, I suspect that we'll also see an increased relative entropy as we include more positions in the motifs; let's look now at the central +/-2 bp window and the non-central window (-3,-2,-1,1):
+
+```{r}
+df2 <- motif_df("AT_CG", "ALL", -2:2) %>%
+  mutate(p_s = singletons / sum(singletons),
+         p_c = controls / sum(controls))
+
+df3 <- motif_df("AT_CG", "ALL", -3:1) %>%
+  mutate(p_s = singletons / sum(singletons),
+         p_c = controls / sum(controls))
+
+sum(df2$p_s * log(df2$p_s / df2$p_c))
+sum(df3$p_s * log(df3$p_s / df3$p_c))
+```
+
+As we expected, we see higher relative entropy statistics as we increase the motif size. Here we observe a slightly higher value for the central (-2 to 2) motif; this motif overlaps with the strongest single position effect (-1), the third strongest single position effect (+2), and the strongest two-way effect (+1, +2). The non-central motif is missing the (+1, +2) and +2 positions, but adds in the second strongest single position effect (-3).
+
+## Cleanup
+
+```{r}
+ray_shutdown()
+```
+
