@@ -730,7 +730,6 @@ res_cor_pearson %>%
   summary() %>% t() %>%
   knitr::kable()
 
-
 res_cor_spearman %>%
   bind_rows() %>%
   select(-rp) %>%
@@ -743,6 +742,49 @@ res_cor_spearman %>%
   unlist() %>%
   summary() %>% t() %>%
   knitr::kable()
+```
+
+### Tables by Subtype
+
+```{r results='asis'}
+for(st in subtypes){
+  cat(paste0("#### Subtype: ", st, "\n"))
+  
+  res_cor_pearson[[st]] %>%
+    select(-rp) %>%
+    summary() %>%
+    knitr::kable() %>%
+    print()
+  
+  cat("\n")
+  
+  res_cor_pearson[[st]] %>%
+    select(-rp) %>%
+    unlist() %>%
+    summary() %>% t() %>%
+    knitr::kable() %>%
+    print()
+  
+  cat("\n")
+  
+  res_cor_spearman[[st]] %>%
+    select(-rp) %>%
+    summary() %>%
+    knitr::kable() %>%
+    print()
+  
+  cat("\n")
+  
+  res_cor_spearman[[st]] %>%
+    select(-rp) %>%
+    unlist() %>%
+    summary() %>% t() %>%
+    knitr::kable() %>%
+    print()
+  
+  cat("\n")
+  
+}
 ```
 
 
