@@ -1949,10 +1949,9 @@ df_window_plots(df_window, df_res, population, subtype)
 
 ## Two Position Models
 
-### A > C
+### Functions
 
-```{r, warning=FALSE, message=FALSE}
-
+```{r}
 tp_all_dev <- function(two_pos_dir, subtype){
   pops <- c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")
   results <- tp_deviance_df_load(two_pos_dir, pops[1], subtype) %>%
@@ -1995,7 +1994,77 @@ tp_re_cor_plot <- function(df_tp, subtype, method="pearson"){
 
   return(p)
 }
+```
 
+### Get table for all pairs of populations
+
+```{r}
+two_pos_resid_table <- function(two_pos_dir){
+  subtypes <- c("AT_CG", "AT_GC", "AT_TA",
+                "GC_AT", "GC_TA", "GC_CG",
+                "cpg_GC_AT", "cpg_GC_TA", "cpg_GC_CG")
+  
+  cor_types <- c("pearson", "spearman")
+  
+  pops <- c("AFR", "AMR", "EAS", "EUR", "SAS")
+  pop_combs <- combn(pops,2)
+  pops_df <- data.frame(pop1 = pop_combs[1,],
+                        pop2 = pop_combs[2,])
+  
+  final <- data.frame(subtype = character(0), 
+                      res_type = character(0),
+                      pop1 = character(0),
+                      pop2 = character(0),
+                      value = numeric(0))
+  
+  for(st in subtypes){
+    df_res <- tp_all_dev(two_pos_dir, st)
+    
+    for(i in 1:length(pops_df$pop1)){
+      pop1 <- pops_df$pop1[i]
+      pop2 <- pops_df$pop2[i]
+      df_res2 <- df_res %>%
+        filter(pop == pop1 | pop == pop2) %>%
+        select(rp1, rp2, re, pop)
+      
+      for(ct in cor_types){
+        # All positions
+        value <- df_res2 %>%
+          pivot_wider(id_cols = c("rp1", "rp2"), names_from = "pop", values_from = re) %>%
+          {cor(.[,3], .[,4], method = ct)} %>%
+          as.numeric()
+        final <- bind_rows(final, 
+                           data.frame(subtype = st, 
+                                      res_type = ct, 
+                                      pop1 = pop1, 
+                                      pop2=pop2, 
+                                      value = value))
+      }
+    }
+  }
+  return(final)
+}
+
+df_tp_cor <- two_pos_resid_table(two_pos_dir)
+
+write_csv(df_tp_cor, "output/two_pos_pop_cor.csv")
+
+df_tp_cor |> 
+  tbl_summary(include = value,
+              by = res_type,
+              statistic = all_continuous() ~ "{min}-{max} ({mean})")
+
+df_tp_cor |> 
+  pivot_wider(names_from = res_type, values_from = value) |>
+  tbl_summary(include = c(pearson, spearman), by = subtype,
+              statistic = all_continuous() ~ "{min}-{max} ({mean})")
+
+```
+
+
+### A > C
+
+```{r, warning=FALSE, message=FALSE}
 subtype <- "AT_CG"
 
 df_tp <- tp_all_dev(two_pos_dir, subtype)
