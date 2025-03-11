@@ -787,6 +787,88 @@ for(st in subtypes){
 }
 ```
 
+## Shared Directionality of Nucleotide Level Residuals
+
+```{r results='asis'}
+for(st in subtypes){
+  if(str_starts(st, "cpg")) rps <- c(-10:-1,2:10)
+  else rps = c(-10:-1,1:10)
+  df_resid <- sp_resid_all_pop(single_pos_dir, st, rp = rps)
+  
+  p <- df_resid |>
+    filter(status == "singletons", pop != "ALL") |>
+    pivot_wider(names_from = pop, values_from = res) |>
+    mutate(AFR_AMR = sign(AFR) == sign(AMR),
+           AFR_EAS = sign(AFR) == sign(EAS),
+           AFR_EUR = sign(AFR) == sign(EUR),
+           AFR_SAS = sign(AFR) == sign(SAS),
+           AMR_EAS = sign(AMR) == sign(EAS),
+           AMR_EUR = sign(AMR) == sign(EUR),
+           AMR_SAS = sign(AMR) == sign(SAS),
+           EAS_EUR = sign(EAS) == sign(EUR),
+           EAS_SAS = sign(EAS) == sign(SAS),
+           EUR_SAS = sign(EUR) == sign(SAS)
+           ) |>
+    group_by(rp) |>
+    summarize(AFR_AMR = sum(AFR_AMR),
+              AFR_EAS = sum(AFR_EAS),
+              AFR_EUR = sum(AFR_EUR),
+              AFR_SAS = sum(AFR_SAS),
+              AMR_EAS = sum(AMR_EAS),
+              AMR_EUR = sum(AMR_EUR),
+              AMR_SAS = sum(AMR_SAS),
+              EAS_EUR = sum(EAS_EUR),
+              EAS_SAS = sum(EAS_SAS),
+              EUR_SAS = sum(EUR_SAS)) |>
+    pivot_longer(-rp, names_to = "pops", values_to = "matches") |>
+    separate_wider_delim(pops, delim = "_", names = c("pop1", "pop2")) |>
+    ggplot(aes(x = rp, y = matches)) +
+    geom_point() +
+    ylim(c(0,4)) +
+    facet_grid(rows = vars(pop2), cols = vars(pop1)) +
+    xlab("Relative Position") +
+    ylab("Nucleotides with Matching Sign") +
+    ggtitle(st)
+  print(p)
+  
+  ## For non-match, are these smaller in absolute value?
+  test_nucleotides <- df_resid |>
+    filter(status == "singletons", pop != "ALL") |>
+    pivot_wider(names_from = pop, values_from = res) |>
+    mutate(AFR_AMR = sign(AFR) == sign(AMR),
+           AFR_EAS = sign(AFR) == sign(EAS),
+           AFR_EUR = sign(AFR) == sign(EUR),
+           AFR_SAS = sign(AFR) == sign(SAS),
+           AMR_EAS = sign(AMR) == sign(EAS),
+           AMR_EUR = sign(AMR) == sign(EUR),
+           AMR_SAS = sign(AMR) == sign(SAS),
+           EAS_EUR = sign(EAS) == sign(EUR),
+           EAS_SAS = sign(EAS) == sign(SAS),
+           EUR_SAS = sign(EUR) == sign(SAS)) %>%
+    select(-AFR, -AMR, -EAS, -EUR, -SAS, -status) |>
+    pivot_longer(AFR_AMR:EUR_SAS, names_to = "pops", values_to = "match") |>
+    filter(!match) |>
+    separate_wider_delim(pops, delim = "_", names = c("pop1", "pop2"))
+  
+  df_resid_rank <- df_resid |>
+    filter(status == "singletons", pop != "ALL") |>
+    group_by(rp, pop) %>%
+    mutate(nuc_rank = rank(abs(res)))
+  
+  test_nucleotides <- test_nucleotides %>%
+    left_join(df_resid_rank, by = join_by(rp == rp, nuc == nuc, pop1 == pop)) %>%
+    rename(rank1 = nuc_rank) |>
+    left_join(df_resid_rank, by = join_by(rp == rp, nuc == nuc, pop2 == pop)) %>%
+    rename(rank2 = nuc_rank)
+  
+  test_nucleotides |>
+    select(rp, rank1, rank2) %>%
+    pivot_longer(-rp, values_to = "rank") |>
+    tbl_summary(include = rank) |>
+    print()
+}
+```
+
 
 ## Single Position Results
 
