@@ -124,6 +124,14 @@ plot_ranked_re <- function(single_dir, two_dir, three_dir, pop, subtype, rank_li
     xlab(paste0("Within-class Rank: ", subtype_print_names(subtype)))
   return(list(df=df, fig=p))
 }
+
+df_extender <- function(df){
+  df_final <- df %>%
+    separate_longer_delim(offset, delim = "_") %>%
+    mutate(offset = as.numeric(offset))
+  return(df_final)
+}
+
 ```
 
 ## Figures and Tables
@@ -138,8 +146,225 @@ And now that the reactable stuff has been attached to our document, let's look a
 
 ### ALL
 
+#### A > C
+
+```{r}
+subtype <- "AT_CG"
+pop <- "ALL"
+df <- read_all(single_dir, two_dir, three_dir, pop, subtype)
+
+df$rank <- rank(-df$re)
+
+df %>%
+  mutate(class2 = recode(class, "1-pos" = "Single", "2-pos" = "Two-Way", "3-pos" = "Three-Way")) %>%
+  filter(rank <= 50) %>%
+  df_extender() %>%
+  ggplot(aes(x = rank, y = offset, shape = class2, color = class2, group = rank)) +
+  geom_point(size = 3) +
+  geom_line() +
+  scale_color_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  scale_shape_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  xlab("Rank") +
+  ylab("Relative Position(s)") +
+  theme_bw() +
+  ggtitle(subtype_print_names(subtype))
+```
+
+#### A > G
+
+```{r}
+subtype <- "AT_GC"
+pop <- "ALL"
+df <- read_all(single_dir, two_dir, three_dir, pop, subtype)
+
+df$rank <- rank(-df$re)
+
+df %>%
+  mutate(class2 = recode(class, "1-pos" = "Single", "2-pos" = "Two-Way", "3-pos" = "Three-Way")) %>%
+  filter(rank <= 50) %>%
+  df_extender() %>%
+  ggplot(aes(x = rank, y = offset, shape = class2, color = class2, group = rank)) +
+  geom_point(size = 3) +
+  geom_line() +
+  scale_color_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  scale_shape_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  xlab("Rank") +
+  ylab("Relative Position(s)") +
+  theme_bw() +
+  ggtitle(subtype_print_names(subtype))
+```
+
+#### A > T
+
+```{r}
+subtype <- "AT_TA"
+pop <- "ALL"
+df <- read_all(single_dir, two_dir, three_dir, pop, subtype)
+
+df$rank <- rank(-df$re)
+
+df %>%
+  mutate(class2 = recode(class, "1-pos" = "Single", "2-pos" = "Two-Way", "3-pos" = "Three-Way")) %>%
+  filter(rank <= 50) %>%
+  df_extender() %>%
+  ggplot(aes(x = rank, y = offset, shape = class2, color = class2, group = rank)) +
+  geom_point(size = 3) +
+  geom_line() +
+  scale_color_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  scale_shape_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  xlab("Rank") +
+  ylab("Relative Position(s)") +
+  theme_bw() +
+  ggtitle(subtype_print_names(subtype))
+```
+
+#### C > T
+
+```{r}
+subtype <- "GC_AT"
+pop <- "ALL"
+df <- read_all(single_dir, two_dir, three_dir, pop, subtype)
+
+df$rank <- rank(-df$re)
+
+df %>%
+  mutate(class2 = recode(class, "1-pos" = "Single", "2-pos" = "Two-Way", "3-pos" = "Three-Way")) %>%
+  filter(rank <= 50) %>%
+  df_extender() %>%
+  ggplot(aes(x = rank, y = offset, shape = class2, color = class2, group = rank)) +
+  geom_point(size = 3) +
+  geom_line() +
+  scale_color_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  scale_shape_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  xlab("Rank") +
+  ylab("Relative Position(s)") +
+  theme_bw() +
+  ggtitle(subtype_print_names(subtype))
+```
+
+#### C > A
+
+```{r}
+subtype <- "GC_TA"
+pop <- "ALL"
+df <- read_all(single_dir, two_dir, three_dir, pop, subtype)
+
+df$rank <- rank(-df$re)
+
+df %>%
+  mutate(class2 = recode(class, "1-pos" = "Single", "2-pos" = "Two-Way", "3-pos" = "Three-Way")) %>%
+  filter(rank <= 50) %>%
+  df_extender() %>%
+  ggplot(aes(x = rank, y = offset, shape = class2, color = class2, group = rank)) +
+  geom_point(size = 3) +
+  geom_line() +
+  scale_color_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  scale_shape_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  xlab("Rank") +
+  ylab("Relative Position(s)") +
+  theme_bw() +
+  ggtitle(subtype_print_names(subtype))
+```
+
+#### C > G
+
+```{r}
+subtype <- "GC_CG"
+pop <- "ALL"
+df <- read_all(single_dir, two_dir, three_dir, pop, subtype)
+
+df$rank <- rank(-df$re)
+
+df %>%
+  mutate(class2 = recode(class, "1-pos" = "Single", "2-pos" = "Two-Way", "3-pos" = "Three-Way")) %>%
+  filter(rank <= 50) %>%
+  df_extender() %>%
+  ggplot(aes(x = rank, y = offset, shape = class2, color = class2, group = rank)) +
+  geom_point(size = 3) +
+  geom_line() +
+  scale_color_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  scale_shape_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  xlab("Rank") +
+  ylab("Relative Position(s)") +
+  theme_bw() +
+  ggtitle(subtype_print_names(subtype))
+```
+
+#### CpG > TpG
+
+```{r}
+subtype <- "cpg_GC_AT"
+pop <- "ALL"
+df <- read_all(single_dir, two_dir, three_dir, pop, subtype)
+
+df$rank <- rank(-df$re)
+
+df %>%
+  mutate(class2 = recode(class, "1-pos" = "Single", "2-pos" = "Two-Way", "3-pos" = "Three-Way")) %>%
+  filter(rank <= 50) %>%
+  df_extender() %>%
+  ggplot(aes(x = rank, y = offset, shape = class2, color = class2, group = rank)) +
+  geom_point(size = 3) +
+  geom_line() +
+  scale_color_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  scale_shape_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  xlab("Rank") +
+  ylab("Relative Position(s)") +
+  theme_bw() +
+  ggtitle(subtype_print_names(subtype))
+```
+
+#### CpG > ApG
+
+```{r}
+subtype <- "cpg_GC_TA"
+pop <- "ALL"
+df <- read_all(single_dir, two_dir, three_dir, pop, subtype)
+
+df$rank <- rank(-df$re)
+
+df %>%
+  mutate(class2 = recode(class, "1-pos" = "Single", "2-pos" = "Two-Way", "3-pos" = "Three-Way")) %>%
+  filter(rank <= 50) %>%
+  df_extender() %>%
+  ggplot(aes(x = rank, y = offset, shape = class2, color = class2, group = rank)) +
+  geom_point(size = 3) +
+  geom_line() +
+  scale_color_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  scale_shape_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  xlab("Rank") +
+  ylab("Relative Position(s)") +
+  theme_bw() +
+  ggtitle(subtype_print_names(subtype))
+```
+
+#### CpG > GpG
+
+```{r}
+subtype <- "cpg_GC_CG"
+pop <- "ALL"
+df <- read_all(single_dir, two_dir, three_dir, pop, subtype)
+
+df$rank <- rank(-df$re)
+
+df %>%
+  mutate(class2 = recode(class, "1-pos" = "Single", "2-pos" = "Two-Way", "3-pos" = "Three-Way")) %>%
+  filter(rank <= 50) %>%
+  df_extender() %>%
+  ggplot(aes(x = rank, y = offset, shape = class2, color = class2, group = rank)) +
+  geom_point(size = 3) +
+  geom_line() +
+  scale_color_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  scale_shape_discrete(breaks=c("Single","Two-Way","Three-Way"), name = "Effect Order") +
+  xlab("Rank") +
+  ylab("Relative Position(s)") +
+  theme_bw() +
+  ggtitle(subtype_print_names(subtype))
+```
+
+
 ```{r results='asis', echo=FALSE}
-subtype <- "ALL"
+pop <- "ALL"
 for(st in subtypes){
   res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
   cat(paste0('#### ', st, "\n"))
@@ -148,62 +373,4 @@ for(st in subtypes){
 }
 ```
 
-### AFR
 
-```{r results='asis', echo=FALSE}
-subtype <- "AFR"
-for(st in subtypes){
-  res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
-  cat(paste0('#### ', st, "\n"))
-  print(res$fig)
-  print(htmltools::tagList(reactable(res$df)))
-}
-```
-
-### AMR
-
-```{r results='asis', echo=FALSE}
-subtype <- "AMR"
-for(st in subtypes){
-  res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
-  cat(paste0('#### ', st, "\n"))
-  print(res$fig)
-  print(htmltools::tagList(reactable(res$df)))
-}
-```
-
-### EAS
-
-```{r results='asis', echo=FALSE}
-subtype <- "EAS"
-for(st in subtypes){
-  res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
-  cat(paste0('#### ', st, "\n"))
-  print(res$fig)
-  print(htmltools::tagList(reactable(res$df)))
-}
-```
-
-### EUR
-
-```{r results='asis', echo=FALSE}
-subtype <- "EUR"
-for(st in subtypes){
-  res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
-  cat(paste0('#### ', st, "\n"))
-  print(res$fig)
-  print(htmltools::tagList(reactable(res$df)))
-}
-```
-
-### SAS
-
-```{r results='asis', echo=FALSE}
-subtype <- "SAS"
-for(st in subtypes){
-  res <- plot_ranked_re(single_dir, two_dir, three_dir, "ALL", st)
-  cat(paste0('#### ', st, "\n"))
-  print(res$fig)
-  print(htmltools::tagList(reactable(res$df)))
-}
-```
