@@ -174,12 +174,12 @@ plot_re_cc_autosig <- function(df_res, df_cc, population, win_size = 10, sig_fra
   return(p)
 }
 
-get_df_windows <- function(df_res, df_cc, population, thresh_vals = (1:10)/10){
+get_df_windows <- function(df_res, df_cc, population, thresh_vals = (1:10)/10, win_size = 10){
   df_cc_sub <- df_cc %>% filter(pop == population)
   df_res_sub <- df_res %>% filter(pop == population)
 
   q_95_c <- quantile(df_cc_sub$re, 0.95)
-  frac_sig_df <- window_frac_sig(df_res, df_cc, population)
+  frac_sig_df <- window_frac_sig(df_res, df_cc, population, win_size = win_size)
   df_windows <- data.frame(frac_thresh = thresh_vals, 
                            left_boundary = -1000, 
                            right_boundary = 1000,
@@ -1154,7 +1154,7 @@ df_cc <- get_pos_cc_pops(control_control, subtype)
 ```{r}
 population <- "ALL"
 
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
+df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10, win_size = 10)
 
 df_window %>% reactable(pagination = FALSE)
 ```
@@ -1162,7 +1162,7 @@ df_window %>% reactable(pagination = FALSE)
 Using 0.7 as our threshold appears to have a good tradeoff between having interior 95%+ significant and less than 3% exterior significant:
 
 ```{r}
-df_window_plots <- function(df_window, df_res, population, subtype, plot_cutoff = 0.8){
+df_window_plots <- function(df_window, df_res, population, subtype, plot_cutoff = 0.1){
   #print("Hello!")
   for(i in 1:length(df_window$frac_thresh)){
     
