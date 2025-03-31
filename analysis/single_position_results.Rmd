@@ -39,8 +39,8 @@ Load position-level results:
 
 ```{r}
 subtypes <- c("AT_CG", "AT_GC", "AT_TA",
-            "GC_AT", "GC_TA", "GC_CG",
-            "cpg_GC_AT", "cpg_GC_TA", "cpg_GC_CG")
+            "GC_TA", "GC_CG", "GC_AT",
+            "cpg_GC_TA", "cpg_GC_CG", "cpg_GC_AT")
 
 get_pos_results <- function(res_dir, pop, subtype){
   f_name <- paste0(res_dir, "/", pop, "/", subtype, ".csv")
@@ -103,18 +103,41 @@ get_pos_resid_all <- function(res_dir, pop, subtype, rp = c(-500:-1, 1:500)){
 ### Figure Functions
 
 ```{r}
-pos_level_line <- function(res_df, rp_lim = 20){
+pos_level_line <- function(res_df, rp_lim = 20, show_line = T){
   p <- res_df %>%
     filter(abs(offset) <= rp_lim) %>%
     ggplot(aes(x = offset, y = re)) +
     geom_point() +
-    geom_line() +
     theme_classic() +
     theme(text = element_text(family = "Arial"),
           legend.position = "inside",
           legend.position.inside = c(.85, .8)) +
     xlab(paste0("Relative Position: ", subtype_print_names(subtype))) +
     ylab("Relative Entropy")
+  if(show_line){
+    p <- p + geom_line()
+  }
+  return(p)
+}
+
+pos_level_bar <- function(res_df, dev=FALSE, rp_lim = 10){
+  if(dev){
+    var_plot <- "dev"
+    y_text <- "Deviance"
+  } else{
+    var_plot <- "re"
+    y_text <- "Relative Entropy"
+  }
+  p <- res_df %>%
+    filter(abs(offset) <= rp_lim) %>%
+    ggplot(aes(x = offset, y = !!sym(var_plot))) +
+    geom_col() +
+    theme_classic() +
+    theme(text = element_text(family = "Arial"),
+          legend.position = "inside",
+          legend.position.inside = c(.85, .8)) +
+    xlab(paste0("Relative Position: ", subtype_print_names(subtype))) +
+    ylab(y_text)
   return(p)
 }
 
@@ -154,12 +177,18 @@ pos_level_dot_cc <- function(res_df, color_pal = friendly_pals$wong_eight[c(3,1:
 
 resid_plot <- function(res_dir, pop, subtype, rp = c(-10:-1, 1:10), palette_name = friendly_pal("nickel_five")){
   res_df <- get_pos_resid_all(res_dir, pop, subtype, rp)
+  
+  res_df$ID <- as.character(res_df$rp)
+  xlab <- as.character(min(res_df$rp):max(res_df$rp))
+  res_df$ID <- factor(res_df$ID, levels = xlab)
+  
   p <- res_df %>%
-    select(rp, nuc, status, res) %>%
+    select(ID, nuc, status, res) %>%
     pivot_wider(names_from = status, values_from = res) %>%
     rowwise() %>%
     mutate(dev_cont = sign(singletons) * (singletons ^ 2 + controls ^ 2)) %>%
-    ggplot(aes(x = rp, y = dev_cont, fill = nuc)) +
+    ggplot(aes(x = ID, y = dev_cont, fill = nuc)) +
+    scale_x_discrete(labels= xlab, drop = FALSE) +
     geom_bar(position="stack", stat="identity") +
     scale_fill_manual(values = palette_name) +
     theme_classic() +
@@ -171,6 +200,277 @@ resid_plot <- function(res_dir, pop, subtype, rp = c(-10:-1, 1:10), palette_name
     geom_hline(yintercept = 0, colour = "black", linetype = 3)
   return(p)
 }
+```
+
+## Summary Across All Subtypes
+
+First let's get a look at the single position model results for all subtypes using the singletons from all 5 1kGP super-populations. 
+
+```{r}
+load_all_pos_results <- function(subtypes, pop = "ALL"){
+  final <- get_pos_results(single_pos_dir, pop, subtypes[1]) %>%
+    mutate(subtype = subtypes[1])
+  
+  for(i in 2:length(subtypes)){
+    final <- final %>%
+      bind_rows({
+        get_pos_results(single_pos_dir, pop, subtypes[i]) %>%
+          mutate(subtype = subtypes[i])
+      })
+  }
+  return(final)
+}
+
+df_all <- load_all_pos_results(subtypes)
+
+df_all <- df_all %>% 
+  mutate(from_n = ifelse(str_starts(subtype, "A"), "A", ifelse(str_starts(subtype, "cpg"), "CpG", "C")),
+         #to_n = ifelse(str_starts(subtype, "A"), str_sub(subtype, 4, 4), str_sub(subtype, -1))
+         to_n = ifelse(str_starts(subtype, "A"), str_sub(subtype, 4,4), 
+                       ifelse(str_starts(subtype, "cpg"), 
+                              paste0(str_sub(subtype, -1), "pG"), 
+                              str_sub(subtype, -1) )))
+```
+
+### Figures
+
+#### Original Dot-Line
+
+```{r}
+p1 <- df_all %>%
+  filter(from_n == "A", abs(offset) < 11) %>%
+  ggplot(aes(x = offset, y = re)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  facet_grid(vars(to_n), vars(from_n)) +
+  xlab("Relative Position") +
+  ylab("Relative Entropy")
+
+y_lim_all <- ggplot_build(p1)$layout$panel_scales_y[[1]]$range$range
+y_lim_all[1] <- 0
+
+p1 <- p1 + ylim(y_lim_all)
+
+p2 <- df_all %>%
+  filter(from_n == "C", abs(offset) < 11) %>%
+  ggplot(aes(x = offset, y = re)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  facet_grid(vars(to_n), vars(from_n)) +
+  xlab("Relative Position") +
+  ylab("") +
+  ylim(y_lim_all)
+
+p3 <- df_all %>%
+  filter(from_n == "CpG", abs(offset) < 11) %>%
+  ggplot(aes(x = offset, y = re)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  facet_grid(vars(to_n), vars(from_n)) +
+  xlab("Relative Position") +
+  ylab("") +
+  ylim(y_lim_all)
+
+gridExtra::grid.arrange(p1, p2, p3, nrow = 1)
+```
+
+#### Dots Only
+
+```{r}
+p1 <- df_all %>%
+  filter(from_n == "A", abs(offset) < 11) %>%
+  ggplot(aes(x = offset, y = re)) +
+  geom_point() +
+  theme_bw() +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank())+
+  facet_grid(vars(to_n), vars(from_n)) +
+  xlab("Relative Position") +
+  ylab("Relative Entropy")
+
+y_lim_all <- ggplot_build(p1)$layout$panel_scales_y[[1]]$range$range
+y_lim_all[1] <- 0
+
+p1 <- p1 + ylim(y_lim_all)
+
+p2 <- df_all %>%
+  filter(from_n == "C", abs(offset) < 11) %>%
+  ggplot(aes(x = offset, y = re)) +
+  geom_point() +
+  theme_bw() +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank())+
+  facet_grid(vars(to_n), vars(from_n)) +
+  xlab("Relative Position") +
+  ylab("") +
+  ylim(y_lim_all)
+
+p3 <- df_all %>%
+  filter(from_n == "CpG", abs(offset) < 11) %>%
+  ggplot(aes(x = offset, y = re)) +
+  geom_point() +
+  theme_bw() +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank())+
+  facet_grid(vars(to_n), vars(from_n)) +
+  xlab("Relative Position") +
+  ylab("") +
+  ylim(y_lim_all)
+
+gridExtra::grid.arrange(p1, p2, p3, nrow = 1) 
+```
+
+#### Bars
+
+```{r}
+df_all$c_val <- factor(abs(df_all$offset))
+
+p1 <- df_all %>%
+  filter(from_n == "A", abs(offset) < 11) %>%
+  ggplot(aes(x = offset, y = re*100, fill = c_val)) +
+  geom_col() +
+  theme_bw() +
+  theme(panel.grid.major.x  = element_blank(),
+        panel.grid.minor.x = element_blank())+
+  facet_grid(vars(to_n), vars(from_n)) +
+  xlab("Relative Position") +
+  ylab("Relative Entropy") +
+  scale_fill_manual(values = rev(friendly_pal("bright_seven", n = 10, type = "continuous"))) +
+  guides(fill = "none")
+
+y_lim_all <- ggplot_build(p1)$layout$panel_scales_y[[1]]$range$range
+y_lim_all[1] <- 0
+
+p1 <- p1 + ylim(y_lim_all)
+
+p2 <- df_all %>%
+  filter(from_n == "C", abs(offset) < 11) %>%
+  ggplot(aes(x = offset, y = re*100, fill = c_val)) +
+  geom_col() +
+  theme_bw() +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank())+
+  facet_grid(vars(to_n), vars(from_n)) +
+  xlab("Relative Position") +
+  ylab("") +
+  ylim(y_lim_all) +
+  scale_fill_manual(values = rev(friendly_pal("bright_seven", n = 10, type = "continuous"))) +
+  guides(fill = "none")
+
+p3 <- df_all %>%
+  filter(from_n == "CpG", abs(offset) < 11) %>%
+  ggplot(aes(x = offset, y = re*100, fill = c_val)) +
+  geom_col() +
+  theme_bw() +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank())+
+  facet_grid(vars(to_n), vars(from_n)) +
+  xlab("Relative Position") +
+  ylab("") +
+  ylim(y_lim_all) +
+  scale_fill_manual(values = rev(friendly_pal("bright_seven", n = 10, type = "continuous"))) +
+  guides(fill = "none")
+
+gridExtra::grid.arrange(p1, p2, p3, nrow = 1)
+```
+
+#### Bars: 1 subtype at a time
+
+```{r}
+plot_list <- vector(mode = "list", length = 9)
+names(plot_list) <- subtypes
+pal_vec <- rev(friendly_pal("bright_seven", n = 10, type = "continuous"))
+
+find_max_y_range <- function(plot_list) {
+  y_ranges <- lapply(plot_list, function(plot) {
+    y_range <- ggplot_build(plot)$layout$panel_scales_y[[1]]$range$range
+    return(y_range)
+  })
+
+  max_y_min <- min(unlist(lapply(y_ranges, function(range) range[1])))
+  max_y_max <- max(unlist(lapply(y_ranges, function(range) range[2])))
+
+  return(c(max_y_min, max_y_max))
+}
+
+for(st in subtypes){
+  # Get top three
+  df_sub <- df_all %>%
+    filter(subtype == st, abs(offset) < 11)
+  
+  top_three <- df_sub %>%
+    arrange(desc(re)) %>% pull(offset) %>% .[1:3]
+  
+  plot_list[[st]] <- df_sub %>%
+    ggplot(aes(x = offset, y = re*100, fill = c_val)) +
+    geom_col() +
+    theme_bw() +
+    theme(panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank())+
+    xlab("") +
+    ylab("") +
+    scale_fill_manual(values = pal_vec) +
+    guides(fill = "none") +
+    geom_text(
+      label = "1",
+      x = {df_sub %>% filter(offset == top_three[1]) %>% pull(offset) %>% as.numeric()},
+      y = ({df_sub %>% filter(offset == top_three[1]) %>% pull(re) %>% as.numeric()}*100) + 0.05,
+      color = pal_vec[abs({df_sub %>% filter(offset == top_three[1]) %>% pull(offset)})]
+    ) +
+    geom_text(
+      label = "2",
+      x = {df_sub %>% filter(offset == top_three[2]) %>% pull(offset) %>% as.numeric()},
+      y = ({df_sub %>% filter(offset == top_three[2]) %>% pull(re) %>% as.numeric()}*100) + 0.05,
+      color = pal_vec[abs({df_sub %>% filter(offset == top_three[2]) %>% pull(offset)})]
+    ) +
+    geom_text(
+      label = "3",
+      x = {df_sub %>% filter(offset == top_three[3]) %>% pull(offset) %>% as.numeric()},
+      y = ({df_sub %>% filter(offset == top_three[3]) %>% pull(re) %>% as.numeric()}*100) + 0.05,
+      color = pal_vec[abs({df_sub %>% filter(offset == top_three[3]) %>% pull(offset)})]
+    ) 
+    
+}
+
+y_lims <- find_max_y_range(plot_list)
+y_lims[2] <- y_lims[2] + 0.05
+
+for(st in subtypes){
+  plot_list[[st]] <- plot_list[[st]] + 
+    ylim(y_lims) +
+    geom_text(label = subtype_print_names(st),
+              x = -9.5,
+              y = {y_lims[2]}-0.1, 
+              hjust = "left")
+}
+```
+
+```{r fig.height = 8, fig.width = 8, fig.align = "center"}
+gridExtra::grid.arrange(grobs = plot_list, ncol = 3)
+```
+
+
+### +/- 10 BP
+
+```{r}
+df_all %>%
+  filter(abs(offset) <= 10) %>%
+  select(offset, re, subtype) %>%
+  pivot_wider(id_cols = offset, names_from = subtype, values_from = re) %>%
+  arrange(offset)
+```
+
+Across all subtypes, what range of values for RE do we see within the +/- 10 bp window?
+
+```{r}
+df_all %>%
+  filter(abs(offset) <= 10) %>%
+  select(re, mean_var, max_var, simple_re) %>%
+  summary() %>%
+  knitr::kable()
 ```
 
 
@@ -194,18 +494,50 @@ df_results$sig  <- ifelse(df_results$dev > qchisq(0.95,3), "Significant", "Non-s
 df_cc$sig <- "Control"
 df <- bind_rows(df_results, df_cc)
 
-pos_level_line(df_results) 
 pos_level_dot(df_results, friendly_pals$wong_eight)
 pos_level_dot_cc(df) 
-pos_level_line(df_results) + scale_y_log10() + ylab("Relative Entropy (log10)")
+
+pos_level_line(df_results) 
+pos_level_line(df_results) + scale_y_log10() 
+
+pos_level_line(df_results, show_line = F)
+
+pos_level_bar(df_results)
+pos_level_bar(df_results) + scale_y_log10()
+
 ```
 
-For the A > G mutation subtype, we observe the strongest signal of influence (relative entropy) at the +1 relative position. We observed that, in general, the signal decreases as positions further from the focal (0) position are considered, but note that this pattern is not monotonic in either direction, with the most obvious example of this being the stronger signal observed at -2 relative to the signal observed at -1. When compared to the critical value for a $\chi^2$ distribution with 3 degrees of freedom at the $\alpha=0.05$ level of significance, we find that the underlying deviance statistics remain significant up to approximately +/- 250bp; from here, we see values hover in a range that includes values which are not significant. The above results are based on the distributions of nucleotides flanking singletons and their matched controls across all five 1kGP super-populations.
+For the A > G mutation subtype, we observe the strongest signal of influence (relative entropy) at the +1 relative position (re = 0.0096). We observed that, in general, the signal decreases as positions further from the focal (0) position are considered, but note that this pattern is not monotonic in either direction, with the most obvious example of this being the stronger signal observed at -2 relative to the signal observed at -1. When compared to the critical value for a $\chi^2$ distribution with 3 degrees of freedom at the $\alpha=0.05$ level of significance, we find that the underlying deviance statistics remain significant up to approximately +/- 250bp; from here, we see values hover in a range that includes values which are not significant. The above results are based on the distributions of nucleotides flanking singletons and their matched controls across all five 1kGP super-populations.
 
 Next, we plot the nucleotide contribution to each position's deviance statistic:
 
 ```{r}
-resid_plot(single_pos_dir, pop, subtype, rp = c(-5:-1,1:5))
+df %>%
+  filter(abs(offset) <= 10) %>%
+  mutate(highlighted = offset==1) %>%
+  ggplot(aes(x = offset, y = re, fill = highlighted)) +
+  geom_col() +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  scale_fill_manual(values = c("#595959", "darksalmon")) +
+  guides(fill = "none") +
+  xlab("Relative Entropy") + 
+  ylab("Relative Position")
+```
+
+
+```{r}
+resid_plot(single_pos_dir, pop, subtype, rp = c(-5:-1,1:5)) +
+  theme(legend.position="top", 
+        legend.title=element_blank(), 
+        legend.text = element_text(size=10),
+        legend.key.size = unit(0.35, 'cm'), 
+        legend.box.background = element_blank())
+
+resid_plot(single_pos_dir, pop, subtype, rp = c(1)) +
+  theme(legend.position="top", 
+        legend.title=element_blank())
 ```
 
 Here we are interested in the result at the +1 position, since this is the largest statistic observed overall subtypes for the single-position models (and as we'll later see, the largest statistic we observe in any of our analyses). While we can easily discuss the magnitude of this statistic relative to other relative entropy statistics, it isn't necessarily as simple to describe the practical interpretation of this statistic. For that, let's first examine the distribution of counts for the singletons and the matched controls at this position:
@@ -300,6 +632,46 @@ df_results %>%
   filter(re > 1e-6, re < 6e-6) %>%
   ggplot(aes(x = offset, y = (0.5 * tot_var) / max_tot_var)) +
   geom_point()
+```
+
+Ok, let's be more rigorous here. We first subset to the positions with a significant chi square statistic outside of the +/- 10 bp window.
+
+```{r}
+df_results_sub <- df_results %>%
+  filter(abs(offset) > 10,
+         sig == "Significant")
+```
+
+Using only this criterion as our cutoff, we remain with `r length(df_results_sub$sig)` out of 980 possible flanking sites. If instead of using alpha=0.05 cutoff for deviance statistics we instead found the 95th-percentile of our control-control relative entropy statistics, we'd instead use a cutoff of $\textrm{re} > 1.41 \times 10^{-7}$
+
+```{r}
+quantile_cutoff <- quantile(df_cc$re, 0.95)
+df_results_sub <- df_results %>%
+  filter(abs(offset) > 10,
+         re > quantile_cutoff)
+```
+
+Now we have limited ourselves to `r length(df_results_sub$re)` of the 980 possible flanking positions. Where are these positions located?
+
+```{r}
+df_results_sub %>%
+  ggplot(aes(x = offset, y = re)) +
+  geom_point() +
+  scale_y_log10() +
+  theme_bw()
+
+print(max(abs(df_results_sub$offset)))
+```
+
+The furthest flanking position considered is 426 bases from the focal position, while 75% of included flanking positions are within 231 bases of the focal position. So then, at these moderately influential positions, what does the shift in distribution look like?
+
+```{r}
+df_results_sub$max_var %>% summary()
+df_results_sub$mean_var %>% summary()
+
+n_singletons <- max(df_results$singletons)
+(df_results_sub$max_var * n_singletons) %>% summary()
+(df_results_sub$mean_var * n_singletons) %>% summary()
 ```
 
 
@@ -760,6 +1132,12 @@ all_results(single_pos_dir, pop, subtype, control_control)
 
 Here we explore options for displaying results across multiple mutation subtypes in one (or more, but less than 9) figure(s).
 
+
+* Bars instead of lines and dots
+* Add colours to ease interpretation
+    * The nucleotide "boes" on top and right of figure
+* grid lines are "noise"
+
 ```{r fig.dim = c(10, 6)}
 df <- get_pos_results_all(single_pos_dir, "ALL", subtypes)
 
@@ -777,6 +1155,9 @@ p1 <- df %>%
   ylab("Relative Entropy")
 
 y_lim_all <- ggplot_build(p1)$layout$panel_scales_y[[1]]$range$range
+y_lim_all[1] <- 0
+
+p1 <- p1 + ylim(y_lim_all)
 
 p2 <- df %>%
   filter(from_n == "C", abs(offset) < 11) %>%
@@ -786,7 +1167,7 @@ p2 <- df %>%
   theme_bw() +
   facet_grid(vars(to_n), vars(from_n)) +
   xlab("Relative Position") +
-  ylab("Relative Entropy") +
+  ylab("") +
   ylim(y_lim_all)
 
 p3 <- df %>%
@@ -797,7 +1178,7 @@ p3 <- df %>%
   theme_bw() +
   facet_grid(vars(to_n), vars(from_n)) +
   xlab("Relative Position") +
-  ylab("Relative Entropy") +
+  ylab("") +
   ylim(y_lim_all)
 
 gridExtra::grid.arrange(p1, p2, p3, nrow = 1)
