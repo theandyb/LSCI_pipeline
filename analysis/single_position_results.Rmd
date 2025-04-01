@@ -452,6 +452,32 @@ for(st in subtypes){
 gridExtra::grid.arrange(grobs = plot_list, ncol = 3)
 ```
 
+#### Resid: all st in one
+
+```{r}
+plot_list <- vector(mode = "list", length = 9)
+names(plot_list) <- subtypes
+pal_vec <- rev(friendly_pal("bright_seven", n = 10, type = "continuous"))
+
+for(st in subtypes){
+  plot_list[[st]] <- resid_plot(single_pos_dir, "ALL", st, rp = c(-5:-1,1:5)) +
+    theme(legend.position="top", 
+          legend.title=element_blank(), 
+          legend.text = element_text(size=10),
+          legend.key.size = unit(0.35, 'cm'), 
+          legend.box.background = element_blank())
+}
+# y_lims <- find_max_y_range(plot_list)
+# 
+# for(st in subtypes){
+#   plot_list[[st]] <- plot_list[[st]] + 
+#     ylim(y_lims) 
+# }
+```
+
+```{r fig.height = 8, fig.width = 8, fig.align = "center"}
+gridExtra::grid.arrange(grobs = plot_list, ncol = 3)
+```
 
 ### +/- 10 BP
 
