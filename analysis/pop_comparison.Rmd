@@ -33,6 +33,12 @@ library(reactable) # table output for html
 library(knitr) # PDF table output
 library(corrr)
 library(gtsummary)
+library(MASS)
+
+library(conflicted)
+
+conflict_prefer("select", "dplyr")
+conflict_prefer("filter", "dplyr")
 
 subtype_print_names <- function(st){
   if(str_starts(st, "AT")){
@@ -54,6 +60,7 @@ subtypes <- c("AT_CG", "AT_GC", "AT_TA",
 Load position-level results:
 
 ```{r}
+# Load position-level statistics for a population-subtype pair
 sp_deviance_df_load <- function(res_dir, pop, subtype){
   f_name <- paste0(res_dir, "/", pop, "/", subtype, ".csv")
   df <- read_csv(f_name, show_col_types = FALSE) %>%
@@ -63,6 +70,7 @@ sp_deviance_df_load <- function(res_dir, pop, subtype){
   return(df)
 }
 
+# Same as above, but appends the population label (seems redundant?)
 sp_re_single_pop <- function(res_dir, subtype, pop){
   df <- sp_deviance_df_load(res_dir, pop, subtype) %>%
     mutate(pop=pop)
@@ -102,118 +110,6 @@ get_pos_cc_pops <- function(control_control, subtype){
     results[[p]]$pop <- p
   }
   return(bind_rows(results))
-}
-
-window_frac_sig <- function(df_res, df_cc, population, win_size = 10){
-  df_cc_sub <- df_cc %>% filter(pop == population) %>%
-    mutate(is_sig = "Control")
-  df_res_sub <- df_res %>% filter(pop == population)
-  q_95_c <- quantile(df_cc_sub$re, 0.95)
-  
-  frac_sig_df <- data.frame(offset = min(df_res_sub$offset):(max(df_res_sub$offset) - win_size), frac_sig = 0)
-  frac_sig_df <- frac_sig_df %>%
-    filter(offset %in% df_res_sub$offset)
-  
-  for(i in 1:length(frac_sig_df$offset)){
-    win_low = frac_sig_df$offset[i]
-    win_high = win_low + win_size
-    tmp_vec <- df_res_sub %>%
-      filter(offset >= win_low, offset <= win_high) %>%
-      mutate(is_sig = re > q_95_c) %>%
-      pull(is_sig)
-    frac_sig_df$frac_sig[i] <- sum(tmp_vec) / length(tmp_vec)
-  }
-  return(frac_sig_df)
-}
-
-plot_re_cc_autosig <- function(df_res, df_cc, population, win_size = 10, sig_frac = 8/10){
-  df_cc_sub <- df_cc %>% filter(pop == population) %>%
-    mutate(is_sig = "Control")
-  df_res_sub <- df_res %>% filter(pop == population)
-  q_95_c <- quantile(df_cc_sub$re, 0.95)
-  
-  frac_sig_df <- window_frac_sig(df_res, df_cc, population, win_size) 
-  
-  frac_sig_df %>%
-    ggplot(aes(x = offset, y = frac_sig)) +
-    geom_point()
-  
-  # frac_sig_df <- frac_sig_df %>%
-  #   mutate(frac_sig_lead = lead(frac_sig),
-  #          frac_sig_lag = lag(frac_sig))
-  
-  left_boundary <- frac_sig_df %>%
-    filter(frac_sig >= sig_frac) %>% #, frac_sig_lead >= sig_frac, frac_sig_lag >= sig_frac) %>%
-    pull(offset) %>%
-    min()
-  right_boundary <- frac_sig_df %>%
-    filter(frac_sig >= sig_frac) %>% #, frac_sig_lead >= sig_frac, frac_sig_lag >= sig_frac) %>%
-    pull(offset) %>%
-    max()
-  
-  p <- df_res_sub %>%
-    mutate(is_sig = as.character(is_sig)) %>%
-    bind_rows(df_cc_sub) %>%
-    ggplot(aes(x = offset, y = re, colour = is_sig, alpha = is_sig)) +
-    geom_point() +
-    scale_alpha_manual(values = c(0.2, 1, 1)) + guides(alpha="none") + 
-    scale_color_manual(values = friendly_pals$wong_eight[c(3,1:2)]) +
-    theme_classic() +
-    theme(text = element_text(family = "Arial"),
-        legend.position = "inside",
-        legend.position.inside = c(.85, .8)) +
-    labs(colour = "Significant") +
-    xlab("Relative Position") +
-    ylab("Relative Entropy (log10)") +
-    scale_y_log10() +
-    geom_vline(xintercept = left_boundary, colour = friendly_pals$wong_eight[2]) +
-    geom_vline(xintercept = right_boundary, colour = friendly_pals$wong_eight[2]) +
-    annotate("text", x = left_boundary - 110, y = min(df_res_sub$re), label = left_boundary) + 
-    annotate("text", x = right_boundary + 100, y = min(df_res_sub$re), label = right_boundary) +
-    ggtitle(paste0("Population: ", population, "; Subtype: ", subtype_print_names(subtype)))
-  return(p)
-}
-
-get_df_windows <- function(df_res, df_cc, population, thresh_vals = (1:10)/10, win_size = 10){
-  df_cc_sub <- df_cc %>% filter(pop == population)
-  df_res_sub <- df_res %>% filter(pop == population)
-
-  q_95_c <- quantile(df_cc_sub$re, 0.95)
-  frac_sig_df <- window_frac_sig(df_res, df_cc, population, win_size = win_size)
-  df_windows <- data.frame(frac_thresh = thresh_vals, 
-                           left_boundary = -1000, 
-                           right_boundary = 1000,
-                           frac_in = 0,
-                           frac_out = 0)
-  
-  for(i in 1:length(thresh_vals)){
-    sig_frac <- thresh_vals[i]
-    left_boundary <- frac_sig_df %>%
-      filter(frac_sig >= sig_frac) %>% #, frac_sig_lead >= sig_frac, frac_sig_lag >= sig_frac) %>%
-      pull(offset) %>%
-      min()
-    right_boundary <- frac_sig_df %>%
-      filter(frac_sig >= sig_frac) %>% #, frac_sig_lead >= sig_frac, frac_sig_lag >= sig_frac) %>%
-      pull(offset) %>%
-      max()
-    
-    sig_vec <- df_res_sub %>%
-      filter(offset < left_boundary | offset > right_boundary) %>%
-      mutate(is_sig = re > q_95_c) %>%
-      pull(is_sig)
-    df_windows$frac_out[i] <- sum(sig_vec) / length(sig_vec)
-    
-    sig_vec <- df_res_sub %>%
-      filter(offset >= left_boundary,  offset <= right_boundary) %>%
-      mutate(is_sig = re > q_95_c) %>%
-      pull(is_sig)
-    df_windows$frac_in[i] <- sum(sig_vec) / length(sig_vec)
-    
-    
-    df_windows$left_boundary[i] <- left_boundary
-    df_windows$right_boundary[i] <- right_boundary
-  }
-  return(df_windows)
 }
 ```
 
@@ -647,10 +543,6 @@ single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10), sig_frac = 5/10){
   
   print(gridExtra::grid.arrange(grobs = plts))
   
-  # for(poppy in c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
-  #   print(plot_re_cc_autosig(df_res, df_cc, poppy, win_size = 10, sig_frac = 8 / 10))
-  # }
-  
   df_resid %>%
     pivot_wider(id_cols = rp:status, names_from = pop, values_from = res) %>%
     select(ALL:SAS) %>%
@@ -677,10 +569,679 @@ single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10), sig_frac = 5/10){
 
 ```
 
+### Load all single position position-level statistics
+
+```{r}
+subtypes <- c("AT_CG", "AT_GC", "AT_TA",
+              "GC_AT", "GC_TA", "GC_CG",
+              "cpg_GC_AT", "cpg_GC_TA", "cpg_GC_CG")
+
+load_all_pos_results <- function(result_dir, subtypes){
+  final <- sp_re_all_pop(result_dir, subtypes[1]) %>%
+    mutate(subtype = subtypes[1])
+  
+  for(i in 2:length(subtypes)){
+    final <- final %>%
+      bind_rows({
+        sp_re_all_pop(result_dir, subtypes[i]) %>%
+          mutate(subtype = subtypes[i])
+      })
+  }
+  return(final)
+}
+
+df_all_sp <- load_all_pos_results(single_pos_dir, subtypes)
+```
+
+### Load all control-control single position results
+
+```{r}
+load_all_sp_cc <- function(control_contol, subtypes){
+  final <- get_pos_cc_pops(control_control, subtypes[1]) %>%
+    mutate(subtype = subtypes[1])
+  
+  for(i in 2:length(subtypes)){
+    final <- final %>%
+      bind_rows({
+        get_pos_cc_pops(control_control, subtypes[i]) %>%
+          mutate(subtype = subtypes[i])
+      })
+  }
+  return(final)
+}
+
+df_all_sp_cc <- load_all_sp_cc(control_control, subtypes)
+```
+
+#### Aside: plot densities of position-level results
+
+```{r}
+df_all_sp %>%
+  filter(subtype == "AT_GC") %>%
+  ggplot(aes(x = pop, y = log10(dev))) +
+  geom_boxplot(notch = TRUE) +
+  geom_hline(yintercept = log10(qchisq(0.95, 3)), colour = "red")
+
+df_all_crit <- df_all_sp %>%
+  filter(subtype == "AT_GC") %>%
+  group_by(pop) %>%
+  summarize(mean_n = mean(2 * (singletons + controls)), 
+            emp_re = quantile(re, 0.95)) %>%
+  mutate(crit_re = qchisq(0.95, 3) / mean_n)
+
+df_crit_cc <- df_all_sp_cc %>%
+  filter(subtype == "AT_GC") %>%
+  group_by(pop) %>%
+  summarise(mean_n = mean(2*(singletons + controls)),
+            emp_crit = quantile(re, 0.95)) %>%
+  mutate(crit_re = qchisq(0.95, 3) / mean_n)
+
+df_all_sp %>%
+  filter(subtype == "AT_GC") %>%
+  ggplot(aes(x = pop, y = re )) +
+  geom_boxplot(notch = TRUE) +
+  scale_y_log10() +
+  geom_crossbar(data = df_all_crit, aes(x = pop, y = crit_re, ymin = crit_re, ymax = crit_re, color = type),
+                colour = "salmon", linewidth = 0.5, width = 0.5) +
+  geom_crossbar(data = df_crit_cc, aes(x = pop, y = emp_crit, ymin = emp_crit, ymax = emp_crit, color = type),
+                colour = "green", linewidth = 0.5, width = 0.5)
+
+df_crit_cc <- df_all_sp_cc %>%
+  filter(subtype == "AT_GC") %>%
+  group_by(pop) %>%
+  summarise(emp_crit = quantile(dev, 0.95)) %>%
+  right_join(df_all_crit, by = "pop") %>%
+  mutate(new_crit_re = emp_crit / mean_n)
+
+df_all_sp %>%
+  filter(subtype == "AT_GC") %>%
+  ggplot(aes(x = pop, y = re )) +
+  geom_boxplot(notch = TRUE) +
+  scale_y_log10() +
+  geom_crossbar(data = df_all_crit, aes(x = pop, y = crit_re, ymin = crit_re, ymax = crit_re, color = type),
+                colour = "salmon", linewidth = 0.5, width = 0.5) +
+  geom_crossbar(data = df_crit_cc, aes(x = pop, y = new_crit_re, ymin = new_crit_re, ymax = new_crit_re, color = type),
+                colour = "green", linewidth = 0.5, width = 0.5)
+```
+
+
+#### Aside: do each population's control-control results look similar?
+
+```{r}
+df_all_sp_cc %>%
+  filter(subtype == "AT_GC") %>%
+  ggplot(aes(x = pop, y = dev)) + 
+  geom_boxplot(notch = TRUE) +
+  xlab("Population") +
+  ylab("Deviance") +
+  geom_hline(yintercept = qchisq(0.95, 3), color = "red")
+
+df_all_sp_cc %>%
+  filter(subtype == "AT_GC") %>%
+  ggplot(aes(x = dev, colour = pop)) +
+  geom_density() +
+  stat_function(
+    fun = dchisq,
+    args = list(df = 3),
+    geom = "line",
+    aes(colour = "Theoretical Chi-Square (df=3)", linetype = "Theoretical"),
+    size = 1,
+  ) +
+  xlab("Deviance") +
+  ylab("Density") +
+  scale_colour_manual(
+    name = "Population",
+    values = c("blue", "red", "green", "purple", "orange", "magenta", "black"), # Customize colors as needed
+    breaks = c(unique(df_all_sp_cc$pop), "Theoretical Chi-Square (df=3)")
+  ) +
+  scale_linetype_manual(
+    name = "", # Remove the linetype legend title
+    values = c("Theoretical" = "dotted"), # Set the theoretical line to dashed
+    guide = "none" # Remove the linetype legend
+  )
+
+df_all_sp_cc %>%
+  filter(subtype == "AT_GC") %>%
+  ggplot(aes(x = pop, y = re)) + 
+  geom_boxplot() +
+  xlab("Population") +
+  ylab("Relative Entropy")
+
+df_all_sp_cc %>%
+  filter(subtype == "AT_GC") %>%
+  ggplot(aes(x = re, colour = pop)) + 
+  geom_density() +
+  xlab("Relative Entropy") +
+  labs(colour = "Population")
+
+# If we divide the chi square critical value by the mean number of 2*(singletons + controls) for each population:
+
+df_crit_cc <- df_all_sp_cc %>%
+  filter(subtype == "AT_GC") %>%
+  group_by(pop) %>%
+  summarise(mean_n = mean(2*(singletons + controls)),
+            emp_crit = quantile(re, 0.95)) %>%
+  mutate(crit_re = qchisq(0.95, 3) / mean_n)
+
+df_all_sp_cc %>%
+  filter(subtype == "AT_GC") %>%
+  ggplot(aes(x = pop, y = re)) + 
+  geom_boxplot(notch= TRUE) +
+  xlab("Population") +
+  ylab("Relative Entropy") +
+  geom_crossbar(data = df_crit_cc, aes(x = pop, y = crit_re, ymin = crit_re, ymax = crit_re, color = type),
+                colour = "salmon", size = 0.5, width = 0.5) +
+  geom_crossbar(data = df_crit_cc, aes(x = pop, y = emp_crit, ymin = emp_crit, ymax = emp_crit, color = type),
+                colour = "green", size = 0.5, width = 0.5)
+  
+## Last thing I want to check: if we divide the dev by mean_n, do we get distributions that look like re distributions?
+df_all_sp_cc %>%
+  filter(subtype == "AT_GC") %>%
+  left_join(df_crit_cc, by = "pop") %>%
+  mutate(re2 = dev / mean_n) %>%
+  select(pop,offset, re, re2) %>%
+  pivot_longer(starts_with("re"), names_to = "type", values_to = "re") %>%
+  ggplot(aes(x = pop, y = re, colour = type)) +
+  geom_boxplot(notch=T)
+```
+
+#### All subtypes for each population
+
+```{r}
+df_all_sp_cc %>%
+  filter(pop == "SAS") %>%
+  ggplot(aes(x = subtype, y = dev)) + 
+  geom_boxplot(notch = TRUE) +
+  xlab("Subtype") +
+  ylab("Deviance") +
+  ggtitle("All Subtypes", "Population: SAS") +
+  geom_hline(yintercept = qchisq(0.95, 3), color = "red")
+```
+
+
+## Aside: Plot single position results along with control-control
+
+```{r}
+cc_re_95 <- df_all_sp %>%
+  filter(subtype == "AT_CG", pop == "ALL") %>%
+  left_join({df_all_sp_cc %>% 
+      filter(pop == "ALL", subtype == "AT_CG") %>% 
+      select(offset, dev) %>%
+      rename(cc_dev = dev)}, 
+      by = "offset") %>%
+  mutate(cc_re = cc_dev / (2 * (singletons + controls)) ) %>%
+  pull(cc_re) %>%
+  quantile(0.95)
+
+df_all_sp %>%
+  filter(subtype == "AT_CG", pop == "ALL") %>%
+  left_join({df_all_sp_cc %>% 
+      filter(pop == "ALL", subtype == "AT_CG") %>% 
+      select(offset, dev) %>%
+      rename(cc_dev = dev)}, 
+      by = "offset") %>%
+  mutate(cc_re = cc_dev / (2 * (singletons + controls)) ) %>%
+  ggplot(aes(x = offset, y = re, colour = is_sig)) +
+  geom_point() +
+  geom_point(aes(x = offset, y = cc_re, colour = "control"), alpha = 0.5) +
+  scale_y_log10()
+
+
+df_all_sp %>%
+  filter(subtype == "AT_CG", pop == "ALL") %>%
+  left_join({df_all_sp_cc %>% 
+      filter(pop == "ALL", subtype == "AT_CG") %>% 
+      select(offset, dev) %>%
+      rename(cc_dev = dev)}, 
+      by = "offset") %>%
+  mutate(cc_re = cc_dev / (2 * (singletons + controls)) ) %>%
+  ggplot(aes(x = offset, y = re, colour = is_sig)) +
+  geom_point() +
+  geom_hline(yintercept = cc_re_95) +
+  scale_y_log10()
+
+df_all_sp %>%
+  filter(subtype == "AT_CG", pop == "ALL", abs(offset) > 450) %>%
+  ungroup() %>%
+  summarize(n_sig = sum(is_sig),
+            n = n()) %>%
+  mutate(fpr = n_sig / n)
+```
+
+## Find windows via chi square significance
+
+```{r}
+df <- df_all_sp %>%
+  filter(subtype == "AT_CG", pop == "ALL") %>%
+  arrange(offset)
+```
+
+Let's simply brute force this and see how many interior / exterior values are significant/insignificant as we consider expanding windows:
+
+```{r}
+df_results <- data.frame(size = numeric(),
+                         tpr = numeric(),
+                         fpr = numeric(),
+                         tnr = numeric(),
+                         fnr = numeric())
+
+for(i in seq(10, 800, 10)){
+  interior_vals <- df %>%
+    filter(abs(offset) <= i) %>%
+    pull(is_sig)
+  
+  exterior_vals <- df %>%
+    filter(abs(offset) > i) %>%
+    pull(is_sig)
+  
+  df_results <- bind_rows(df_results, 
+                          data.frame(size = i,
+                                     tpr = sum(interior_vals) / length(interior_vals),
+                                     fpr = sum(!interior_vals) / length(interior_vals), 
+                                     tnr = sum(!exterior_vals) / length(exterior_vals),
+                                     fnr = sum(exterior_vals) / length(exterior_vals)))
+}
+```
+
+And now let's plot these values:
+
+```{r}
+df_results %>%
+  pivot_longer(-size, names_to = "type", values_to = "rate") %>%
+  ggplot(aes(x = size, y = rate, colour = type)) +
+  geom_point() +
+  theme_classic() +
+  xlab("Window Size") +
+  ylab("Rate") +
+  ggtitle("Fraction Interior/Exterior", paste0("Population: ", "ALL", "; Subtype: ", subtype_print_names("AT_CG"))) +
+  geom_hline(aes(yintercept = 0.05, linetype = "a05")) +
+  scale_linetype_manual(values = c("dotted")) +
+  guides(linetype = "none")
+```
+
+How might we choose a good value for the window? Of the four metrics we compute, there are obvious trade-offs among them. Intuitively, we might want to base our decision on the number of interior values which are false positives (e.g. non-significant). If we control for this being at or below, say, 0.05. we would draw our boundary at 
+
+```{r}
+df_results %>%
+  filter(fpr <= 0.05) %>%
+  pull(size) %>%
+  max()
+```
+
+And consequently, if we define our boundary at 290, the values for the other metrics we observe are:
+
+```{r}
+df_results %>% filter(size == 290) %>% knitr::kable()
+
+df %>%
+  rowwise() %>%
+  mutate(is_sig2 = ifelse(is_sig, 
+                          ifelse(abs(offset) <= 290, "tp", "fn" ), 
+                          ifelse(abs(offset) <= 290, "fp", "tn" ))) %>%
+  ungroup() %>%
+  ggplot(aes(x = offset, y = re, colour = is_sig2)) +
+  geom_point() +
+  scale_y_log10() +
+  geom_vline(aes(xintercept = -290, linetype = "bin")) +
+  geom_vline(aes(xintercept = 290, linetype = "bin")) +
+  scale_linetype_manual(values = c("dotted")) +
+  scale_color_manual(values = ggpubfigs::friendly_pal("vibrant_seven", n=4)) +
+  theme_classic() +
+  guides(linetype = "none") +
+  labs(colour = "Significance\n Type") +
+  theme(legend.position = "inside",
+        legend.position.inside = c(0.9, 0.8)) +
+  ylab("Relative Entropy") +
+  xlab("Offset") +
+  ggtitle("0.05 False Positive Window", paste0("Population: ", "ALL", 
+                                               "; Subtype: ", subtype_print_names("AT_CG"),
+                                               "; Window: ", 290))
+```
+
+Great, now let's see what our results are if we apply this same criterion to all population-subtype pairs:
+
+```{r}
+window_finder_fp <- function(df_all_sp, st, p, alpha = 0.05){
+  
+  df <- df_all_sp %>%
+    filter(subtype == st, pop == p) %>%
+    arrange(offset)
+  
+  df_results <- data.frame(size = numeric(),
+                         tpr = numeric(),
+                         fpr = numeric(),
+                         tnr = numeric(),
+                         fnr = numeric())
+
+  for(i in seq(10, 800, 10)){
+    interior_vals <- df %>%
+      filter(abs(offset) <= i) %>%
+      pull(is_sig)
+    
+    exterior_vals <- df %>%
+      filter(abs(offset) > i) %>%
+      pull(is_sig)
+    
+    df_results <- bind_rows(df_results, 
+                            data.frame(size = i,
+                                       tpr = sum(interior_vals) / length(interior_vals),
+                                       fpr = sum(!interior_vals) / length(interior_vals), 
+                                       tnr = sum(!exterior_vals) / length(exterior_vals),
+                                       fnr = sum(exterior_vals) / length(exterior_vals)))
+  }
+  
+  p1 <- df_results %>%
+    pivot_longer(-size, names_to = "type", values_to = "rate") %>%
+    ggplot(aes(x = size, y = rate, colour = type)) +
+    geom_point() +
+    theme_classic() +
+    xlab("Window Size") +
+    ylab("Rate") +
+    ggtitle("Fraction Interior/Exterior", paste0("Population: ", p, "; Subtype: ", subtype_print_names(st))) +
+    geom_hline(aes(yintercept = 0.05, linetype = "a05")) +
+    scale_linetype_manual(values = c("dotted")) +
+    guides(linetype = "none")
+  
+  if(length(df_results %>%
+    filter(fpr <= alpha) %>% pull(size)) > 0){
+    win_size <- df_results %>%
+      filter(fpr <= alpha) %>%
+      pull(size) %>%
+      max()
+  } else {
+    win_size <- df_results %>%
+      filter(fpr > alpha) %>%
+      pull(size) %>%
+      min()
+  }
+  
+  p2 <- df %>%
+    rowwise() %>%
+    mutate(is_sig2 = ifelse(is_sig, 
+                            ifelse(abs(offset) <= win_size, "tp", "fn" ), 
+                            ifelse(abs(offset) <= win_size, "fp", "tn" ))) %>%
+    ungroup() %>%
+    ggplot(aes(x = offset, y = re, colour = is_sig2)) +
+    geom_point() +
+    scale_y_log10() +
+    geom_vline(aes(xintercept = -win_size, linetype = "bin")) +
+    geom_vline(aes(xintercept = win_size, linetype = "bin")) +
+    scale_linetype_manual(values = c("dotted")) +
+    scale_color_manual(values = ggpubfigs::friendly_pal("vibrant_seven", n=4)) +
+    theme_classic() +
+    guides(linetype = "none") +
+    labs(colour = "Significance\n Type") +
+    theme(legend.position = "inside",
+          legend.position.inside = c(0.9, 0.8)) +
+    ylab("Relative Entropy") +
+    xlab("Offset") +
+    ggtitle(paste0(alpha, " False Positive Window"), paste0("Population: ", p, 
+                                                 "; Subtype: ", subtype_print_names(st),
+                                                 "; Window: ", win_size))
+  
+  return(list("figure" = p2, 
+              "metrics" = df_results %>% filter(size == win_size),
+              "rate_fig" = p1))
+}
+
+res_list <- window_finder_fp(df_all_sp, "AT_CG", "ALL")
+```
+
+```{r}
+plot_list <- vector(mode = "list", length = 9)
+names(plot_list) <- subtypes
+
+plot_rate_list <- vector(mode = "list", length = 9)
+names(plot_rate_list) <- subtypes
+
+metric_list <- vector(mode = "list", length = 9)
+names(metric_list) <- subtypes
+
+for(i in subtypes){
+  plot_list[[i]] <- vector(mode="list", length = 6)
+  names(plot_list[[i]]) <- c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")
+  
+  metric_list[[i]] <- vector(mode="list", length = 6)
+  names(metric_list[[i]]) <- c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")
+  
+  plot_rate_list[[i]] <- vector(mode="list", length = 6)
+  names(plot_rate_list[[i]]) <- c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")
+}
+
+for(i in subtypes){
+  for(j in c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
+    print(paste0(i, " - ", j))
+    res_item <- window_finder_fp(df_all_sp, i, j)
+    
+    metric_list[[i]][[j]] <- res_item$metrics %>% mutate(pop = j, subtype = i)
+    plot_list[[i]][[j]] <- res_item$figure
+    plot_rate_list[[i]][[j]] <- res_item$rate_fig
+  }
+}
+
+df_metric <- metric_list %>% purrr::list_c() %>% bind_rows()
+```
+
+Now, let's explore these results:
+
+### A > C
+
+```{r}
+st <- "AT_CG"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+```
+
+### A > G
+
+```{r}
+st <- "AT_GC"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+```
+
+### A > T
+
+```{r}
+st <- "AT_TA"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+```
+
+### C > T
+
+```{r}
+st <- "GC_AT"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+```
+
+### C > A
+
+```{r}
+st <- "GC_TA"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+```
+
+### C > G
+
+```{r}
+st <- "GC_CG"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+```
+
+### CpG > TpG
+
+```{r}
+st <- "cpg_GC_AT"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+```
+
+### CpG > ApG
+
+```{r}
+st <- "cpg_GC_TA"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+```
+
+### CpG > GpG
+
+```{r}
+st <- "cpg_GC_CG"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+```
+
+
+## Inflection point analysis
+
+The idea of this analysis is to smooth our log10(re) values over the offset, and based on this observed function identify inflection points that correspond to the "interesting region" in the center of the figure.
+
+```{r}
+df <- df_all_sp %>%
+  filter(pop == "ALL", subtype == "AT_GC") %>%
+  arrange(offset)
+```
+
+Let's first take a look at what the raw results look like:
+
+```{r}
+df %>%
+  ggplot(aes(x = offset, y = log10(re), colour = is_sig)) +
+  geom_point()
+```
+
+Now let's see what kind of smoothing options we have for this data:
+
+```{r}
+df %>%
+  ggplot(aes(x = offset, y = log10(re))) +
+  geom_point(aes(colour = is_sig)) +
+  geom_smooth()
+
+df %>%
+  ggplot(aes(x = offset, y = log10(re))) +
+  geom_point(aes(colour = is_sig)) +
+  geom_smooth(method= "loess", span=0.15)
+
+# df %>%
+#   ggplot(aes(x = offset, y = re)) +
+#   geom_point(aes(colour = is_sig)) +
+#   geom_smooth()
+```
+
+On visual inspection, the default `gam` smoothed line looks like it has inflection points near positions where I would be tempted to draw lines to define the "region of interest". What other types of smoothing might I consider for this task?
+
+### segmented Library
+
+Let's see what happens when we fit the model log10(re) ~ offset using the `segmented` library. 
+
+Open question: how do we go about choosing the number of segments?
+
+```{r}
+# library(segmented)
+# 
+# fit_lm <- lm(log10(re) ~ offset, data = df)
+# fit_segmented <- segmented(fit_lm, seg.Z = ~offset, npsi = 10)
+# 
+# plot(fit_segmented)
+# points(df)
+# points.segmented(fit_segmented)
+# 
+# summary(fit_segmented)
+```
+
+
 
 ## All Single Position RE Correlations
 
 ```{r}
+# default restricted range is +/- 20 bp (inclusive)
 df_cor <- single_pos_resid_table(single_pos_dir)
 
 df_cor |> 
@@ -876,8 +1437,6 @@ for(st in subtypes){
 
 ```{r}
 subtype <- "AT_CG"
-
-
 single_pos_analysis(subtype, sig_frac = 5/10)
 ```
 
@@ -887,17 +1446,6 @@ df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = c(-10:-1, 1:10))
 df_cc <- get_pos_cc_pops(control_control, subtype)
 res_cor_analysis <- residual_analysis(df_resid, subtype)
 
-# resid_plots <- residual_analysis(df_resid, subtype)
-# 
-# print(resid_plots$p1)
-# print(resid_plots$p2)
-# print(resid_plots$p3)
-# print(resid_plots$p4)
-
-# for(poppy in c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
-#   print(poppy)
-#   print(plot_re_cc_autosig(df_res, df_cc, poppy))
-# }
 
 df_res %>%
   filter(abs(offset) <= 20) %>%
@@ -914,8 +1462,6 @@ df_res %>%
   ylab("Relative Position") +
   xlab("Rank")
   
-
-plot_re_cc_autosig(df_res, df_cc, "SAS")
 ```
 
 
@@ -1135,816 +1681,6 @@ for(i in 1:dim(pop_combs)[1]){
     geom_hline(yintercept = qchisq(0.95, 3), color = "red", linetype = 2) 
   print(p)
 }
-```
-
-## Single Position Window Selection
-
-### A > C
-
-```{r}
-subtype <- "AT_CG"
-df_res <- sp_re_all_pop(single_pos_dir, subtype)
-df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = c(-10:-1, 1:10))
-df_cc <- get_pos_cc_pops(control_control, subtype)
-```
-
-
-#### ALL
-
-```{r}
-population <- "ALL"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10, win_size = 10)
-
-df_window %>% reactable(pagination = FALSE)
-```
-
-Using 0.7 as our threshold appears to have a good tradeoff between having interior 95%+ significant and less than 3% exterior significant:
-
-```{r}
-df_window_plots <- function(df_window, df_res, population, subtype, plot_cutoff = 0.1){
-  #print("Hello!")
-  for(i in 1:length(df_window$frac_thresh)){
-    
-    if(df_window$frac_in[i] < plot_cutoff) next
-    
-    thresh_cutoff <- df_window$frac_thresh[i]
-    left_boundary <- df_window %>% filter(frac_thresh == thresh_cutoff) %>% pull(left_boundary)
-    right_boundary <- df_window %>% filter(frac_thresh == thresh_cutoff) %>% pull(right_boundary)
-    
-    p <- df_res %>%
-      filter(pop == population) %>%
-      mutate(is_sig = as.character(is_sig)) %>%
-      bind_rows({df_cc %>% filter(pop == population) %>% mutate(is_sig = "Control")}) %>%
-      ggplot(aes(x = offset, y = re, colour = is_sig, alpha = is_sig)) +
-      geom_point() +
-      scale_alpha_manual(values = c(0.2, 1, 1)) + guides(alpha="none") + 
-      scale_color_manual(values = friendly_pals$wong_eight[c(3,1:2)]) +
-      theme_classic() +
-      theme(text = element_text(family = "Arial"),
-          legend.position = "inside",
-          legend.position.inside = c(.85, .8)) +
-      labs(colour = "Significant") +
-      xlab("Relative Position") +
-      ylab("Relative Entropy (log10)") +
-      scale_y_log10() +
-      geom_vline(xintercept = left_boundary, colour = friendly_pals$wong_eight[2]) +
-      geom_vline(xintercept = right_boundary, colour = friendly_pals$wong_eight[2]) +
-      annotate("text", x = left_boundary - 110, y = min(df_res$re), label = left_boundary) + 
-      annotate("text", x = right_boundary + 100, y = min(df_res$re), label = right_boundary) +
-      ggtitle(paste0("Population: ", population, "; Subtype: ", subtype_print_names(subtype)),
-              paste0("Cutoff: ", thresh_cutoff,
-                "; Frac Interior: ", 
-                     round(df_window$frac_in[i],2), 
-                     "; Frac Exterior: ", 
-                     round(df_window$frac_out[i], 2) 
-                     )
-              )
-    print(p)
-  }
-}
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-#### AFR
-
-```{r}
-population <- "AFR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-#### AMR
-
-```{r}
-population <- "AMR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-#### EAS
-
-```{r}
-population <- "EAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-#### EUR
-
-```{r}
-population <- "EUR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-#### SAS
-
-```{r}
-population <- "SAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-### A > G
-
-```{r}
-subtype <- "AT_GC"
-df_res <- sp_re_all_pop(single_pos_dir, subtype)
-df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = c(-10:-1, 1:10))
-df_cc <- get_pos_cc_pops(control_control, subtype)
-```
-
-#### ALL
-
-```{r}
-population <- "ALL"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-#### AFR
-
-```{r}
-population <- "AFR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### AMR
-
-```{r}
-population <- "AMR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EAS
-
-```{r}
-population <- "EAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EUR
-
-```{r}
-population <- "EUR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### SAS
-
-```{r}
-population <- "SAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-### A > T
-
-```{r}
-subtype <- "AT_TA"
-df_res <- sp_re_all_pop(single_pos_dir, subtype)
-df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = c(-10:-1, 1:10))
-df_cc <- get_pos_cc_pops(control_control, subtype)
-```
-
-#### ALL
-
-```{r}
-population <- "ALL"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-#### AFR
-
-```{r}
-population <- "AFR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### AMR
-
-```{r}
-population <- "AMR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EAS
-
-```{r}
-population <- "EAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EUR
-
-```{r}
-population <- "EUR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### SAS
-
-```{r}
-population <- "SAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-### C > T
-
-```{r}
-subtype <- "GC_AT"
-df_res <- sp_re_all_pop(single_pos_dir, subtype)
-df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = c(-10:-1, 1:10))
-df_cc <- get_pos_cc_pops(control_control, subtype)
-```
-
-#### ALL
-
-```{r}
-population <- "ALL"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-#### AFR
-
-```{r}
-population <- "AFR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### AMR
-
-```{r}
-population <- "AMR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EAS
-
-```{r}
-population <- "EAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EUR
-
-```{r}
-population <- "EUR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### SAS
-
-```{r}
-population <- "SAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-### C > A
-
-```{r}
-subtype <- "GC_TA"
-df_res <- sp_re_all_pop(single_pos_dir, subtype)
-df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = c(-10:-1, 1:10))
-df_cc <- get_pos_cc_pops(control_control, subtype)
-```
-
-#### ALL
-
-```{r}
-population <- "ALL"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-#### AFR
-
-```{r}
-population <- "AFR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### AMR
-
-```{r}
-population <- "AMR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EAS
-
-```{r}
-population <- "EAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EUR
-
-```{r}
-population <- "EUR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### SAS
-
-```{r}
-population <- "SAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-### C > G
-
-```{r}
-subtype <- "GC_CG"
-df_res <- sp_re_all_pop(single_pos_dir, subtype)
-df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = c(-10:-1, 1:10))
-df_cc <- get_pos_cc_pops(control_control, subtype)
-```
-
-#### ALL
-
-```{r}
-population <- "ALL"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-#### AFR
-
-```{r}
-population <- "AFR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### AMR
-
-```{r}
-population <- "AMR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EAS
-
-```{r}
-population <- "EAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EUR
-
-```{r}
-population <- "EUR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### SAS
-
-```{r}
-population <- "SAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-### CpG > TpG
-
-```{r}
-subtype <- "cpg_GC_AT"
-df_res <- sp_re_all_pop(single_pos_dir, subtype)
-df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = c(-10:-1, 1:10))
-df_cc <- get_pos_cc_pops(control_control, subtype)
-```
-
-#### ALL
-
-```{r}
-population <- "ALL"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-#### AFR
-
-```{r}
-population <- "AFR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### AMR
-
-```{r}
-population <- "AMR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EAS
-
-```{r}
-population <- "EAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EUR
-
-```{r}
-population <- "EUR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### SAS
-
-```{r}
-population <- "SAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-### CpG > ApG
-
-```{r}
-subtype <- "cpg_GC_TA"
-df_res <- sp_re_all_pop(single_pos_dir, subtype)
-df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = c(-10:-1, 1:10))
-df_cc <- get_pos_cc_pops(control_control, subtype)
-```
-
-#### ALL
-
-```{r}
-population <- "ALL"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-#### AFR
-
-```{r}
-population <- "AFR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### AMR
-
-```{r}
-population <- "AMR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EAS
-
-```{r}
-population <- "EAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EUR
-
-```{r}
-population <- "EUR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### SAS
-
-```{r}
-population <- "SAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-### CpG > GpG
-
-```{r}
-subtype <- "cpg_GC_CG"
-df_res <- sp_re_all_pop(single_pos_dir, subtype)
-df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = c(-10:-1, 1:10))
-df_cc <- get_pos_cc_pops(control_control, subtype)
-```
-
-#### ALL
-
-```{r}
-population <- "ALL"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-#### AFR
-
-```{r}
-population <- "AFR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### AMR
-
-```{r}
-population <- "AMR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EAS
-
-```{r}
-population <- "EAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### EUR
-
-```{r}
-population <- "EUR"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
-```
-
-
-#### SAS
-
-```{r}
-population <- "SAS"
-
-df_window <- get_df_windows(df_res, df_cc, population, thresh_vals = (1:10)/10)
-
-df_window %>% reactable(pagination = FALSE)
-
-df_window_plots(df_window, df_res, population, subtype)
 ```
 
 ## Two Position Models
