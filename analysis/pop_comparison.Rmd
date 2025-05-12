@@ -117,9 +117,16 @@ Load position-level residuals:
 
 ```{r}
 sp_resid_df_load <- function(res_dir, pop, subtype, rp){
+  # f_name <- paste0(res_dir, "/resid/", pop, "/", subtype, "_rp_", rp, ".csv")
+  # df <- read_csv(f_name, show_col_types = FALSE)
+  # df$rp <- rp
+  # return(df)
   f_name <- paste0(res_dir, "/resid/", pop, "/", subtype, "_rp_", rp, ".csv")
   df <- read_csv(f_name, show_col_types = FALSE)
   df$rp <- rp
+  
+  n_tot <- sum(df$n)
+  df$re_res <- (df$res^2) / (2*n_tot)
   return(df)
 }
 
@@ -135,27 +142,27 @@ sp_resid_df_load_all <- function(res_dir, pop, subtype, rp = c(-500:-1, 1:500)){
 
 sp_resid_all_pop <- function(res_dir, subtype, rp = c(-500:-1, 1:500)){
   df_ALL <- sp_resid_df_load_all(res_dir, "ALL", subtype, rp) %>%
-    select(rp, nuc, status, res) %>%
+    select(rp, nuc, status, n, res, re_res) %>%
     mutate(pop = "ALL")
   
   df_AFR <- sp_resid_df_load_all(res_dir, "AFR", subtype, rp) %>%
-    select(rp, nuc, status, res) %>%
+    select(rp, nuc, status, n, res, re_res) %>%
     mutate(pop = "AFR")
   
   df_AMR <- sp_resid_df_load_all(res_dir, "AMR", subtype, rp) %>%
-    select(rp, nuc, status, res) %>%
+    select(rp, nuc, status, n, res, re_res) %>%
     mutate(pop = "AMR")
   
   df_EAS <- sp_resid_df_load_all(res_dir, "EAS", subtype, rp) %>%
-    select(rp, nuc, status, res) %>%
+    select(rp, nuc, status, n, res, re_res) %>%
     mutate(pop = "EAS")
   
   df_EUR <- sp_resid_df_load_all(res_dir, "EUR", subtype, rp) %>%
-    select(rp, nuc, status, res) %>%
+    select(rp, nuc, status, n, res, re_res) %>%
     mutate(pop = "EUR")
   
   df_SAS <- sp_resid_df_load_all(res_dir, "SAS", subtype, rp) %>%
-    select(rp, nuc, status, res) %>%
+    select(rp, nuc, status, n, res, re_res) %>%
     mutate(pop = "SAS")
   
   return(bind_rows(df_ALL, df_AFR, df_AMR, df_EAS, df_EUR, df_SAS))
@@ -428,6 +435,35 @@ residual_analysis <- function(df_resid, subtype, no_plots = F){
   
 }
 
+nuc_resid_plots <-function(subtype, rp = c(-5:-1, 1:5)){
+  df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = rp)
+  
+  df_resid$ID <- as.character(df_resid$rp)
+  xlab <- as.character(min(df_resid$rp):max(df_resid$rp))
+  df_resid$ID <- factor(df_resid$ID, levels = xlab)
+  
+  res_df2 <- df_resid %>%
+    mutate(sign_re = sign(res) * re_res) %>%
+    select(ID, nuc, pop, status, sign_re) %>%
+    pivot_wider(names_from = status, values_from = sign_re) %>%
+    mutate(re_cont = sign(singletons) * (abs(singletons) + abs(controls)))
+  
+  p <- res_df2 %>%
+    ggplot(aes(x= ID, y = re_cont, fill = nuc)) +
+    scale_x_discrete(labels = xlab, drop = FALSE) +
+    geom_bar(position = "stack", stat = "identity") +
+    scale_fill_manual(values =ggpubfigs::friendly_pals$nickel_five  ) +
+    ylab("Relative Entropy") +
+    theme_bw() +
+    xlab(paste0("Relative Position: ", subtype_print_names(subtype))) +
+    labs(fill = "") +
+    theme(legend.position = "top") +
+    theme_classic() +
+    facet_wrap(vars(pop))
+  
+  return(p)
+}
+
 single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10), sig_frac = 5/10){
   df_res <- sp_re_all_pop(single_pos_dir, subtype)
   df_resid <- sp_resid_all_pop(single_pos_dir, subtype, rp = rp)
@@ -484,6 +520,28 @@ single_pos_analysis <- function(subtype, rp = c(-10:-1, 1:10), sig_frac = 5/10){
     ylab("Relative Entropy (log10)") +
     scale_y_log10()
   print(p)
+  
+  # df_resid$ID <- as.character(df_resid$rp)
+  # xlab <- as.character(min(df_resid$rp):max(df_resid$rp))
+  # df_resid$ID <- factor(df_resid$ID, levels = xlab)
+  # 
+  # res_df2 <- df_resid %>%
+  #   mutate(sign_re = sign(res) * re_res) %>%
+  #   select(ID, nuc, pop, status, sign_re) %>%
+  #   pivot_wider(names_from = status, values_from = sign_re) %>%
+  #   mutate(re_cont = sign(singletons) * (abs(singletons) + abs(controls)))
+  # 
+  # p <- res_df2 %>%
+  #   ggplot(aes(x= ID, y = re_cont, fill = nuc)) +
+  #   scale_x_discrete(labels = xlab, drop = FALSE) +
+  #   geom_bar(position = "stack", stat = "identity") +
+  #   scale_fill_manual(values =ggpubfigs::friendly_pals$nickel_five  ) +
+  #   ylab("Relative Entropy") +
+  #   theme_bw() +
+  #   xlab(paste0("Relative Position: ", subtype_print_names(subtype))) +
+  #   labs(fill = "") +
+  #   theme(legend.position = "top") +
+  #   facet_wrap(vars(pop))
   
   cat("Correlation of RE statistics across all flanking positions +/- 1000 bp:\n")
   df_res %>%
@@ -866,6 +924,16 @@ df_results %>%
   filter(fpr <= 0.05) %>%
   pull(size) %>%
   max()
+
+df_results %>%
+  filter(fnr >= 0.167) %>%
+  pull(size) %>%
+  max()
+
+df_results %>%
+  mutate(diff_false = fnr - fpr) %>%
+  arrange(abs(diff_false)) %>%
+  pull(size) %>% .[1]
 ```
 
 And consequently, if we define our boundary at 290, the values for the other metrics we observe are:
@@ -1358,6 +1426,8 @@ for(st in subtypes){
   
   p <- df_resid |>
     filter(status == "singletons", pop != "ALL") |>
+    select(pop, rp, nuc, res) |>
+    group_by(rp, nuc) |>
     pivot_wider(names_from = pop, values_from = res) |>
     mutate(AFR_AMR = sign(AFR) == sign(AMR),
            AFR_EAS = sign(AFR) == sign(EAS),
@@ -1395,6 +1465,7 @@ for(st in subtypes){
   ## For non-match, are these smaller in absolute value?
   test_nucleotides <- df_resid |>
     filter(status == "singletons", pop != "ALL") |>
+    select(rp, nuc, pop, res) |>
     pivot_wider(names_from = pop, values_from = res) |>
     mutate(AFR_AMR = sign(AFR) == sign(AMR),
            AFR_EAS = sign(AFR) == sign(EAS),
@@ -1406,7 +1477,7 @@ for(st in subtypes){
            EAS_EUR = sign(EAS) == sign(EUR),
            EAS_SAS = sign(EAS) == sign(SAS),
            EUR_SAS = sign(EUR) == sign(SAS)) %>%
-    select(-AFR, -AMR, -EAS, -EUR, -SAS, -status) |>
+    select(-AFR, -AMR, -EAS, -EUR, -SAS) |>
     pivot_longer(AFR_AMR:EUR_SAS, names_to = "pops", values_to = "match") |>
     filter(!match) |>
     separate_wider_delim(pops, delim = "_", names = c("pop1", "pop2"))
@@ -1521,6 +1592,80 @@ single_pos_analysis(subtype, rp = c(-10:-1,2:10))
 ```{r}
 subtype <- "cpg_GC_CG"
 single_pos_analysis(subtype, rp = c(-10:-1,2:10))
+```
+
+## Single Position Nucleotide Residuals
+
+### A > C
+
+```{r fig.width=10, fig.height=8}
+subtype <- "AT_CG"
+
+nuc_resid_plots(subtype)
+```
+
+### A > G
+
+```{r fig.width=10, fig.height=8}
+subtype <- "AT_GC"
+
+nuc_resid_plots(subtype)
+```
+
+### A > T
+
+```{r fig.width=10, fig.height=8}
+subtype <- "AT_TA"
+
+nuc_resid_plots(subtype)
+```
+
+### C > T
+
+```{r fig.width=10, fig.height=8}
+subtype <- "GC_AT"
+
+nuc_resid_plots(subtype)
+```
+
+### C > A
+
+```{r fig.width=10, fig.height=8}
+subtype <- "GC_TA"
+
+nuc_resid_plots(subtype)
+```
+
+### C > G
+
+```{r fig.width=10, fig.height=8}
+subtype <- "GC_CG"
+
+nuc_resid_plots(subtype)
+```
+
+### CpG > TpG
+
+```{r fig.width=10, fig.height=8}
+subtype <- "cpg_GC_AT"
+
+nuc_resid_plots(subtype, rp = c(-5:-1, 2:5))
+```
+
+### C > A
+
+```{r fig.width=10, fig.height=8}
+subtype <- "cpg_GC_TA"
+
+nuc_resid_plots(subtype, rp = c(-5:-1, 2:5))
+```
+
+### C > G
+
+```{r fig.width=10, fig.height=8}
+subtype <- "cpg_GC_CG"
+
+nuc_resid_plots(subtype, rp = c(-5:-1, 2:5))
 ```
 
 ## Single Position Pop-Pop Model
