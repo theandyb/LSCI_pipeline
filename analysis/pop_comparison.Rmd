@@ -1052,7 +1052,82 @@ window_finder_fp <- function(df_all_sp, st, p, alpha = 0.05){
               "rate_fig" = p1))
 }
 
-res_list <- window_finder_fp(df_all_sp, "AT_CG", "ALL")
+window_finder_diff <- function(df_all_sp, st, p, alpha = 0.05){
+  
+  df <- df_all_sp %>%
+    filter(subtype == st, pop == p) %>%
+    arrange(offset)
+  
+  df_results <- data.frame(size = numeric(),
+                         tpr = numeric(),
+                         fpr = numeric(),
+                         tnr = numeric(),
+                         fnr = numeric())
+
+  for(i in seq(10, 800, 10)){
+    interior_vals <- df %>%
+      filter(abs(offset) <= i) %>%
+      pull(is_sig)
+    
+    exterior_vals <- df %>%
+      filter(abs(offset) > i) %>%
+      pull(is_sig)
+    
+    df_results <- bind_rows(df_results, 
+                            data.frame(size = i,
+                                       tpr = sum(interior_vals) / length(interior_vals),
+                                       fpr = sum(!interior_vals) / length(interior_vals), 
+                                       tnr = sum(!exterior_vals) / length(exterior_vals),
+                                       fnr = sum(exterior_vals) / length(exterior_vals)))
+  }
+  
+  p1 <- df_results %>%
+    pivot_longer(-size, names_to = "type", values_to = "rate") %>%
+    ggplot(aes(x = size, y = rate, colour = type)) +
+    geom_point() +
+    theme_classic() +
+    xlab("Window Size") +
+    ylab("Rate") +
+    ggtitle("Fraction Interior/Exterior", paste0("Population: ", p, "; Subtype: ", subtype_print_names(st))) +
+    geom_hline(aes(yintercept = 0.05, linetype = "a05")) +
+    scale_linetype_manual(values = c("dotted")) +
+    guides(linetype = "none")
+  
+  win_size <- df_results %>%
+    mutate(diff_false = fnr - fpr) %>%
+    arrange(abs(diff_false)) %>%
+    pull(size) %>% .[1]
+  
+  p2 <- df %>%
+    rowwise() %>%
+    mutate(is_sig2 = ifelse(is_sig, 
+                            ifelse(abs(offset) <= win_size, "tp", "fn" ), 
+                            ifelse(abs(offset) <= win_size, "fp", "tn" ))) %>%
+    ungroup() %>%
+    ggplot(aes(x = offset, y = re, colour = is_sig2)) +
+    geom_point() +
+    scale_y_log10() +
+    geom_vline(aes(xintercept = -win_size, linetype = "bin")) +
+    geom_vline(aes(xintercept = win_size, linetype = "bin")) +
+    scale_linetype_manual(values = c("dotted")) +
+    scale_color_manual(values = ggpubfigs::friendly_pal("vibrant_seven", n=4)) +
+    theme_classic() +
+    guides(linetype = "none") +
+    labs(colour = "Significance\n Type") +
+    theme(legend.position = "inside",
+          legend.position.inside = c(0.9, 0.8)) +
+    ylab("Relative Entropy") +
+    xlab("Offset") +
+    ggtitle(paste0(alpha, " False Positive Window"), paste0("Population: ", p, 
+                                                 "; Subtype: ", subtype_print_names(st),
+                                                 "; Window: ", win_size))
+  
+  return(list("figure" = p2, 
+              "metrics" = df_results %>% filter(size == win_size),
+              "rate_fig" = p1))
+}
+
+list_res <- window_finder_diff(df_all_sp, "AT_CG", "AMR")
 ```
 
 ```{r}
@@ -1243,6 +1318,259 @@ plot_list[[st]][["AMR"]]
 plot_list[[st]][["EAS"]]
 plot_list[[st]][["EUR"]]
 plot_list[[st]][["SAS"]]
+```
+
+## Use FP/FN Intersection as Window Selction Criterion
+
+```{r}
+plot_list <- vector(mode = "list", length = 9)
+names(plot_list) <- subtypes
+
+plot_rate_list <- vector(mode = "list", length = 9)
+names(plot_rate_list) <- subtypes
+
+metric_list <- vector(mode = "list", length = 9)
+names(metric_list) <- subtypes
+
+for(i in subtypes){
+  plot_list[[i]] <- vector(mode="list", length = 6)
+  names(plot_list[[i]]) <- c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")
+  
+  metric_list[[i]] <- vector(mode="list", length = 6)
+  names(metric_list[[i]]) <- c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")
+  
+  plot_rate_list[[i]] <- vector(mode="list", length = 6)
+  names(plot_rate_list[[i]]) <- c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")
+}
+
+for(i in subtypes){
+  for(j in c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
+    print(paste0(i, " - ", j))
+    res_item <- window_finder_diff(df_all_sp, i, j)
+    
+    metric_list[[i]][[j]] <- res_item$metrics %>% mutate(pop = j, subtype = i)
+    plot_list[[i]][[j]] <- res_item$figure
+    plot_rate_list[[i]][[j]] <- res_item$rate_fig
+  }
+}
+
+df_metric <- metric_list %>% purrr::list_c() %>% bind_rows()
+```
+
+### A > C
+
+```{r}
+st <- "AT_CG"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+
+plot_rate_list[[st]][["ALL"]]
+plot_rate_list[[st]][["AFR"]]
+plot_rate_list[[st]][["AMR"]]
+plot_rate_list[[st]][["EAS"]]
+plot_rate_list[[st]][["EUR"]]
+plot_rate_list[[st]][["SAS"]]
+```
+
+### A > G
+
+```{r}
+st <- "AT_GC"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+
+plot_rate_list[[st]][["ALL"]]
+plot_rate_list[[st]][["AFR"]]
+plot_rate_list[[st]][["AMR"]]
+plot_rate_list[[st]][["EAS"]]
+plot_rate_list[[st]][["EUR"]]
+plot_rate_list[[st]][["SAS"]]
+```
+
+### A > T
+
+```{r}
+st <- "AT_TA"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+
+plot_rate_list[[st]][["ALL"]]
+plot_rate_list[[st]][["AFR"]]
+plot_rate_list[[st]][["AMR"]]
+plot_rate_list[[st]][["EAS"]]
+plot_rate_list[[st]][["EUR"]]
+plot_rate_list[[st]][["SAS"]]
+```
+
+### C > T
+
+```{r}
+st <- "GC_AT"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+
+plot_rate_list[[st]][["ALL"]]
+plot_rate_list[[st]][["AFR"]]
+plot_rate_list[[st]][["AMR"]]
+plot_rate_list[[st]][["EAS"]]
+plot_rate_list[[st]][["EUR"]]
+plot_rate_list[[st]][["SAS"]]
+```
+
+### C > A
+
+```{r}
+st <- "GC_TA"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+
+plot_rate_list[[st]][["ALL"]]
+plot_rate_list[[st]][["AFR"]]
+plot_rate_list[[st]][["AMR"]]
+plot_rate_list[[st]][["EAS"]]
+plot_rate_list[[st]][["EUR"]]
+plot_rate_list[[st]][["SAS"]]
+```
+
+### C > G
+
+```{r}
+st <- "GC_CG"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+
+plot_rate_list[[st]][["ALL"]]
+plot_rate_list[[st]][["AFR"]]
+plot_rate_list[[st]][["AMR"]]
+plot_rate_list[[st]][["EAS"]]
+plot_rate_list[[st]][["EUR"]]
+plot_rate_list[[st]][["SAS"]]
+```
+
+### CpG > TpG
+
+```{r}
+st <- "cpg_GC_AT"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+
+plot_rate_list[[st]][["ALL"]]
+plot_rate_list[[st]][["AFR"]]
+plot_rate_list[[st]][["AMR"]]
+plot_rate_list[[st]][["EAS"]]
+plot_rate_list[[st]][["EUR"]]
+plot_rate_list[[st]][["SAS"]]
+```
+
+### CpG > ApG
+
+```{r}
+st <- "cpg_GC_TA"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+
+plot_rate_list[[st]][["ALL"]]
+plot_rate_list[[st]][["AFR"]]
+plot_rate_list[[st]][["AMR"]]
+plot_rate_list[[st]][["EAS"]]
+plot_rate_list[[st]][["EUR"]]
+plot_rate_list[[st]][["SAS"]]
+```
+
+### CpG > GpG
+
+```{r}
+st <- "cpg_GC_CG"
+
+df_metric %>%
+  filter(subtype == st) %>%
+  knitr::kable()
+
+plot_list[[st]][["ALL"]]
+plot_list[[st]][["AFR"]]
+plot_list[[st]][["AMR"]]
+plot_list[[st]][["EAS"]]
+plot_list[[st]][["EUR"]]
+plot_list[[st]][["SAS"]]
+
+plot_rate_list[[st]][["ALL"]]
+plot_rate_list[[st]][["AFR"]]
+plot_rate_list[[st]][["AMR"]]
+plot_rate_list[[st]][["EAS"]]
+plot_rate_list[[st]][["EUR"]]
+plot_rate_list[[st]][["SAS"]]
 ```
 
 
