@@ -34,6 +34,7 @@ library(knitr) # PDF table output
 library(corrr)
 library(gtsummary)
 library(MASS)
+library(patchwork)
 
 library(conflicted)
 
@@ -671,6 +672,32 @@ load_all_sp_cc <- function(control_contol, subtypes){
 df_all_sp_cc <- load_all_sp_cc(control_control, subtypes)
 ```
 
+#### Aside: qvalue computation
+
+```{r}
+library(qvalue)
+
+df <- df_all_sp %>%
+  filter(pop == "ALL", subtype == "AT_GC") %>%
+  arrange(offset) %>%
+  mutate(p_dev = pchisq(dev, 3, lower.tail = F))
+
+df$p_dev %>% density() %>% plot()
+
+df$q_vals <- qvalue(df$p_dev)$qvalues
+
+ggplot(df, aes(x = p_dev, y = q_vals)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0)
+
+df %>%
+  mutate(sig_type = ifelse(q_vals < 0.05, "both_sig", 
+                           ifelse(p_dev < 0.05, "p_sig", "in_sig"))) %>%
+  ggplot(aes(x = offset, y = log10(re), colour = sig_type)) +
+  geom_point()
+```
+
+
 #### Aside: plot densities of position-level results
 
 ```{r}
@@ -864,6 +891,701 @@ df_all_sp %>%
   summarize(n_sig = sum(is_sig),
             n = n()) %>%
   mutate(fpr = n_sig / n)
+```
+
+## Plot all single position results
+
+### A to C
+
+```{r}
+st <- "AT_CG"
+plot_list <- vector(mode = "list")
+```
+
+#### AFR
+
+```{r}
+sp <- "AFR"
+
+single_pos_stat_plot <- function(st, sp){
+  n_s <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(singletons) %>% max()
+  n_c <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(controls) %>% max()
+
+  crit_val <- qchisq(0.95, 3) / (2 * (n_c + n_s))
+
+  p <- df_all_sp %>%
+    filter(subtype == st, pop == sp) %>%
+    ggplot(aes(x = offset, y = re, colour = is_sig)) +
+    geom_point() +
+    geom_hline(yintercept = crit_val, linetype="dotted") +
+    scale_y_log10() +
+    ggtitle(sp, subtype_print_names(st))
+ return(p)
+}
+
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### AMR
+
+```{r}
+sp <- "AMR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EAS
+
+```{r}
+sp <- "EAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EUR
+
+```{r}
+sp <- "EUR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### SAS
+
+```{r}
+sp <- "SAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### ALL
+
+```{r}
+sp <- "ALL"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+
+```{r fig.width=8, fig.height=12}
+wrap_plots(plot_list, ncol = 2)
+```
+
+### A to G
+
+```{r}
+st <- "AT_GC"
+plot_list <- vector(mode = "list")
+```
+
+#### AFR
+
+```{r}
+sp <- "AFR"
+
+single_pos_stat_plot <- function(st, sp){
+  n_s <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(singletons) %>% max()
+  n_c <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(controls) %>% max()
+
+  crit_val <- qchisq(0.95, 3) / (2 * (n_c + n_s))
+
+  p <- df_all_sp %>%
+    filter(subtype == st, pop == sp) %>%
+    ggplot(aes(x = offset, y = re, colour = is_sig)) +
+    geom_point() +
+    geom_hline(yintercept = crit_val, linetype="dotted") +
+    scale_y_log10() +
+    ggtitle(sp, subtype_print_names(st))
+ return(p)
+}
+
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### AMR
+
+```{r}
+sp <- "AMR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EAS
+
+```{r}
+sp <- "EAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EUR
+
+```{r}
+sp <- "EUR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### SAS
+
+```{r}
+sp <- "SAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### ALL
+
+```{r}
+sp <- "ALL"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+
+```{r fig.width=8, fig.height=12}
+wrap_plots(plot_list, ncol = 2)
+```
+
+### A to T
+
+```{r}
+st <- "AT_TA"
+plot_list <- vector(mode = "list")
+```
+
+#### AFR
+
+```{r}
+sp <- "AFR"
+
+single_pos_stat_plot <- function(st, sp){
+  n_s <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(singletons) %>% max()
+  n_c <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(controls) %>% max()
+
+  crit_val <- qchisq(0.95, 3) / (2 * (n_c + n_s))
+
+  p <- df_all_sp %>%
+    filter(subtype == st, pop == sp) %>%
+    ggplot(aes(x = offset, y = re, colour = is_sig)) +
+    geom_point() +
+    geom_hline(yintercept = crit_val, linetype="dotted") +
+    scale_y_log10() +
+    ggtitle(sp, subtype_print_names(st))
+ return(p)
+}
+
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### AMR
+
+```{r}
+sp <- "AMR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EAS
+
+```{r}
+sp <- "EAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EUR
+
+```{r}
+sp <- "EUR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### SAS
+
+```{r}
+sp <- "SAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### ALL
+
+```{r}
+sp <- "ALL"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+
+```{r fig.width=8, fig.height=12}
+wrap_plots(plot_list, ncol = 2)
+```
+
+### C to T
+
+```{r}
+st <- "GC_AT"
+plot_list <- vector(mode = "list")
+```
+
+#### AFR
+
+```{r}
+sp <- "AFR"
+
+single_pos_stat_plot <- function(st, sp){
+  n_s <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(singletons) %>% max()
+  n_c <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(controls) %>% max()
+
+  crit_val <- qchisq(0.95, 3) / (2 * (n_c + n_s))
+
+  p <- df_all_sp %>%
+    filter(subtype == st, pop == sp) %>%
+    ggplot(aes(x = offset, y = re, colour = is_sig)) +
+    geom_point() +
+    geom_hline(yintercept = crit_val, linetype="dotted") +
+    scale_y_log10() +
+    ggtitle(sp, subtype_print_names(st))
+ return(p)
+}
+
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### AMR
+
+```{r}
+sp <- "AMR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EAS
+
+```{r}
+sp <- "EAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EUR
+
+```{r}
+sp <- "EUR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### SAS
+
+```{r}
+sp <- "SAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### ALL
+
+```{r}
+sp <- "ALL"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+
+```{r fig.width=8, fig.height=12}
+wrap_plots(plot_list, ncol = 2)
+```
+
+### CpG to TpG
+
+```{r}
+st <- "cpg_GC_AT"
+plot_list <- vector(mode = "list")
+```
+
+#### AFR
+
+```{r}
+sp <- "AFR"
+
+single_pos_stat_plot <- function(st, sp){
+  n_s <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(singletons) %>% max()
+  n_c <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(controls) %>% max()
+
+  crit_val <- qchisq(0.95, 3) / (2 * (n_c + n_s))
+
+  p <- df_all_sp %>%
+    filter(subtype == st, pop == sp) %>%
+    ggplot(aes(x = offset, y = re, colour = is_sig)) +
+    geom_point() +
+    geom_hline(yintercept = crit_val, linetype="dotted") +
+    scale_y_log10() +
+    ggtitle(sp, subtype_print_names(st))
+ return(p)
+}
+
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### AMR
+
+```{r}
+sp <- "AMR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EAS
+
+```{r}
+sp <- "EAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EUR
+
+```{r}
+sp <- "EUR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### SAS
+
+```{r}
+sp <- "SAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### ALL
+
+```{r}
+sp <- "ALL"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+
+```{r fig.width=8, fig.height=12}
+wrap_plots(plot_list, ncol = 2)
+```
+
+### C to A
+
+```{r}
+st <- "GC_TA"
+plot_list <- vector(mode = "list")
+```
+
+#### AFR
+
+```{r}
+sp <- "AFR"
+
+single_pos_stat_plot <- function(st, sp){
+  n_s <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(singletons) %>% max()
+  n_c <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(controls) %>% max()
+
+  crit_val <- qchisq(0.95, 3) / (2 * (n_c + n_s))
+
+  p <- df_all_sp %>%
+    filter(subtype == st, pop == sp) %>%
+    ggplot(aes(x = offset, y = re, colour = is_sig)) +
+    geom_point() +
+    geom_hline(yintercept = crit_val, linetype="dotted") +
+    scale_y_log10() +
+    ggtitle(sp, subtype_print_names(st))
+ return(p)
+}
+
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### AMR
+
+```{r}
+sp <- "AMR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EAS
+
+```{r}
+sp <- "EAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EUR
+
+```{r}
+sp <- "EUR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### SAS
+
+```{r}
+sp <- "SAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### ALL
+
+```{r}
+sp <- "ALL"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+
+```{r fig.width=8, fig.height=12}
+wrap_plots(plot_list, ncol = 2)
+```
+
+### CpG to ApG
+
+```{r}
+st <- "cpg_GC_TA"
+plot_list <- vector(mode = "list")
+```
+
+#### AFR
+
+```{r}
+sp <- "AFR"
+
+single_pos_stat_plot <- function(st, sp){
+  n_s <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(singletons) %>% max()
+  n_c <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(controls) %>% max()
+
+  crit_val <- qchisq(0.95, 3) / (2 * (n_c + n_s))
+
+  p <- df_all_sp %>%
+    filter(subtype == st, pop == sp) %>%
+    ggplot(aes(x = offset, y = re, colour = is_sig)) +
+    geom_point() +
+    geom_hline(yintercept = crit_val, linetype="dotted") +
+    scale_y_log10() +
+    ggtitle(sp, subtype_print_names(st))
+ return(p)
+}
+
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### AMR
+
+```{r}
+sp <- "AMR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EAS
+
+```{r}
+sp <- "EAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EUR
+
+```{r}
+sp <- "EUR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### SAS
+
+```{r}
+sp <- "SAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### ALL
+
+```{r}
+sp <- "ALL"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+
+```{r fig.width=8, fig.height=12}
+wrap_plots(plot_list, ncol = 2)
+```
+
+### C to G
+
+```{r}
+st <- "GC_CG"
+plot_list <- vector(mode = "list")
+```
+
+#### AFR
+
+```{r}
+sp <- "AFR"
+
+single_pos_stat_plot <- function(st, sp){
+  n_s <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(singletons) %>% max()
+  n_c <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(controls) %>% max()
+
+  crit_val <- qchisq(0.95, 3) / (2 * (n_c + n_s))
+
+  p <- df_all_sp %>%
+    filter(subtype == st, pop == sp) %>%
+    ggplot(aes(x = offset, y = re, colour = is_sig)) +
+    geom_point() +
+    geom_hline(yintercept = crit_val, linetype="dotted") +
+    scale_y_log10() +
+    ggtitle(sp, subtype_print_names(st))
+ return(p)
+}
+
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### AMR
+
+```{r}
+sp <- "AMR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EAS
+
+```{r}
+sp <- "EAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EUR
+
+```{r}
+sp <- "EUR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### SAS
+
+```{r}
+sp <- "SAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### ALL
+
+```{r}
+sp <- "ALL"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+
+```{r fig.width=8, fig.height=12}
+wrap_plots(plot_list, ncol = 2)
+```
+
+### CpG to GpG
+
+```{r}
+st <- "cpg_GC_CG"
+plot_list <- vector(mode = "list")
+```
+
+#### AFR
+
+```{r}
+sp <- "AFR"
+
+single_pos_stat_plot <- function(st, sp){
+  n_s <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(singletons) %>% max()
+  n_c <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(controls) %>% max()
+
+  crit_val <- qchisq(0.95, 3) / (2 * (n_c + n_s))
+
+  p <- df_all_sp %>%
+    filter(subtype == st, pop == sp) %>%
+    ggplot(aes(x = offset, y = re, colour = is_sig)) +
+    geom_point() +
+    geom_hline(yintercept = crit_val, linetype="dotted") +
+    scale_y_log10() +
+    ggtitle(sp, subtype_print_names(st))
+ return(p)
+}
+
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### AMR
+
+```{r}
+sp <- "AMR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EAS
+
+```{r}
+sp <- "EAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### EUR
+
+```{r}
+sp <- "EUR"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### SAS
+
+```{r}
+sp <- "SAS"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+#### ALL
+
+```{r}
+sp <- "ALL"
+plot_list[[sp]] <- single_pos_stat_plot(st, sp)
+print(plot_list[[sp]] )
+```
+
+
+```{r fig.width=8, fig.height=12}
+wrap_plots(plot_list, ncol = 2)
 ```
 
 ## Find windows via chi square significance
