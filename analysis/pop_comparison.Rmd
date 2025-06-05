@@ -1137,23 +1137,6 @@ plot_list <- vector(mode = "list")
 
 ```{r}
 sp <- "AFR"
-
-single_pos_stat_plot <- function(st, sp){
-  n_s <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(singletons) %>% max()
-  n_c <- df_all_sp %>% filter(subtype == st, pop == sp) %>% pull(controls) %>% max()
-
-  crit_val <- qchisq(0.95, 3) / (2 * (n_c + n_s))
-
-  p <- df_all_sp %>%
-    filter(subtype == st, pop == sp) %>%
-    ggplot(aes(x = offset, y = re, colour = is_sig)) +
-    geom_point() +
-    geom_hline(yintercept = crit_val, linetype="dotted") +
-    scale_y_log10() +
-    ggtitle(sp, subtype_print_names(st))
- return(p)
-}
-
 plot_list[[sp]] <- single_pos_stat_plot(st, sp)
 print(plot_list[[sp]] )
 ```
@@ -1587,6 +1570,74 @@ print(plot_list[[sp]] )
 ```{r fig.width=10, fig.height=12}
 wrap_plots(plot_list, ncol = 2)
 ```
+
+## 500 bp center windows
+
+Here we'll evaluate the consequences of using a set +/- 250bp window for all subtypes across all populations.
+
+```{r}
+results <- data.frame(subtype = character(),
+                      pop = character(),
+                      true_pos = numeric(),
+                      false_neg = numeric(),
+                      true_neg = numeric(),
+                      false_pos = numeric())
+
+for(sp in c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
+  for(st in subtypes){
+    df <- df_all_sp %>%
+      filter(subtype == st, pop == sp) %>%
+      mutate(in_win = abs(offset) <= 250)
+    true_pos <- df %>% filter(in_win, is_sig) %>% pull(is_sig) %>% length() 
+    false_pos <- df %>% filter(in_win, !is_sig) %>% pull(is_sig) %>% length() 
+    true_neg <- df %>% filter(!in_win, !is_sig) %>% pull(is_sig) %>% length() 
+    false_neg <- df %>% filter(!in_win, is_sig) %>% pull(is_sig) %>% length()
+    
+    t_sig <- df %>% pull(is_sig) %>% sum()
+    t_f <- df %>% filter(!is_sig) %>% pull(is_sig) %>% length()
+    
+    results <- bind_rows(results,
+                         data.frame(subtype = st,
+                                    pop = sp, 
+                                    true_pos = true_pos,
+                                    false_neg = false_neg,
+                                    true_neg = true_neg,
+                                    false_pos = false_pos,
+                                    t_sig = t_sig,
+                                    t_f = t_f))
+  }
+}
+
+results$precision <- results$true_pos / (results$true_pos + results$false_pos)
+results$recall <- results$true_pos / (results$true_pos + results$false_neg)
+```
+
+```{r}
+results %>%
+  select(subtype, pop, precision, recall) %>%
+  pivot_longer(precision:recall, names_to = "measure", values_to = "value") %>%
+  ggplot(aes(x = subtype, y = value, colour = measure)) +
+  geom_point() +
+  facet_grid(rows = vars(pop))
+
+results %>%
+  ggplot(aes(x = subtype, y = precision, colour = pop)) +
+  geom_point() +
+  theme_classic() +
+  xlab("Subtype") +
+  ylab("Precision") +
+  scale_color_manual(values = ggpubfigs::friendly_pals$vibrant_seven)
+
+results %>%
+  mutate(fnr = false_neg / t_sig) %>%
+  ggplot(aes(x = subtype, y = fnr, colour = pop)) +
+  geom_point() +
+  theme_classic() +
+  xlab("Subtype") +
+  ylab("False Negative Rate") +
+  scale_color_manual(values = ggpubfigs::friendly_pals$vibrant_seven)
+```
+
 
 ## Find windows via chi square significance
 
