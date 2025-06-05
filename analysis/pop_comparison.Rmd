@@ -968,7 +968,7 @@ print(plot_list[[sp]] )
 ```
 
 
-```{r fig.width=8, fig.height=12}
+```{r fig.width=10, fig.height=12}
 wrap_plots(plot_list, ncol = 2)
 ```
 
@@ -1045,7 +1045,7 @@ print(plot_list[[sp]] )
 ```
 
 
-```{r fig.width=8, fig.height=12}
+```{r fig.width=10, fig.height=12}
 wrap_plots(plot_list, ncol = 2)
 ```
 
@@ -1122,7 +1122,7 @@ print(plot_list[[sp]] )
 ```
 
 
-```{r fig.width=8, fig.height=12}
+```{r fig.width=10, fig.height=12}
 wrap_plots(plot_list, ncol = 2)
 ```
 
@@ -1199,7 +1199,7 @@ print(plot_list[[sp]] )
 ```
 
 
-```{r fig.width=8, fig.height=12}
+```{r fig.width=10, fig.height=12}
 wrap_plots(plot_list, ncol = 2)
 ```
 
@@ -1276,7 +1276,7 @@ print(plot_list[[sp]] )
 ```
 
 
-```{r fig.width=8, fig.height=12}
+```{r fig.width=10, fig.height=12}
 wrap_plots(plot_list, ncol = 2)
 ```
 
@@ -1353,7 +1353,7 @@ print(plot_list[[sp]] )
 ```
 
 
-```{r fig.width=8, fig.height=12}
+```{r fig.width=10, fig.height=12}
 wrap_plots(plot_list, ncol = 2)
 ```
 
@@ -1430,7 +1430,7 @@ print(plot_list[[sp]] )
 ```
 
 
-```{r fig.width=8, fig.height=12}
+```{r fig.width=10, fig.height=12}
 wrap_plots(plot_list, ncol = 2)
 ```
 
@@ -1507,7 +1507,7 @@ print(plot_list[[sp]] )
 ```
 
 
-```{r fig.width=8, fig.height=12}
+```{r fig.width=10, fig.height=12}
 wrap_plots(plot_list, ncol = 2)
 ```
 
@@ -1584,7 +1584,7 @@ print(plot_list[[sp]] )
 ```
 
 
-```{r fig.width=8, fig.height=12}
+```{r fig.width=10, fig.height=12}
 wrap_plots(plot_list, ncol = 2)
 ```
 
