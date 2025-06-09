@@ -705,7 +705,15 @@ df_all_sp %>%
   filter(subtype == "AT_GC") %>%
   ggplot(aes(x = pop, y = log10(dev))) +
   geom_boxplot(notch = TRUE) +
-  geom_hline(yintercept = log10(qchisq(0.95, 3)), colour = "red")
+  geom_hline(yintercept = log10(qchisq(0.95, 3)), colour = "red") +
+  ggtitle(subtype_print_names("AT_GC"))
+
+df_all_sp %>%
+  filter(subtype == "AT_GC", abs(offset) > 250) %>%
+  ggplot(aes(x = pop, y = log10(dev))) +
+  geom_boxplot(notch = TRUE) +
+  geom_hline(yintercept = log10(qchisq(0.95, 3)), colour = "red") +
+  ggtitle(subtype_print_names("AT_GC"), "Exclude interior +/- 250bp")
 
 df_all_crit <- df_all_sp %>%
   filter(subtype == "AT_GC") %>%
@@ -2697,12 +2705,51 @@ single_pos_analysis(subtype, rp = c(-10:-1,2:10))
 
 ## Single Position Nucleotide Residuals
 
+### All subtypes
+
+```{r}
+df_resid <- vector(mode = "list", length = 9)
+names(df_resid) <- subtypes
+
+for(st in subtypes){
+  if(str_starts(st, "cpg")) {
+    pos_vec <- c(-5:-1,2:5) 
+  } else {
+    pos_vec <-  c(-5:-1,1:5)
+  }
+  df_resid[[st]] <- sp_resid_all_pop(single_pos_dir, st, rp = pos_vec)
+  df_resid[[st]]$subtype <- st
+}
+
+df_resid <- bind_rows(df_resid)
+```
+
+```{r}
+df_resid %>%
+  filter(status == "singletons", subtype == "AT_GC", pop != "ALL") %>%
+  select(rp, nuc, pop, res) %>%
+  pivot_wider(id_cols = c("rp", "nuc"), names_from = "pop", values_from = "res") %>%
+  group_by(rp) %>%
+  group_modify(~ correlate(.x)) %>% summary()
+```
+
+
 ### A > C
 
 ```{r fig.width=10, fig.height=8}
 subtype <- "AT_CG"
 
 nuc_resid_plots(subtype)
+```
+
+In the A to C subtype, we observe the strongest signal of influence at the -1 relative position. 
+
+```{r}
+df_resid %>%
+  filter(status == "singletons", subtype == "AT_CG", pop != "ALL", rp == -1) %>%
+  mutate(re_res = re_res * sign(res)) %>%
+  select(rp, nuc, pop, re_res) %>%
+  pivot_wider(id_cols = c("rp", "nuc"), names_from = "pop", values_from = "re_res")
 ```
 
 ### A > G
@@ -2713,12 +2760,34 @@ subtype <- "AT_GC"
 nuc_resid_plots(subtype)
 ```
 
+In the A > G subtype, the strongest signal is observed at the +1 relative position across all populations. In the singletons, we see the following patterns of nucleotide enrichment/depletion across the populations:
+
+```{r}
+df_resid %>%
+  filter(status == "singletons", subtype == "AT_GC", pop != "ALL", rp == 1) %>%
+  mutate(re_res = re_res * sign(res)) %>%
+  select(rp, nuc, pop, re_res) %>%
+  pivot_wider(id_cols = c("rp", "nuc"), names_from = "pop", values_from = "re_res")
+```
+
+Here we observe largely consistent results in regards to the rank of nucleotide by relative entropy residuals and sign, with the exception of C in AMR; the C nucleotide has the smallest absolute value across all populations, however, and the results at the more influential nucleotides (i.e. T and A) are consistent across all populations including AMR.
+
 ### A > T
 
 ```{r fig.width=10, fig.height=8}
 subtype <- "AT_TA"
 
 nuc_resid_plots(subtype)
+```
+
+In the A to T subtype, we observe the strongest signal of influence at the +1 relative position. 
+
+```{r}
+df_resid %>%
+  filter(status == "singletons", subtype == "AT_TA", pop != "ALL", rp == 1) %>%
+  mutate(re_res = re_res * sign(res)) %>%
+  select(rp, nuc, pop, re_res) %>%
+  pivot_wider(id_cols = c("rp", "nuc"), names_from = "pop", values_from = "re_res")
 ```
 
 ### C > T
@@ -2729,12 +2798,32 @@ subtype <- "GC_AT"
 nuc_resid_plots(subtype)
 ```
 
+In the C to T subtype, we observe the strongest signal of influence at the -1 relative position. 
+
+```{r}
+df_resid %>%
+  filter(status == "singletons", subtype == "GC_AT", pop != "ALL", rp == -1) %>%
+  mutate(re_res = re_res * sign(res)) %>%
+  select(rp, nuc, pop, re_res) %>%
+  pivot_wider(id_cols = c("rp", "nuc"), names_from = "pop", values_from = "re_res")
+```
+
 ### C > A
 
 ```{r fig.width=10, fig.height=8}
 subtype <- "GC_TA"
 
 nuc_resid_plots(subtype)
+```
+
+In the C to A subtype, we observe the strongest signal of influence at the +1 relative position. 
+
+```{r}
+df_resid %>%
+  filter(status == "singletons", subtype == "GC_TA", pop != "ALL", rp == 1) %>%
+  mutate(re_res = re_res * sign(res)) %>%
+  select(rp, nuc, pop, re_res) %>%
+  pivot_wider(id_cols = c("rp", "nuc"), names_from = "pop", values_from = "re_res")
 ```
 
 ### C > G
@@ -2745,6 +2834,16 @@ subtype <- "GC_CG"
 nuc_resid_plots(subtype)
 ```
 
+In the C to G subtype, we observe the strongest signal of influence at the -2 relative position. 
+
+```{r}
+df_resid %>%
+  filter(status == "singletons", subtype == "GC_CG", pop != "ALL", rp == -2) %>%
+  mutate(re_res = re_res * sign(res)) %>%
+  select(rp, nuc, pop, re_res) %>%
+  pivot_wider(id_cols = c("rp", "nuc"), names_from = "pop", values_from = "re_res")
+```
+
 ### CpG > TpG
 
 ```{r fig.width=10, fig.height=8}
@@ -2753,7 +2852,17 @@ subtype <- "cpg_GC_AT"
 nuc_resid_plots(subtype, rp = c(-5:-1, 2:5))
 ```
 
-### C > A
+In the CpG to TpG subtype, we observe the strongest signal of influence at the -1 relative position. 
+
+```{r}
+df_resid %>%
+  filter(status == "singletons", subtype == "cpg_GC_AT", pop != "ALL", rp == -1) %>%
+  mutate(re_res = re_res * sign(res)) %>%
+  select(rp, nuc, pop, re_res) %>%
+  pivot_wider(id_cols = c("rp", "nuc"), names_from = "pop", values_from = "re_res")
+```
+
+### CpG > ApG
 
 ```{r fig.width=10, fig.height=8}
 subtype <- "cpg_GC_TA"
@@ -2761,12 +2870,32 @@ subtype <- "cpg_GC_TA"
 nuc_resid_plots(subtype, rp = c(-5:-1, 2:5))
 ```
 
-### C > G
+In the CpG to ApG subtype, we observe the strongest signal of influence at the -1 relative position. 
+
+```{r}
+df_resid %>%
+  filter(status == "singletons", subtype == "cpg_GC_TA", pop != "ALL", rp == -1) %>%
+  mutate(re_res = re_res * sign(res)) %>%
+  select(rp, nuc, pop, re_res) %>%
+  pivot_wider(id_cols = c("rp", "nuc"), names_from = "pop", values_from = "re_res")
+```
+
+### CpG > GpG
 
 ```{r fig.width=10, fig.height=8}
 subtype <- "cpg_GC_CG"
 
 nuc_resid_plots(subtype, rp = c(-5:-1, 2:5))
+```
+
+In the CpG to GpG subtype, we observe the strongest signal of influence at the -1 relative position for all but the AFR population. 
+
+```{r}
+df_resid %>%
+  filter(status == "singletons", subtype == "cpg_GC_CG", pop != "ALL", rp == -1) %>%
+  mutate(re_res = re_res * sign(res)) %>%
+  select(rp, nuc, pop, re_res) %>%
+  pivot_wider(id_cols = c("rp", "nuc"), names_from = "pop", values_from = "re_res")
 ```
 
 ## Single Position Pop-Pop Model
