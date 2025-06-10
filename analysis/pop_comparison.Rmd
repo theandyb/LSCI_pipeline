@@ -1601,6 +1601,9 @@ for(sp in c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
     true_neg <- df %>% filter(!in_win, !is_sig) %>% pull(is_sig) %>% length() 
     false_neg <- df %>% filter(!in_win, is_sig) %>% pull(is_sig) %>% length()
     
+    prop_int_sig <- {df %>% filter(in_win, is_sig) %>% pull(is_sig) %>% length()} / {df %>% filter(in_win) %>% pull(is_sig) %>% length()}
+    prop_ext_sig <- {df %>% filter(!in_win, is_sig) %>% pull(is_sig) %>% length()} / {{df %>% filter(!in_win) %>% pull(is_sig) %>% length()}}
+    
     t_sig <- df %>% pull(is_sig) %>% sum()
     t_f <- df %>% filter(!is_sig) %>% pull(is_sig) %>% length()
     
@@ -1612,7 +1615,9 @@ for(sp in c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
                                     true_neg = true_neg,
                                     false_pos = false_pos,
                                     t_sig = t_sig,
-                                    t_f = t_f))
+                                    t_f = t_f, 
+                                    prop_int_sig = prop_int_sig,
+                                    prop_ext_sig = prop_ext_sig))
   }
 }
 
@@ -1627,6 +1632,11 @@ results %>%
   ggplot(aes(x = subtype, y = value, colour = measure)) +
   geom_point() +
   facet_grid(rows = vars(pop))
+
+results %>%
+  select(subtype, pop, prop_ext_sig) %>%
+  ggplot(aes(x = subtype, y = prop_ext_sig, colour = pop)) +
+  geom_point()
 
 results %>%
   ggplot(aes(x = subtype, y = precision, colour = pop)) +
@@ -1644,6 +1654,116 @@ results %>%
   xlab("Subtype") +
   ylab("False Negative Rate") +
   scale_color_manual(values = ggpubfigs::friendly_pals$vibrant_seven)
+```
+
+## Find windows by alpha
+
+Let's expand the window by 10 bp intervals, and in each we'll compute the fraction of significant results outside of the window. We'll see what the smallest window for each subtype is in which the fraction of significant observations is less than, say, 5 or 10%.
+
+
+### A > C
+
+```{r}
+st <- "AT_CG"
+```
+
+
+#### ALL
+
+```{r}
+subpop <- "ALL"
+results <- data.frame(window = numeric(),
+                      frac_ext_sig = numeric(),
+                      frac_int_sig = numeric())
+df <- df_all_sp %>%
+  filter(subtype == st, pop == subpop)
+
+for(i in seq(10,900, by = 10)){
+  df <- df %>%
+    mutate(in_win = abs(offset) <= i)
+  
+  frac_ext_sig <- length({df %>% filter(is_sig, !in_win) %>% pull(is_sig)}) / length({df %>% filter(!in_win) %>% pull(is_sig)})
+  frac_int_sig <- length({df %>% filter(is_sig, in_win) %>% pull(is_sig)}) / length({df %>% filter(in_win) %>% pull(is_sig)})
+  results <- bind_rows(results, data.frame(window = i,
+                                          frac_ext_sig = frac_ext_sig,
+                                          frac_int_sig = frac_int_sig))
+}
+```
+
+```{r}
+results %>%
+  pivot_longer(-window, names_to = "location", values_to = "prop") %>%
+  ggplot(aes(x = window, y= prop, colour = location)) +
+  geom_point() +
+  geom_line()
+```
+
+#### AFR
+
+```{r}
+subpop <- "AFR"
+results <- data.frame(window = numeric(),
+                      frac_ext_sig = numeric(),
+                      frac_int_sig = numeric())
+df <- df_all_sp %>%
+  filter(subtype == st, pop == subpop)
+
+for(i in seq(10,900, by = 10)){
+  df <- df %>%
+    mutate(in_win = abs(offset) <= i)
+  
+  frac_ext_sig <- length({df %>% filter(is_sig, !in_win) %>% pull(is_sig)}) / length({df %>% filter(!in_win) %>% pull(is_sig)})
+  frac_int_sig <- length({df %>% filter(is_sig, in_win) %>% pull(is_sig)}) / length({df %>% filter(in_win) %>% pull(is_sig)})
+  results <- bind_rows(results, data.frame(window = i,
+                                          frac_ext_sig = frac_ext_sig,
+                                          frac_int_sig = frac_int_sig))
+}
+```
+
+```{r}
+results %>%
+  pivot_longer(-window, names_to = "location", values_to = "prop") %>%
+  ggplot(aes(x = window, y= prop, colour = location)) +
+  geom_point() +
+  geom_line()
+```
+
+### A > G
+
+```{r}
+st <- "AT_GC"
+```
+
+#### ALL
+
+```{r}
+subpop <- "ALL"
+results <- data.frame(window = numeric(),
+                      frac_ext_sig = numeric(),
+                      frac_int_sig = numeric())
+df <- df_all_sp %>%
+  filter(subtype == st, pop == subpop)
+
+for(i in seq(10,900, by = 10)){
+  df <- df %>%
+    mutate(in_win = abs(offset) <= i)
+  
+  frac_ext_sig <- length({df %>% filter(is_sig, !in_win) %>% pull(is_sig)}) / length({df %>% filter(!in_win) %>% pull(is_sig)})
+  frac_int_sig <- length({df %>% filter(is_sig, in_win) %>% pull(is_sig)}) / length({df %>% filter(in_win) %>% pull(is_sig)})
+  results <- bind_rows(results, data.frame(window = i,
+                                          frac_ext_sig = frac_ext_sig,
+                                          frac_int_sig = frac_int_sig))
+}
+```
+
+```{r}
+results %>%
+  pivot_longer(-window, names_to = "location", values_to = "prop") %>%
+  ggplot(aes(x = window, y= prop, colour = location)) +
+  geom_point() +
+  geom_line() +
+  geom_hline(yintercept = 0.05, linetype = "dotted") +
+  geom_hline(yintercept = 0.10, linetype = "dashed")
 ```
 
 
