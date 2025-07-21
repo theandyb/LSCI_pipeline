@@ -79,7 +79,7 @@ subtype_print_names <- function(st){
   } else if(str_starts(st, "GC")){
     return(paste0("C → ", str_sub(st, 5, 5)))
   } else if(str_starts(st, "all")){
-    return(paste0("C → ", str_sub(st, 9, 9)))
+    return(paste0("C* → ", str_sub(st, 9, 9)))
   } else{
     return(paste0("CpG → ", str_sub(st, 9, 9), "pG"))
   }
@@ -253,6 +253,71 @@ df_all %>%
   ggplot(aes(x = offset, y = cramer, colour = subtype)) +
   geom_point() +
   theme_classic()
+```
+
+
+## Background Tables
+
+### Counts of Singletons
+
+#### ALL
+
+```{r}
+df_all %>%
+  mutate(subtype = subtype_print_names(subtype)) %>%
+  group_by(subtype) %>%
+  summarize(singletons = max(singletons)) %>%
+  knitr::kable()
+```
+
+#### AFR
+
+```{r}
+load_all_pos_results(subtypes, pop = "AFR") %>%
+  mutate(subtype = subtype_print_names(subtype)) %>%
+  group_by(subtype) %>%
+  summarize(singletons = max(singletons)) %>%
+  knitr::kable()
+```
+
+#### AMR
+
+```{r}
+load_all_pos_results(subtypes, pop = "AMR") %>%
+  mutate(subtype = subtype_print_names(subtype)) %>%
+  group_by(subtype) %>%
+  summarize(singletons = max(singletons)) %>%
+  knitr::kable()
+```
+
+#### EAS
+
+```{r}
+load_all_pos_results(subtypes, pop = "EAS") %>%
+  mutate(subtype = subtype_print_names(subtype)) %>%
+  group_by(subtype) %>%
+  summarize(singletons = max(singletons)) %>%
+  knitr::kable()
+```
+
+#### EUR
+
+```{r}
+load_all_pos_results(subtypes, pop = "EUR") %>%
+  mutate(subtype = subtype_print_names(subtype)) %>%
+  group_by(subtype) %>%
+  summarize(singletons = max(singletons)) %>%
+  knitr::kable()
+```
+
+#### SAS
+
+```{r}
+load_all_pos_results(subtypes, pop = "SAS") %>%
+  mutate(subtype = subtype_print_names(subtype)) %>%
+  group_by(subtype) %>%
+  summarize(singletons = max(singletons)) %>%
+  knitr::kable()
 ```
 
 
