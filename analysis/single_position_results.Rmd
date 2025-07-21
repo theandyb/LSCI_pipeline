@@ -739,7 +739,8 @@ df_all %>%
   filter(abs(offset) <= 10) %>%
   select(offset, re, subtype) %>%
   pivot_wider(id_cols = offset, names_from = subtype, values_from = re) %>%
-  arrange(offset)
+  arrange(offset) %>%
+  knitr::kable()
 ```
 
 Across all subtypes, what range of values for RE do we see within the +/- 10 bp window?
