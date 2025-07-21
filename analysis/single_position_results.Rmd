@@ -20,6 +20,11 @@ library(tidyverse)
 library(ggpubfigs) # functions for color blind friendly palettes
 library(reactable) # table output for html
 library(knitr) # PDF table output
+library(conflicted)
+
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+conflict_prefer("theme_grey", "ggpubfigs")
 ```
 
 ### Paths
@@ -73,6 +78,8 @@ subtype_print_names <- function(st){
     return(paste0("A → ", str_sub(st, 4, 4)))
   } else if(str_starts(st, "GC")){
     return(paste0("C → ", str_sub(st, 5, 5)))
+  } else if(str_starts(st, "all")){
+    return(paste0("C → ", str_sub(st, 9, 9)))
   } else{
     return(paste0("CpG → ", str_sub(st, 9, 9), "pG"))
   }
@@ -86,6 +93,9 @@ get_pos_resid <- function(res_dir, pop, subtype, rp){
   f_name <- paste0(res_dir, "/resid/", pop, "/", subtype, "_rp_", rp, ".csv")
   df <- read_csv(f_name, show_col_types = FALSE)
   df$rp <- rp
+  
+  n_tot <- sum(df$n)
+  df$re_res <- (df$res^2) / (2*n_tot)
   return(df)
 }
 
@@ -218,28 +228,132 @@ load_all_pos_results <- function(subtypes, pop = "ALL"){
           mutate(subtype = subtypes[i])
       })
   }
-  return(final)
-}
-
-df_all <- load_all_pos_results(subtypes)
-
-df_all <- df_all %>% 
-  mutate(from_n = ifelse(str_starts(subtype, "A"), "A", ifelse(str_starts(subtype, "cpg"), "CpG", "C")),
+  final <- final %>%
+    mutate(from_n = ifelse(str_starts(subtype, "A"), "A", 
+                           ifelse(str_starts(subtype, "cpg"), "CpG", 
+                                  ifelse(str_starts(subtype, "all"), "C*", "C"))),
          #to_n = ifelse(str_starts(subtype, "A"), str_sub(subtype, 4, 4), str_sub(subtype, -1))
          to_n = ifelse(str_starts(subtype, "A"), str_sub(subtype, 4,4), 
                        ifelse(str_starts(subtype, "cpg"), 
                               paste0(str_sub(subtype, -1), "pG"), 
                               str_sub(subtype, -1) )))
+  return(final)
+}
+
+df_all <- load_all_pos_results(c(subtypes, "all_GC_AT"))
+df_all$cramer <- sqrt(df_all$dev / (df_all$singletons + df_all$controls))
+
+df_all$side <- ifelse(df_all$offset > 0, 1, -1)
 ```
+
+```{r}
+df_all %>%
+  filter(subtype %in% c("AT_GC", "all_GC_AT"), abs(offset) <= 20) %>%
+  select(offset, subtype, cramer) %>%
+  ggplot(aes(x = offset, y = cramer, colour = subtype)) +
+  geom_point() +
+  theme_classic()
+```
+
+
+## Temp: Working on text of draft
+
+### What are the big deals?
+
+1. We've utilized a dataset comprising of evolutionarily newer variants (singletons)
+
+### Text
+
+Our analyses investigated the influence of neighboring nucleotides on germline mutation rates. We assessed the influence of nucleotides at individual flanking positions in an expanded window covering flanking positions up to 1000 bp from the focal position. Second and third order interactions were assessed across all combinations of flanking positions within +/- 10 bp of the focal position to ascertain the degree to which neighboring nucleotides interact and moderate each other’s influence on the rate of mutation. We conducted these analyses using singletons aggregated across all 1000 Genomes Project (1kGP) populations and separately for each of the five 1kGP super-populations. We then assessed the consistency of population-level results for both single-position and higher-order models.
+
+#### Patterns of influence at individual flanking positions in an expanded window
+
+We first examined the influence of nucleotides at individual flanking positions within a small window (e.g., +/- 10bp from the focal position), consistent with previous research on local sequence context influence on germline mutation rates (citation). However we considered nine distinct mutation categories, as we addressed the known impact of CpG dinucleotides on mutation rates by separately evaluating CpG and non-CpG mutations as distinct categories. Across all nine mutation types, we observed highly statistically significant deviance statistics at all flanking positions within 10 bases of the focal position, ranging from 18.6 to 1659567 ($\chi^2$ df = 3, $p \leq 3.24 \times 10^-4$). 
+
+```{r}
+df_all %>%
+  filter(abs(offset) <= 10) %>%
+  group_by(subtype) %>%
+  summarize(mean_d = mean(dev),
+            min_d = min(dev),
+            max_d = max(dev),
+            singletons = mean(singletons)) %>%
+  mutate(min_p = pchisq(min_d, df = 3, lower.tail = F),
+         max_p = pchisq(max_d, df = 3, lower.tail = F)) %>%
+  knitr::kable(digits=10)
+
+# Table S1
+df_tmp <- df_all %>%
+  filter(abs(offset) < 11) %>%
+  select(subtype, offset, dev, re) %>%
+  mutate(p = pchisq(dev, df = 3, lower.tail = F)) %>%
+  arrange(subtype, offset)
+
+df_tmp[which(str_starts(df_tmp$subtype, "GC") & df_tmp$offset == 1),]$p <- pchisq(df_tmp[which(str_starts(df_tmp$subtype, "GC") & df_tmp$offset == 1),]$dev, df = 3, lower.tail = F)
+
+df_tmp <- df_tmp %>%
+  mutate(subtype = subtype_print_names(subtype))
+
+df_tmp %>% knitr::kable()
+```
+
+
+```{r}
+# mean deviance by singletons
+df_all %>%
+  filter(abs(offset) <= 10) %>%
+  group_by(subtype) %>%
+  summarize(mean_d = mean(dev),
+            min_d = min(dev),
+            max_d = max(dev),
+            singletons = mean(singletons)) %>%
+  ggplot(aes(x = singletons, y = mean_d)) +
+  geom_point()
+
+df_all %>%
+  filter(abs(offset) <= 10) %>%
+  group_by(subtype) %>%
+  summarize(mean_d = mean(dev),
+            min_d = min(dev),
+            max_d = max(dev),
+            singletons = mean(singletons)) %>%
+  {cor.test(.$mean_d, .$singletons)}
+
+df_all %>%
+  filter(abs(offset) <= 10) %>%
+  group_by(subtype) %>%
+  summarize(mean_d = mean(dev),
+            min_d = min(dev),
+            max_d = max(dev),
+            singletons = mean(singletons)) %>%
+  {cor.test(.$max_d, .$singletons)}
+```
+
+### Practical implications of deviance statistics
+
+We have a distribution of deviance statistics, but what practical significance do they have? (as opposed to statistically significant?)
+
+### Deviance statistics in broader window
+
+Although the relative entropy statistics decrease as positions further from the focal position are considered, all deviance statistics in the +/- 10 bp window are highly significant (p<7e-6) in all mutation subtypes.
+
+```{r}
+df_all %>%
+  filter(subtype == "AT_GC") %>%
+  mutate(is_sig = pchisq(dev, 3, lower.tail = F) < 0.05) %>%
+  ggplot(aes(x = offset, y = log10(re), colour = is_sig)) +
+  geom_point()
+```
+
 
 ### Figures
 
 #### Original Dot-Line
 
-```{r}
+```{r, fig.width=12, fig.height=8}
 p1 <- df_all %>%
   filter(from_n == "A", abs(offset) < 11) %>%
-  ggplot(aes(x = offset, y = re)) +
+  ggplot(aes(x = offset, y = re, group = side)) +
   geom_point() +
   geom_line() +
   theme_bw() +
@@ -254,7 +368,7 @@ p1 <- p1 + ylim(y_lim_all)
 
 p2 <- df_all %>%
   filter(from_n == "C", abs(offset) < 11) %>%
-  ggplot(aes(x = offset, y = re)) +
+  ggplot(aes(x = offset, y = re, group = side)) +
   geom_point() +
   geom_line() +
   theme_bw() +
@@ -265,7 +379,7 @@ p2 <- df_all %>%
 
 p3 <- df_all %>%
   filter(from_n == "CpG", abs(offset) < 11) %>%
-  ggplot(aes(x = offset, y = re)) +
+  ggplot(aes(x = offset, y = re, group = side)) +
   geom_point() +
   geom_line() +
   theme_bw() +
@@ -479,6 +593,145 @@ for(st in subtypes){
 gridExtra::grid.arrange(grobs = plot_list, ncol = 3)
 ```
 
+#### Combo Resid + Statistic
+
+```{r}
+resid_plot(single_pos_dir, "ALL", "AT_GC", rp = c(-5:-1,1:5))
+
+resid_logo_plot <- function(res_dir, pop, st, df_all, rp = c(-5:-1,1:5)){
+  res_df <- get_pos_resid_all(res_dir, pop, st, rp)
+  
+  mat_df <- res_df %>%
+    filter(status == "singletons") %>%
+    rowwise() %>%
+    mutate(re = sign(res)*re_res) %>%
+    select(rp, nuc, re) %>%
+    pivot_wider(names_from = nuc, values_from = re) %>%
+    bind_rows(data.frame(rp=0, A=0, C=0, G=0, T=0)) %>%
+    arrange(rp) %>%
+    select(-rp) %>%
+    as.data.frame()
+  
+  p <- ggseqlogo::ggseqlogo(t(mat_df), method = "custom") +
+  theme_classic() +
+    scale_x_continuous(breaks = 1:11, labels = function(x){x - 6}) +
+    geom_hline(yintercept = 0, linetype = "dotted")
+  return(p)
+}
+
+resid_combo_plot <- function(res_dir, pop, st, df_all, rp = c(-5:-1,1:5)){
+  res_df <- get_pos_resid_all(res_dir, pop, st, rp)
+  res_df$ID <- as.character(res_df$rp)
+  xlab <- as.character(min(res_df$rp):max(res_df$rp))
+  res_df$ID <- factor(res_df$ID, levels = xlab)
+  
+  df_stat <- df_all %>%
+    filter(subtype == st) %>%
+    arrange(offset) %>%
+    filter(offset %in% rp)
+  
+  df_stat$ID <- factor(df_stat$offset, levels = xlab)
+  df_stat$group <- ifelse(df_stat$offset < 0, -1, 1)
+  
+  res_df2 <- res_df %>%
+    mutate(sign_re = sign(res) * re_res) %>%
+    select(ID, nuc, status, sign_re) %>%
+    pivot_wider(names_from = status, values_from = sign_re) %>%
+    mutate(re_cont = sign(singletons) * (abs(singletons) + abs(controls))) 
+  
+  p <- res_df2 %>%
+    ggplot(aes(x= ID, y = re_cont, fill = nuc)) +
+    scale_x_discrete(labels = xlab, drop = FALSE) +
+    geom_bar(position = "stack", stat = "identity") +
+    geom_point(aes(y = re, fill = NULL), data = df_stat, show.legend = F, size = 2) +
+    geom_line(aes(y = re, fill = NULL, group = group), 
+              linewidth = 1, data = df_stat, linetype = "dotted", alpha = 1, colour = "grey") +
+    scale_fill_manual(values =ggpubfigs::friendly_pals$nickel_five  ) +
+    ylab("Relative Entropy") +
+    theme_bw() +
+    xlab(paste0("Relative Position: ", subtype_print_names(st))) +
+    labs(fill = "") +
+    theme(legend.position = "inside",
+          legend.position.inside = c(0.5, 0.1), 
+          legend.direction = "horizontal",
+          legend.text = element_text(size = 8), 
+          legend.key.size = unit(8, "pt")) 
+    # theme(legend.position = "inside" ,
+    #       legend.position.inside = c(.95, .95),
+    #       legend.justification = c("right", "top"))
+  return(p)
+}
+```
+
+
+```{r}
+plot_list <- vector(mode = "list", length = 9)
+names(plot_list) <- subtypes
+
+for(st in subtypes){
+  plot_list[[st]] <- resid_combo_plot(single_pos_dir, "ALL", st, df_all, rp = c(-5:-1,1:5))
+}
+
+# 1. Find the maximum y-axis limit across all plots
+max_y <- -Inf
+min_y <- Inf
+for (plot in plot_list) {
+  y_range <- layer_scales(plot)$y$range$range
+  if (!is.null(y_range) && y_range[2] > max_y) {
+    max_y <- y_range[2]
+  }
+  if (!is.null(y_range) && y_range[1] < min_y) {
+    min_y <- y_range[1]
+  }
+}
+
+# 2. Update all plots in the list to have the same y-axis limits
+updated_plot_list <- lapply(plot_list, function(plot) {
+  plot + ylim(min_y - 0.001, max_y + 0.001) # Assuming you want the y-axis to start at 0
+})
+
+updated_plot_list[["cpg_GC_AT"]]
+```
+
+```{r fig.height = 8, fig.width = 8, fig.align = "center"}
+sjPlot::plot_grid(x = updated_plot_list, margin = c(0.3, 0.3, 0.3, 0.3))
+```
+
+#### Logo Plots
+
+```{r}
+plot_list <- vector(mode = "list", length = 9)
+names(plot_list) <- subtypes
+
+for(st in subtypes){
+  plot_list[[st]] <- resid_logo_plot(single_pos_dir, "ALL", st, df_all, rp = c(-5:-1,1:5))
+}
+
+# 1. Find the maximum y-axis limit across all plots
+max_y <- -Inf
+min_y <- Inf
+for (plot in plot_list) {
+  y_range <- layer_scales(plot)$y$range$range
+  if (!is.null(y_range) && y_range[2] > max_y) {
+    max_y <- y_range[2]
+  }
+  if (!is.null(y_range) && y_range[1] < min_y) {
+    min_y <- y_range[1]
+  }
+}
+
+# 2. Update all plots in the list to have the same y-axis limits
+updated_plot_list <- lapply(plot_list, function(plot) {
+  plot + ylim(min_y - 0.001, max_y + 0.001) # Assuming you want the y-axis to start at 0
+})
+
+updated_plot_list[["cpg_GC_AT"]]
+```
+
+```{r fig.height = 8, fig.width = 8, fig.align = "center"}
+sjPlot::plot_grid(x = updated_plot_list, margin = c(0.3, 0.3, 0.3, 0.3))
+```
+
 ### +/- 10 BP
 
 ```{r}
@@ -494,7 +747,7 @@ Across all subtypes, what range of values for RE do we see within the +/- 10 bp 
 ```{r}
 df_all %>%
   filter(abs(offset) <= 10) %>%
-  select(re, mean_var, max_var, simple_re) %>%
+  select(dev, re, mean_var, max_var, simple_re) %>%
   summary() %>%
   knitr::kable()
 ```
