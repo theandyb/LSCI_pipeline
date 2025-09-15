@@ -244,11 +244,44 @@ pop <- "ALL"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+In addition to the relative entropy statistic at each pair of positions, let's also look at which nucleotide pairs were enriched or depleted at position pairs with higher re statistics:
+
+```{r}
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+# Idea: make a heatmap with +1 on Y, +2 on X, colour determined by singleton residual
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
+
 #### AFR
 
 ```{r}
 pop <- "AFR"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+# Idea: make a heatmap with +1 on Y, +2 on X, colour determined by singleton residual
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 #### AMR
@@ -258,11 +291,52 @@ pop <- "AMR"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+# Idea: make a heatmap with +1 on Y, +2 on X, colour determined by singleton residual
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### EAS
 
 ```{r}
 pop <- "EAS"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+# Idea: make a heatmap with +1 on Y, +2 on X, colour determined by singleton residual
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 #### EUR
@@ -272,12 +346,43 @@ pop <- "EUR"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+# Idea: make a heatmap with +1 on Y, +2 on X, colour determined by singleton residual
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### SAS
 
 ```{r}
 pop <- "SAS"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
+
+```{r}
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+# Idea: make a heatmap with +1 on Y, +2 on X, colour determined by singleton residual
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 
 ### A > G
 
@@ -292,11 +397,40 @@ pop <- "ALL"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
+
 #### AFR
 
 ```{r}
 pop <- "AFR"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 #### AMR
@@ -306,11 +440,39 @@ pop <- "AMR"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### EAS
 
 ```{r}
 pop <- "EAS"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 #### EUR
@@ -320,11 +482,39 @@ pop <- "EUR"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### SAS
 
 ```{r}
 pop <- "SAS"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 ### A > T
@@ -340,11 +530,39 @@ pop <- "ALL"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### AFR
 
 ```{r}
 pop <- "AFR"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 #### AMR
@@ -354,11 +572,39 @@ pop <- "AMR"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### EAS
 
 ```{r}
 pop <- "EAS"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 #### EUR
@@ -368,11 +614,39 @@ pop <- "EUR"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### SAS
 
 ```{r}
 pop <- "SAS"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 ### C > T
@@ -388,11 +662,65 @@ pop <- "ALL"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### AFR
 
 ```{r}
 pop <- "AFR"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 #### AMR
@@ -402,11 +730,65 @@ pop <- "AMR"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### EAS
 
 ```{r}
 pop <- "EAS"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 #### EUR
@@ -416,11 +798,65 @@ pop <- "EUR"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### SAS
 
 ```{r}
 pop <- "SAS"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 ### C > A
@@ -434,6 +870,45 @@ subtype <- "GC_TA"
 ```{r}
 pop <- "ALL"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 C to A has the largest overall RE observed across all subtypes for two position models. Let's take a look at the residuals for this position:
@@ -466,11 +941,89 @@ pop <- "AFR"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### AMR
 
 ```{r}
 pop <- "AMR"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 #### EAS
@@ -480,6 +1033,45 @@ pop <- "EAS"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### EUR
 
 ```{r}
@@ -487,11 +1079,89 @@ pop <- "EUR"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### SAS
 
 ```{r}
 pop <- "SAS"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_m1_1 <- resid_df_load(base_dir, pop, subtype, -1, 1)
+
+df_m1_1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("1 Relative Position") +
+  ylab("-1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 ### C > G
@@ -507,11 +1177,39 @@ pop <- "ALL"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### AFR
 
 ```{r}
 pop <- "AFR"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 #### AMR
@@ -521,11 +1219,39 @@ pop <- "AMR"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### EAS
 
 ```{r}
 pop <- "EAS"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 #### EUR
@@ -535,11 +1261,39 @@ pop <- "EUR"
 main_analysis(base_dir, pop, subtype, max_rp)
 ```
 
+```{r}
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
+```
+
 #### SAS
 
 ```{r}
 pop <- "SAS"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_1_2 <- resid_df_load(base_dir, pop, subtype, 1, 2)
+
+df_1_2 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("+2 Relative Position") +
+  ylab("+1 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 ### CpG > TpG
@@ -602,6 +1356,20 @@ subtype <- "cpg_GC_TA"
 ```{r}
 pop <- "ALL"
 main_analysis(base_dir, pop, subtype, max_rp)
+```
+
+```{r}
+df_m2_m1 <- resid_df_load(base_dir, pop, subtype, -2, -1)
+
+df_m2_m1 %>%
+  filter(status == "singletons") %>%
+  ggplot(aes(x = p2, y = p1, fill = res)) +
+  geom_tile() +
+  theme_classic() +
+  scale_fill_distiller(palette = "RdBu", direction = -1) +
+  xlab("-1 Relative Position") +
+  ylab("-2 Relative Position") +
+  labs(fill = "Singleton \nEnrichment")
 ```
 
 #### AFR
