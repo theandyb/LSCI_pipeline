@@ -72,6 +72,41 @@ ray_start()
 #motif_df("AT_CG", "AMR", rel_vals = c(-1,0,1))
 ```
 
+### Plotting and Other Functions
+
+```{r}
+subtype_print_names <- function(st){
+  if(str_starts(st, "AT")){
+    return(paste0("A → ", str_sub(st, 4, 4)))
+  } else if(str_starts(st, "GC")){
+    return(paste0("C → ", str_sub(st, 5, 5)))
+  } else{
+    return(paste0("CpG → ", str_sub(st, 9, 9), "pG"))
+  }
+}
+
+motif_prop_plot <- function(df, subtype, motif = as.character("(-1, 1)")){
+  p <- df  %>% 
+    select(motif, p_s, p_c) %>%
+    rename(Singletons = p_s, Controls = p_c) %>%
+    pivot_longer(-motif, names_to = "category", values_to = "proportion") %>%
+    ggplot(aes(x = proportion, y = motif, shape = category, color = category)) +
+    geom_point(size=3) +
+    xlab("Class Proportion") +
+    ylab("Motif") +
+    theme_minimal() +
+    scale_color_manual(values = ggpubfigs::friendly_pals$wong_eight) +
+    labs(color = "Category", shape = "Category") + 
+    theme(legend.position = "inside", legend.position.inside = c(0.85,0.85),
+          legend.background = element_rect(color = "white", fill = "white"),
+          legend.box.background = element_rect(fill = alpha('#e5e5e5', .6), 
+                                               linewidth = 1, 
+                                               linetype = "solid", color = "#333333")) +
+    ggtitle(subtype_print_names(subtype), motif)
+  return(p)
+}
+```
+
 
 ## Analyses
 
@@ -81,6 +116,81 @@ ray_start()
 population <- "ALL"
 ```
 
+#### A > G
+
+```{r}
+subtype <- "AT_GC"
+
+df <- load_motif(motif_dir, population, subtype)
+
+df %>%
+  reactable(pagination = F)
+```
+
+Let's assess how similar/dissimilar these distributions are between the singletons and their matched controls:
+
+First: do the rankings of motifs match?
+
+```{r}
+motif_rank_singletons <- df %>%
+  arrange(desc(p_s)) %>% 
+  pull(motif)
+
+motif_rank_controls <- df %>%
+  arrange(desc(p_c)) %>% 
+  pull(motif)
+
+motif_rank_singletons
+motif_rank_controls
+motif_rank_singletons == motif_rank_controls
+```
+
+Not really much at all!
+
+```{r}
+df %>%
+  ggplot(aes(x = p_s, y = p_c)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = 2) +
+  xlab("Proportion Singletons") +
+  ylab("Proportion Controls") +
+  ggtitle(subtype_print_names(subtype))
+
+motif_prop_plot(df, subtype)
+```
+
+```{r}
+rel_val <- sum(df$p_s * log(df$p_s / df$p_c))
+
+n_singletons <- sum(df$singletons)
+exp_s <- n_singletons * df$p_c
+chi_sq <- sum(((df$singletons - exp_s)^2) / exp_s)
+```
+
+I don't think we're going to do any better than (-1, +1), but let's see what we get with two other motifs: (-2, +1) and (-2, -1):
+
+```{r}
+df2 <- motif_df("AT_GC", "ALL", -2:-1) %>%
+  mutate(p_s = singletons / sum(singletons),
+         p_c = controls / sum(controls))
+
+df3 <- motif_df("AT_GC", "ALL", c(-2,1)) %>%
+  mutate(p_s = singletons / sum(singletons),
+         p_c = controls / sum(controls))
+
+sum(df2$p_s * log(df2$p_s / df2$p_c))
+sum(df3$p_s * log(df3$p_s / df3$p_c))
+
+df2$exp_s <- sum(df2$singletons) * df2$p_c
+df3$exp_s <- sum(df3$singletons) * df3$p_c
+
+sum(((df2$singletons - df2$exp_s)^2) / df2$exp_s)
+sum(((df3$singletons - df3$exp_s)^2) / df3$exp_s)
+
+motif_prop_plot(df3, subtype, "(-2, 1)")
+```
+
+Based on this, it would seem that a 5-mer motif might be necessary for this subtype.
 
 #### A > C
 
@@ -119,20 +229,7 @@ df %>%
   geom_point() +
   geom_abline(slope = 1, intercept = 0, linetype = 2)
 
-df %>%
-  select(motif, p_s, p_c) %>%
-  rename(Singletons = p_s, Controls = p_c) %>%
-  pivot_longer(-motif, names_to = "category", values_to = "proportion") %>%
-  ggplot(aes(x = proportion, y = motif, shape = category, color = category)) +
-  geom_point(size=3) +
-  xlab("Class Proportion") +
-  ylab("Motif") +
-  theme_minimal() +
-  scale_color_manual(values = ggpubfigs::friendly_pals$wong_eight) +
-  labs(color = "Category", shape = "Category") + 
-  theme(legend.position = "inside", legend.position.inside = c(0.85,0.85),
-        legend.background = element_rect(color = "white", fill = "white"),
-        legend.box.background = element_rect(fill = alpha('#e5e5e5', .6), linewidth = 1, linetype = "solid", color = "#333333"))
+motif_prop_plot(df, subtype)
 ```
 
 
@@ -180,57 +277,37 @@ Ok, so empirically, our relative entropy value of `r re_val` is far larger than 
 What might be more interesting to look at is the relative entropy statistics that we might have observed for motifs other than the central 3-mer. For example, what if we defined the motif by the nucleotides at the -2 and -1 positions? Do we see a larger relative entropy value for such a motif?
 
 ```{r}
-df2 <- motif_df("AT_CG", "ALL", -2:0) 
+df2 <- motif_df("AT_CG", "ALL", -2:0) %>%
+  mutate(p_s = singletons / sum(singletons),
+         p_c = controls / sum(controls))
 
-df2 <- df2 %>%
+df3 <- motif_df("AT_CG", "ALL", c(-1, 2)) %>%
   mutate(p_s = singletons / sum(singletons),
          p_c = controls / sum(controls))
 
 sum(df2$p_s * log(df2$p_s / df2$p_c))
+sum(df3$p_s * log(df3$p_s / df3$p_c))
+
+motif_prop_plot(df2, subtype, "(-2, -1)")
+motif_prop_plot(df3, subtype, "(-1, 2)")
 ```
+
+```{r}
+df$exp_s <- sum(df$singletons) * df$p_c
+df2$exp_s <- sum(df2$singletons) * df2$p_c
+df3$exp_s <- sum(df3$singletons) * df3$p_c
+
+sum(((df$singletons - df$exp_s)^2) / df$exp_s)
+sum(((df2$singletons - df2$exp_s)^2) / df2$exp_s)
+sum(((df3$singletons - df3$exp_s)^2) / df3$exp_s)
+```
+
 
 Here we observe a large re value relative to our "null" draws from above, and it's close to what we observed for the -1,1 motif
 
 * The top single position effects were at: -1, -3, 2, +1
 * The top two-way interaction was at (1,2)
     * (-1, 1) was the second highest 2-position relative entropy
-
-Based on the above, we might instead ask what our results look like if we define motifs based on the nucleotides at the 1 and 2 relative positions:
-
-```{r}
-df2 <- motif_df("AT_CG", "ALL", 0:2) %>%
-  mutate(p_s = singletons / sum(singletons),
-         p_c = controls / sum(controls))
-
-sum(df2$p_s * log(df2$p_s / df2$p_c))
-```
-
-Still weaker than the (-1, 1) relative entropy, but still in the same ballpark. But what if we instead went by chosing the two positions with the highest individual position effects (-1, -3):
-
-```{r}
-df2 <- motif_df("AT_CG", "ALL", c(-3,-1,0)) %>%
-  mutate(p_s = singletons / sum(singletons),
-         p_c = controls / sum(controls))
-
-sum(df2$p_s * log(df2$p_s / df2$p_c))
-```
-
-Well ok, here we've found a higher relative entropy value than what we observed at (-1, 1)! Now, I suspect that we'll also see an increased relative entropy as we include more positions in the motifs; let's look now at the central +/-2 bp window and the non-central window (-3,-2,-1,1):
-
-```{r}
-df2 <- motif_df("AT_CG", "ALL", -2:2) %>%
-  mutate(p_s = singletons / sum(singletons),
-         p_c = controls / sum(controls))
-
-df3 <- motif_df("AT_CG", "ALL", -3:1) %>%
-  mutate(p_s = singletons / sum(singletons),
-         p_c = controls / sum(controls))
-
-sum(df2$p_s * log(df2$p_s / df2$p_c))
-sum(df3$p_s * log(df3$p_s / df3$p_c))
-```
-
-As we expected, we see higher relative entropy statistics as we increase the motif size. Here we observe a slightly higher value for the central (-2 to 2) motif; this motif overlaps with the strongest single position effect (-1), the third strongest single position effect (+2), and the strongest two-way effect (+1, +2). The non-central motif is missing the (+1, +2) and +2 positions, but adds in the second strongest single position effect (-3).
 
 ## Cleanup
 

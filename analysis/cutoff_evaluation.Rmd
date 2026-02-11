@@ -1,0 +1,141 @@
+---
+title: "Cutoff Evaluation"
+author: "Andy Beck"
+date: "2025-03-17"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Setup
+
+### Libraries
+
+```{r}
+library(tidyverse)
+library(ggpubfigs) # functions for color blind friendly palettes
+library(reactable)
+library(reticulate)
+
+conda_python("my_project_env", conda = "/net/snowwhite/home/beckandy/mambaforge/bin/mamba")
+source_python("scratch/3mer_enrichment_R.py")
+```
+
+### Paths
+
+```{r}
+base_dir <- "output" 
+three_dir <- paste0(base_dir, "/three_pos") # template: base_dir/three_pos/{population}/{subtype}.csv
+two_dir <- paste0(base_dir, "/two_pos") # template: base_dir/two_pos/{population}/{subtype}.csv
+single_dir <- paste0(base_dir, "/single_pos") # template: base_dir/single_pos/{population}/{subtype}.csv
+```
+
+### Data Reading
+
+```{r}
+subtypes <- c("AT_CG", "AT_GC", "AT_TA",
+            "GC_AT", "GC_TA", "GC_CG",
+            "cpg_GC_AT", "cpg_GC_TA", "cpg_GC_CG")
+
+read_single <- function(res_dir, pop, subtype, tp=FALSE){
+  
+  f_name <- paste0(res_dir, "/", pop, "/", subtype, ".csv")
+  if(tp){
+    return(read_csv(f_name, show_col_types = F, col_names = c("dev","singletons","controls","rp1","rp2")))
+  }
+  return(read_csv(f_name, show_col_types = FALSE))
+}
+
+read_all <- function(single_dir, two_dir, three_dir, pop, subtype){
+  s_df <- read_single(single_dir, pop, subtype)
+  two_df <- read_single(two_dir, pop, subtype, tp=T)
+  three_df <- read_single(three_dir, pop, subtype)
+  
+  # compute re 
+  three_df <- three_df %>%
+    mutate(re = dev / (2 * (singletons + controls)))
+  two_df <- two_df %>%
+    mutate(re = dev / (2 * (singletons + controls)))
+  s_df <- s_df %>%
+    mutate(re = dev / (2 * (singletons + controls)))
+  
+  # rank by re
+  three_df <- three_df %>%
+    mutate(class_rank = dense_rank(desc(re)))
+  two_df <- two_df %>%
+    mutate(class_rank = dense_rank(desc(re)))
+  s_df <- s_df %>%
+    mutate(class_rank = dense_rank(desc(re)))
+  
+  # unify structure: dev, offsets, re, class, class_rank
+  three_df <- three_df %>%
+    rowwise() %>%
+    mutate(offset = paste0(rp1, "_", rp2, "_", rp3)) %>%
+    ungroup() %>%
+    mutate(class = "3-pos") %>%
+    select(dev, offset, re, class ,class_rank) 
+  
+  two_df <- two_df %>%
+    mutate(class = "2-pos") %>%
+    rowwise() %>%
+    mutate(offset = paste0(rp1, "_", rp2)) %>%
+    ungroup() %>%
+    select(dev, offset, re, class, class_rank)
+  
+  s_df <- s_df %>%
+    mutate(class = "1-pos",
+           offset = as.character(offset)) %>%
+    select(dev, offset, re, class, class_rank)
+  
+  final_df <- bind_rows(s_df, two_df, three_df)
+  return(final_df)
+}
+```
+
+### On the Fly Motif Generation
+
+```{r}
+#' Load counts of singletons and controls stratified by nucleotides at given flanking positions
+#' @param subtype mutation subtype
+#' @param population 1kGP super population (ALL for all all five)
+#' @param rel_values vector of relative positions to stratify singleton and control counts by
+motif_df <- function(subtype, population, rel_vals = c(-1:1)){
+  rel_vals <- sort(rel_vals)
+  df <- try(get_motif_table(subtype, population, "output", rel_vals = as.integer(rel_vals)))
+  if (inherits(df, 'try-error')){
+    py_eval('ray.shutdown()')
+  }
+  return(df)
+}
+
+#' Function to start underlying ray instance
+#' If not run before motif_df, an instance using all cores will be started, which might not be desirable
+ray_start <- function(){
+  py_eval('ray.init(num_cpus=22)')
+}
+
+#' Function to stop underlying ray instance
+#' Not sure what happens if this isn't run when R session stops ¯\_(ツ)_/¯
+ray_shutdown <- function(){
+  py_eval('ray.shutdown()')
+}
+
+```
+
+## A > G
+
+For the first example, I want to look at the consequences of using a cut-off similar to Zhu, et al (2017) in determining the "size of the window" in which local sequence context impacts rates of germline mutation. How "strong" are the effects of positions just below the cutoff for significance? What reduction do we see in terms of the second and third order effects do we see?
+
+First, let's load the data:
+
+```{r}
+ray_start()
+df <- motif_df("AT_GC", "ALL", rel_vals = c(-1, 1))
+ray_shutdown()
+```
+
+```{r}
+df %>%
+  separate(motif, sep = c(1,2), into = paste0("m", c(-1,1)))
+```
+

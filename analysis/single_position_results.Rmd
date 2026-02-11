@@ -342,9 +342,12 @@ df_all %>%
   summarize(mean_d = mean(dev),
             min_d = min(dev),
             max_d = max(dev),
-            singletons = mean(singletons)) %>%
+            singletons = max(singletons)) %>%
   mutate(min_p = pchisq(min_d, df = 3, lower.tail = F),
          max_p = pchisq(max_d, df = 3, lower.tail = F)) %>%
+  ungroup() %>%
+  rowwise() %>%
+  mutate(subtype = subtype_print_names(subtype)) %>%
   knitr::kable(digits=10)
 
 # Table S1

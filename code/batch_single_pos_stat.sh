@@ -28,4 +28,5 @@ VAR2=${VAR2_VALUES[$VAR2_INDEX]}
 
 echo "Running single position models for subtype ${VAR2} in population ${VAR1}"
 
-python code/single_position_models_posOnly.py -p ${VAR1} -t ${VAR2} -o output
+python code/single_position_models_posOnly.py -p ${VAR1} -t ${VAR2} -o output -s .min
+python code/single_position_models_posOnly.py -p ${VAR1} -t ${VAR2} -o output -s .max

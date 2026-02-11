@@ -1,0 +1,267 @@
+---
+title: "logistic_models"
+author: "Andy Beck"
+date: "2025-03-14"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r warning=FALSE, message=FALSE}
+library(tidyverse)
+library(broom)
+library(reticulate)
+library(rcompanion) #nagelkerke function
+#library(speedglm)
+
+conda_python("my_project_env", conda = "/net/snowwhite/home/beckandy/mambaforge/bin/mamba")
+source_python("scratch/3mer_enrichment_R.py")
+```
+
+
+## Introduction
+
+Here in this document we'll explore one particular alternative model structure for the examination of the influence of local sequence context on rates of germline mutation: logistic regression models. But first, some functions to enable loading of data "on the fly":
+
+## Data Functions
+
+```{r}
+#' Load counts of singletons and controls stratified by nucleotides at given flanking positions
+#' @param subtype mutation subtype
+#' @param population 1kGP super population (ALL for all all five)
+#' @param rel_values vector of relative positions to stratify singleton and control counts by
+motif_df <- function(subtype, population, rel_vals = c(-1:1)){
+  rel_vals <- sort(rel_vals)
+  df <- try(get_motif_table(subtype, population, "output", rel_vals = as.integer(rel_vals)))
+  if (inherits(df, 'try-error')){
+    py_eval('ray.shutdown()')
+  }
+  return(df)
+}
+
+#' Function to start underlying ray instance
+#' If not run before motif_df, an instance using all cores will be started, which might not be desirable
+ray_start <- function(){
+  py_eval('ray.init(num_cpus=22)')
+}
+
+#' Function to stop underlying ray instance
+#' Not sure what happens if this isn't run when R session stops ¯\_(ツ)_/¯
+ray_shutdown <- function(){
+  py_eval('ray.shutdown()')
+}
+
+```
+
+## Conditional Logistic Regression Models
+
+```{r}
+library(survival)
+```
+
+```{r}
+df <- read_csv("scratch/EUR_AG_1.csv") %>%
+  filter(nuc %in% c("A", "C", "G", "T"))
+
+mod_clr <- clogit(status ~ nuc + strata(id), df)
+```
+
+
+## Single Position Effects
+
+For our first example, let's compare the results of two models for the influence of the nucleotide at the +1 relative position for the A > G mutation subtype. 
+
+Model 1:
+
+$$
+\textrm{logit}(\Pr(X_i \textrm{singleton} | \textrm{nucleotide}_i)) = \beta_0 + \sum_{j \in C,G,T} \beta_j I(\textrm{nucleotide}_i = j)
+$$
+
+And model 2:
+
+$$
+\log(n_i^s) = \lambda_0 + \lambda_{\textrm{singleton}}I(s=\textrm{singleton}) + \sum_{j \in C,G,T} \lambda_j I(i=j)
+$$
+
+Both models are for data which we can represent in the following table:
+
+```{r}
+population <- "ALL"
+subtype <- "AT_GC"
+
+ray_start()
+df <- motif_df(subtype, population, rel_vals = as.vector(c(1)))
+ray_shutdown()
+
+df %>% knitr::kable()
+```
+
+Let's fit the two models and see what we obtain with regards to parameter estimates and goodness of fit statistics:
+
+```{r}
+mod_logit <- glm(cbind(singletons, controls) ~ motif, data = df, family = binomial())
+
+mod_logit2 <- df %>%
+  mutate(controls2 = round(controls / 5)) %>%
+  glm(cbind(singletons, controls2) ~ motif, data = ., family = binomial())
+
+mod_loglin <- df %>%
+  pivot_longer(-motif, names_to = "status", values_to = "n") %>%
+  glm(n ~ motif + status, data=., family = poisson())
+mod_loglin_sat <- df %>%
+  pivot_longer(-motif, names_to = "status", values_to = "n") %>%
+  glm(n ~ motif * status, data=., family = poisson())
+
+
+mod_logit %>%
+  tidy() %>%
+  knitr::kable()
+
+mod_logit %>%
+  glance() %>%
+  knitr::kable()
+
+mod_logit2 %>%
+  tidy() %>%
+  knitr::kable()
+
+mod_logit2 %>%
+  glance() %>%
+  knitr::kable()
+
+mod_loglin %>%
+  tidy() %>%
+  knitr::kable()
+
+mod_loglin %>%
+  glance() %>%
+  knitr::kable()
+
+mod_loglin_sat %>%
+  tidy() %>%
+  knitr::kable()
+
+mod_loglin_sat %>%
+  glance() %>%
+  knitr::kable()
+```
+
+Let's see if anything interesting happens if we "lengthen" our data.frame and give each "observation" (singleton, control) it's own row (divide controls by 1/5 to make even in number):
+
+```{r}
+# df <- df %>%
+#   mutate(controls2 = round(controls / 5))
+# 
+# df_long <- data.frame(status = numeric(0), motif = character(0))
+# 
+# for(i in 1:length(df$motif)){
+#   df_singletons <- data.frame(status = rep(1, df$singletons[i]), motif = df$motif[i])
+#   df_controls <- data.frame(status = rep(0, df$controls2[i]), motif = df$motif[i])
+#   df_long <- bind_rows(df_long, df_singletons, df_controls)
+# }
+# 
+# df_long[] = lapply(df_long, sample)
+# mod_logit3 <- speedglm(status ~ motif, data = df_long, family = binomial())
+```
+
+### Extended Window
+
+Let's grab 7-mer motifs surrounding singletons and matched controls for the A>G subtype and play around with models using nucleotides in this extended window. Note that now single-position logistic regression models are no longer fully saturated (?)
+
+```{r}
+population <- "EUR"
+subtype <- "AT_GC"
+
+ray_start()
+df <- motif_df(subtype, population, rel_vals = c(-3:-1, 1:3))
+ray_shutdown()
+
+# df$controls <- round(df$controls / 5)
+
+df <- df %>%
+  separate(motif, sep=1:6, into = paste0("n", 1:6))
+
+df %>% head(10) %>% knitr::kable()
+```
+
+Contrast each individual position using Nagelkerke's R2:
+
+```{r}
+mod_n1 <- glm(cbind(singletons, controls) ~ n1, data = df, family = binomial)
+mod_n2 <- glm(cbind(singletons, controls) ~ n2, data = df, family = binomial)
+mod_n3 <- glm(cbind(singletons, controls) ~ n3, data = df, family = binomial)
+mod_n4 <- glm(cbind(singletons, controls) ~ n4, data = df, family = binomial)
+mod_n5 <- glm(cbind(singletons, controls) ~ n5, data = df, family = binomial)
+mod_n6 <- glm(cbind(singletons, controls) ~ n6, data = df, family = binomial)
+
+df_res <- data.frame(pos = c(-3:-1, 1:3),
+                     r2 = c(nagelkerke(mod_n1)$Pseudo[3],
+                            nagelkerke(mod_n2)$Pseudo[3],
+                            nagelkerke(mod_n3)$Pseudo[3],
+                            nagelkerke(mod_n4)$Pseudo[3],
+                            nagelkerke(mod_n5)$Pseudo[3],
+                            nagelkerke(mod_n6)$Pseudo[3]),
+                     aic = c(mod_n1$aic, mod_n2$aic, mod_n3$aic, mod_n4$aic, mod_n5$aic, mod_n6$aic))
+
+df_res %>% knitr::kable()
+```
+
+And same for loglinear models:
+
+```{r}
+df_long <- df %>% pivot_longer(singletons:controls, names_to = "status", values_to = "n")
+
+mod_n1 <- glm(n ~ status + n1, data = df_long, family = poisson)
+mod_n2 <- glm(n ~ status + n2, data = df_long, family = poisson)
+mod_n3 <- glm(n ~ status + n3, data = df_long, family = poisson)
+mod_n4 <- glm(n ~ status + n4, data = df_long, family = poisson)
+mod_n5 <- glm(n ~ status + n5, data = df_long, family = poisson)
+mod_n6 <- glm(n ~ status + n6, data = df_long, family = poisson)
+
+df_res <- data.frame(pos = c(-3:-1, 1:3),
+                     r2 = c(nagelkerke(mod_n1)$Pseudo[3],
+                            nagelkerke(mod_n2)$Pseudo[3],
+                            nagelkerke(mod_n3)$Pseudo[3],
+                            nagelkerke(mod_n4)$Pseudo[3],
+                            nagelkerke(mod_n5)$Pseudo[3],
+                            nagelkerke(mod_n6)$Pseudo[3]),
+                     aic = c(mod_n1$aic, mod_n2$aic, mod_n3$aic, mod_n4$aic, mod_n5$aic, mod_n6$aic),
+                     deviance = c(mod_n1$deviance, mod_n2$deviance, mod_n3$deviance, mod_n4$deviance, mod_n5$deviance, mod_n6$deviance))
+
+df_res %>% knitr::kable()
+```
+
+
+```{r}
+df_long %>% 
+  select(n4, status, n) %>%
+  group_by(status, n4) %>%
+  summarize(n = sum(n)) %>%
+  glm(n ~ status + n4, family = poisson, data = .) %>%
+  deviance()
+
+df_long %>% 
+  select(n5, status, n) %>%
+  group_by(status, n5) %>%
+  summarize(n = sum(n)) %>%
+  glm(n ~ status + n5, family = poisson, data = .) %>%
+  deviance()
+```
+
+```{r}
+ray_start()
+df_1 <- motif_df(subtype, population, rel_vals = 1)
+df_2 <- motif_df(subtype, population, rel_vals = 2)
+ray_shutdown()
+
+df_1 %>%
+  pivot_longer(singletons:controls, names_to = "status", values_to = "n") %>%
+  glm(n ~ motif + status, data = ., family = poisson()) %>%
+  deviance()
+
+df_2 %>%
+  pivot_longer(singletons:controls, names_to = "status", values_to = "n") %>%
+  glm(n ~ motif + status, data = ., family = poisson()) %>%
+  deviance()
+```
+

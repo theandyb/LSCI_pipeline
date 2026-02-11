@@ -1,0 +1,104 @@
+---
+title: "tvd_other_metrics"
+author: "Andy Beck"
+date: "2025-01-22"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+Here we will compare our single position deviance statistics with other measures of the distance between singleton and control flanking nucleotide distributions. 
+
+## Data and Libraries
+
+```{r}
+library(tidyverse)
+library(ggpubfigs)
+```
+
+```{r}
+
+single_pos_dir <- "output/single_pos"
+
+get_pos_resid <- function(res_dir, pop, subtype, rp){
+  f_name <- paste0(res_dir, "/resid/", pop, "/", subtype, "_rp_", rp, ".csv")
+  df <- read_csv(f_name, show_col_types = FALSE)
+  df$rp <- rp
+  return(df)
+}
+
+get_pos_resid_all <- function(res_dir, pop, subtype, rp = c(-500:-1, 1:500)){
+  results <- vector(mode = "list", length = length(rp))
+  for(i in 1:length(rp)){
+    if(rp[i] == 1 & str_starts(subtype, "cpg")) next
+    results[[i]] <- get_pos_resid(res_dir, pop, subtype, rp[i])
+  }
+  df <- bind_rows(results)
+  return(df)
+}
+```
+
+
+## Total Variation Distance at Single Positons
+
+```{r}
+
+get_tvd_vals <- function(single_pos_dir, pop, subtype, rp = c(-500:-1, 1:500)){
+  df_test <- get_pos_resid_all(single_pos_dir, pop, subtype, rp = rp)
+  
+  tvd_vec <- c()
+  chi_sq_val <- c()
+  
+  for(i in rp){
+    df_sub <- df_test %>%
+      filter(rp == i) %>%
+      select(nuc, status, n) %>%
+      pivot_wider(names_from = status, values_from = n) %>%
+      mutate(prop_s = singletons / sum(singletons),
+             prop_c = controls / sum(controls))
+    tvd_val <- 0.5 * sum(abs(df_sub$prop_s - df_sub$prop_c))
+    tvd_vec <- c(tvd_vec, tvd_val)
+    n_s <- sum(df_sub$singletons)
+    df_sub$exp_s <- n_s * df_sub$prop_c
+    df_sub$chi <- ((df_sub$singletons - df_sub$exp_s)^2) / (df_sub$exp_s)
+    chi_val <- sum(df_sub$chi)
+    chi_sq_val <- c(chi_sq_val, chi_val)
+  }
+  
+  df_res <- tibble(rp = rp, tvd = tvd_vec, chi_sq = chi_sq_val)
+  return(df_res)
+}
+
+df_tvd <- get_tvd_vals(single_pos_dir, "ALL", "AT_GC")
+
+df_tvd %>%
+  filter(abs(rp) <= 20) %>%
+  ggplot(aes(x = rp, y = tvd)) +
+  geom_point() +
+  theme_classic() +
+  xlab("Relative Position") +
+  ylab("Total Variation Distance") +
+  geom_hline(yintercept = 0.0003, linetype = 3) +
+  geom_hline(yintercept = 0.005, linetype = 2, colour = "red")
+
+df_tvd %>%
+  filter(abs(rp) <= 20) %>%
+  ggplot(aes(x = rp, y = chi_sq)) +
+  geom_point() +
+  theme_classic() +
+  xlab("Relative Position") +
+  ylab("Chi Sq.") 
+
+df_tvd %>%
+  ggplot(aes(x = rp, y = tvd)) +
+  geom_point() +
+  theme_classic() +
+  xlab("Relative Position") +
+  ylab("Total Variation Distance") +
+  geom_hline(yintercept = 0.0003, linetype = 3) +
+  geom_hline(yintercept = 0.005, linetype = 2, colour = "red") +
+  scale_y_log10()
+```
+

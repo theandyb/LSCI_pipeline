@@ -1,0 +1,178 @@
+---
+title: "interaction_parameters"
+author: "theandyb"
+date: "2025-05-13"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r warning=FALSE, message=FALSE}
+library(tidyverse)
+library(broom)
+library(reticulate)
+library(conflicted)
+
+conda_python("my_project_env", conda = "/net/snowwhite/home/beckandy/mambaforge/bin/mamba")
+source_python("scratch/3mer_enrichment_R.py")
+```
+
+## Data Functions
+
+```{r}
+#' Load counts of singletons and controls stratified by nucleotides at given flanking positions
+#' @param subtype mutation subtype
+#' @param population 1kGP super population (ALL for all all five)
+#' @param rel_values vector of relative positions to stratify singleton and control counts by
+motif_df <- function(subtype, population, rel_vals = c(-1:1)){
+  rel_vals <- sort(rel_vals)
+  df <- try(get_motif_table(subtype, population, "output", rel_vals = as.integer(rel_vals)))
+  if (inherits(df, 'try-error')){
+    py_eval('ray.shutdown()')
+  }
+  return(df)
+}
+
+#' Function to start underlying ray instance
+#' If not run before motif_df, an instance using all cores will be started, which might not be desirable
+ray_start <- function(){
+  py_eval('ray.init(num_cpus=22)')
+}
+
+#' Function to stop underlying ray instance
+#' Not sure what happens if this isn't run when R session stops ¯\_(ツ)_/¯
+ray_shutdown <- function(){
+  py_eval('ray.shutdown()')
+}
+
+```
+
+## Single Subtype Example
+
+Let's look at our strongest example: the +1 relative position for the A>G subtypes:
+
+```{r}
+ray_start()
+
+df_all <- motif_df("AT_GC", "ALL", c(0,1))
+df_afr <- motif_df("AT_GC", "AFR", c(0,1))
+df_amr <- motif_df("AT_GC", "AMR", c(0,1))
+df_eas <- motif_df("AT_GC", "EAS", c(0,1))
+df_eur <- motif_df("AT_GC", "EUR", c(0,1))
+df_sas <- motif_df("AT_GC", "SAS", c(0,1))
+
+ray_shutdown()
+```
+
+Let's reformat these data frames for log linear modeling!
+
+```{r}
+single_pos_mod <- function(df, nuc_pos){
+  df %>%
+    mutate(nuc = str_sub(motif, nuc_pos, nuc_pos)) %>%
+    select(nuc, singletons, controls) %>%
+    pivot_longer(-nuc, names_to = "status", values_to = "n")
+}
+
+fit_sat_mod <- function(df, nuc_pos){
+  df_mod <- single_pos_mod(df, nuc_pos)
+  mod_obj <- glm(n ~ status*nuc, data = df_mod, family = poisson)
+  return(mod_obj)
+}
+
+```
+
+### Parameter Comparisons
+
+```{r}
+mod_all <- fit_sat_mod(df_all, 2)
+mod_afr <- fit_sat_mod(df_afr, 2)
+mod_amr <- fit_sat_mod(df_amr, 2)
+mod_eas <- fit_sat_mod(df_eas, 2)
+mod_eur <- fit_sat_mod(df_eur, 2)
+mod_sas <- fit_sat_mod(df_sas, 2)
+
+# tidy dataframes
+df_mod_all <- broom::tidy(mod_all) %>% rename(all = estimate) %>% select(term, all)
+df_mod_afr <- broom::tidy(mod_afr) %>% rename(afr = estimate) %>% select(term, afr)
+df_mod_amr <- broom::tidy(mod_amr) %>% rename(amr = estimate) %>% select(term, amr)
+df_mod_eas <- broom::tidy(mod_eas) %>% rename(eas = estimate) %>% select(term, eas)
+df_mod_eur <- broom::tidy(mod_eur) %>% rename(eur = estimate) %>% select(term, eur)
+df_mod_sas <- broom::tidy(mod_sas) %>% rename(sas = estimate) %>% select(term, sas)
+
+# merge together
+
+df_mod <- inner_join(df_mod_all, df_mod_afr, by = "term") %>%
+  inner_join(df_mod_amr) %>%
+  inner_join(df_mod_eas) %>%
+  inner_join(df_mod_eur) %>%
+  inner_join(df_mod_sas)
+```
+
+### Group Parameter
+
+Let's compare models with the same interaction among populations versus models that allow for population specific interactions
+
+```{r}
+df_comb <- single_pos_mod(df_all, 2) %>% mutate(pop = "ALL") %>%
+  bind_rows({single_pos_mod(df_afr, 2) %>% mutate(pop = "AFR")}) %>%
+  bind_rows({single_pos_mod(df_amr, 2) %>% mutate(pop = "AMR")}) %>%
+  bind_rows({single_pos_mod(df_eas, 2) %>% mutate(pop = "EAS")}) %>%
+  bind_rows({single_pos_mod(df_eur, 2) %>% mutate(pop = "EUR")}) %>%
+  bind_rows({single_pos_mod(df_sas, 2) %>% mutate(pop = "SAS")})
+
+mod_full <- glm(n ~ nuc * status * pop, data = df_comb, family = poisson)
+mod_red <- glm(n ~ nuc * status + pop * nuc + pop * status, data = df_comb, family = poisson)
+
+anova(mod_red, mod_full)
+```
+
+#### Group Parameter Function
+
+```{r}
+group_anova <- function(subtype, rp){
+  ray_start()
+  
+  df_all <- motif_df(subtype, "ALL", c(0,rp))
+  df_afr <- motif_df(subtype, "AFR", c(0,rp))
+  df_amr <- motif_df(subtype, "AMR", c(0,rp))
+  df_eas <- motif_df(subtype, "EAS", c(0,rp))
+  df_eur <- motif_df(subtype, "EUR", c(0,rp))
+  df_sas <- motif_df(subtype, "SAS", c(0,rp))
+  
+  ray_shutdown()
+  
+  df_comb <- single_pos_mod(df_all, 2) %>% mutate(pop = "ALL") %>%
+    bind_rows({single_pos_mod(df_afr, 2) %>% mutate(pop = "AFR")}) %>%
+    bind_rows({single_pos_mod(df_amr, 2) %>% mutate(pop = "AMR")}) %>%
+    bind_rows({single_pos_mod(df_eas, 2) %>% mutate(pop = "EAS")}) %>%
+    bind_rows({single_pos_mod(df_eur, 2) %>% mutate(pop = "EUR")}) %>%
+    bind_rows({single_pos_mod(df_sas, 2) %>% mutate(pop = "SAS")})
+  
+  mod_full <- glm(n ~ nuc * status * pop, data = df_comb, family = poisson)
+  mod_red <- glm(n ~ nuc * status + pop * nuc + pop * status, data = df_comb, family = poisson)
+  
+  return(anova(mod_red, mod_full))
+}
+```
+
+```{r}
+group_anova("AT_GC", 100)
+group_anova("AT_GC", 10)
+```
+
+## Use already generated residual files
+
+```{r}
+read_resid <- function(pop, subtype, rp){
+  f_name <- paste0("output/single_pos/resid/", pop, "/", subtype, "_rp_", rp, ".csv")
+  read_csv(f_name, show_col_types = F) %>%
+    select(nuc, status, n) %>%
+    mutate(pop = pop)
+}
+
+mod_df <- function(subtype, rp, pops = c("ALL", "AFR", "AMR", "EAS", "EUR", "SAS")){
+  
+}
+```
+
