@@ -1,0 +1,258 @@
+---
+title: "sliding_window"
+author: "theandyb"
+date: "2026-09-25"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+```{r}
+library(tidyverse)
+library(ggpubfigs) # functions for color blind friendly palettes
+library(reactable) # table output for html
+library(knitr) # PDF table output
+library(conflicted)
+library(kableExtra)
+
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+conflict_prefer("theme_grey", "ggpubfigs")
+
+cb_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", 
+                "#0072B2", "#D55E00", "#CC79A7", "#000000",
+                "#490092", "#999999", "#59260B")
+```
+
+### Paths
+
+```{r}
+base_dir = "output"
+single_pos_dir = paste0(base_dir, "/single_pos")
+control_control <- paste0(base_dir, "/single_pos_cc")
+```
+
+```{r}
+theme_publication <- function(base_size = 12, base_family = "sans") {
+  theme_bw(base_size = base_size, base_family = base_family) %+replace% 
+    theme(
+      # Remove background elements
+      panel.border     = element_blank(),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      
+      # Style the axes
+      axis.line        = element_line(color = "black", linewidth = 0.5),
+      axis.ticks       = element_line(color = "black", linewidth = 0.5),
+      
+      # Refine text and labels
+      strip.background = element_rect(fill = "white", color = "white"),
+      strip.text       = element_text(face = "bold", size = rel(1)),
+      plot.title       = element_text(face = "bold", size = rel(1.2), hjust = 0),
+      axis.title = element_text(size = rel(1.0)),
+      axis.text = element_text(size = rel(0.8)),
+      
+      # Legend positioning
+      legend.key       = element_blank(),
+      legend.direction = "horizontal",
+      legend.position  = "bottom"
+    )
+}
+
+cb_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", 
+                "#0072B2", "#D55E00", "#CC79A7", "#000000")
+```
+
+### Base Functions
+
+Load position-level results:
+
+```{r}
+subtypes <- c("AT_CG", "AT_GC", "AT_TA",
+            "GC_TA", "GC_CG", "GC_AT",
+            "cpg_GC_TA", "cpg_GC_CG", "cpg_GC_AT")
+
+get_pos_results <- function(res_dir, pop, subtype){
+  f_name <- paste0(res_dir, "/", pop, "/", subtype, ".csv")
+  df <- read_csv(f_name, show_col_types = FALSE) %>%
+    rowwise() %>%
+    mutate(re = dev / (2 * (singletons+controls)))
+  return(df)
+}
+
+get_pos_cc <- function(control_control, pop, subtype){
+  f_name <- paste0(control_control, "/", pop, "/", subtype, "_v2.csv")
+  df <- read_csv(f_name, show_col_types = FALSE) %>%
+           mutate(re = dev / (2 * (singletons + controls) ))
+  return(df)
+}
+
+get_pos_results_all <- function(res_dir, pop, subtypes){
+  results <- vector(mode = "list", length = length(subtypes))
+  
+  for(i in 1:length(subtypes)){
+    results[[i]] <- get_pos_results(res_dir, pop, subtypes[[i]])
+    results[[i]]$subtype <- subtypes[[i]]
+  }
+  
+  return(bind_rows(results))
+}
+
+subtype_print_names <- function(st){
+  if(str_starts(st, "AT")){
+    return(paste0("A → ", str_sub(st, 4, 4)))
+  } else if(str_starts(st, "GC")){
+    return(paste0("C → ", str_sub(st, 5, 5)))
+  } else if(str_starts(st, "all")){
+    return(paste0("C* → ", str_sub(st, 9, 9)))
+  } else{
+    return(paste0("CpG → ", str_sub(st, 9, 9), "pG"))
+  }
+}
+```
+
+Load position-level residuals:
+
+```{r}
+get_pos_resid <- function(res_dir, pop, subtype, rp){
+  f_name <- paste0(res_dir, "/resid/", pop, "/", subtype, "_rp_", rp, ".csv")
+  df <- read_csv(f_name, show_col_types = FALSE)
+  df$rp <- rp
+  
+  n_tot <- sum(df$n)
+  df$re_res <- (df$res^2) / (2*n_tot)
+  return(df)
+}
+
+get_pos_resid_all <- function(res_dir, pop, subtype, rp = c(-500:-1, 1:500)){
+  results <- vector(mode = "list", length = length(rp))
+  for(i in 1:length(rp)){
+    if(rp[i] == 1 & str_starts(subtype, "cpg")) next
+    results[[i]] <- get_pos_resid(res_dir, pop, subtype, rp[i])
+  }
+  df <- bind_rows(results)
+  return(df)
+}
+```
+
+## Summary Across All Subtypes
+
+First let's get a look at the single position model results for all subtypes using the singletons from all 5 1kGP super-populations. 
+
+```{r}
+load_all_pos_results <- function(subtypes, pop = "ALL"){
+  final <- get_pos_results(single_pos_dir, pop, subtypes[1]) %>%
+    mutate(subtype = subtypes[1])
+  
+  for(i in 2:length(subtypes)){
+    final <- final %>%
+      bind_rows({
+        get_pos_results(single_pos_dir, pop, subtypes[i]) %>%
+          mutate(subtype = subtypes[i])
+      })
+  }
+  final <- final %>%
+    mutate(from_n = ifelse(str_starts(subtype, "A"), "A", 
+                           ifelse(str_starts(subtype, "cpg"), "CpG", 
+                                  ifelse(str_starts(subtype, "all"), "C*", "C"))),
+         #to_n = ifelse(str_starts(subtype, "A"), str_sub(subtype, 4, 4), str_sub(subtype, -1))
+         to_n = ifelse(str_starts(subtype, "A"), str_sub(subtype, 4,4), 
+                       ifelse(str_starts(subtype, "cpg"), 
+                              paste0(str_sub(subtype, -1), "pG"), 
+                              str_sub(subtype, -1) )))
+  return(final)
+}
+
+df_all <- load_all_pos_results(c(subtypes, "all_GC_AT"))
+df_all$cramer <- sqrt(df_all$dev / (df_all$singletons + df_all$controls))
+
+df_all$side <- ifelse(df_all$offset > 0, 1, -1)
+```
+
+
+## A > C
+
+```{r}
+df <- df_all %>% filter(subtype == "AT_CG")
+```
+
+Get the significant value for chi square df = 3, alpha = 95%:
+
+```{r}
+crit_val <- qchisq(0.95, 3)
+```
+
+
+Sliding window approach: for each window, starting at +/- 5 and increasing in size by 5, cacluate the proportion of significant statistics:
+
+```{r}
+get_window_prop <- function(df, window, crit_val = qchisq(0.95, 3)){
+  sig_vec <- df %>%
+    filter(abs(offset) <= window) %>%
+    mutate(sig = dev > crit_val) %>%
+    pull(sig)
+  return(sum(sig_vec) / length(sig_vec))
+}
+
+get_window_df <- function(df, step_size = 5){
+  max_window <- max(abs(df$offset))
+  window_vec <- seq(step_size, max_window, by = step_size)
+  prop_vec <- sapply(window_vec, function(w) get_window_prop(df, w))
+  return(tibble(window = window_vec, prop_sig = prop_vec))
+}
+
+window_a_c <- get_window_df(df)
+
+# Find smallest window with prop < 0.95
+boundary_point <- window_a_c %>%
+  filter(prop_sig < 0.95) %>%
+  slice(1)
+
+# plot window_a_c
+window_a_c %>%
+  ggplot(aes(x = window, y = prop_sig)) +
+  geom_line() +
+  geom_point() +
+  theme_publication() +
+  xlab("Window Size") +
+  ylab("Proportion Significant") +
+  ggtitle("A > C: Proportion of Significant Positions by Window Size")
+```
+
+## Boundary Point DF
+
+We now want to get the boundary point for all subtypes
+
+```{r}
+result_df <- data.frame(subtype = character(), boundary_point = numeric())
+for(st in subtypes){
+  print(st)
+  df <- df_all %>% filter(subtype == st)
+  df_window <- get_window_df(df)
+  boundary_point <- df_window %>%
+    filter(prop_sig < 0.95) %>%
+    slice(1)
+  result_df <- rbind(result_df, data.frame(subtype = st, boundary_point = boundary_point$window))
+}
+```
+
+Print out table for knitr html document:
+
+```{r}
+result_df %>%
+  rename(Subtype = subtype, `Boundary Point` = boundary_point) %>%
+  reactable::reactable()
+```
+
+
+Format the result_df as a LaTeX table for publication:
+
+```{r}
+# result_df %>%
+#   rename(Subtype = subtype, `Boundary Point` = boundary_point) %>%
+#   kbl(booktabs = T, caption = "Boundary Points for Each Subtype", format = "latex")
+```
+
+
